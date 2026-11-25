@@ -2,17 +2,17 @@
 
 Read this first; it saves you from re-reading the 700-line `index.html`.
 
-## Owner's working rules
-- Spend few tokens. Do only the high-impact items asked for; no polish such as fingerprints, micro-bevels or brushing lines.
-  Final assets will be modelled and baked in Blender later, so the web version only needs to look good, not perfect.
-- If the owner asks what you would change, or for ideas, reply with a short numbered list and wait for them to pick. Build nothing until they choose.
-- Never add features the owner did not name (no colour pickers, navigation widgets, keyboard shortcuts, copy rewrites). If a request is vague, ask one question instead of guessing.
-- One render for the whole change, at phone size. No extra passes for desktop, other languages or interaction tests unless asked.
-- Workflow: branch → PR via `gh api` REST (GraphQL is blocked in Claude sessions) → merge only when the owner says so.
-  Pushing to `main` deploys to GitHub Pages (`.github/workflows/deploy.yml`).
+## WORKING RULES
+Goal: high quality with minimal tokens. Cut waste, not quality.
+- Focus only on the key features that noticeably affect the result. Don't do minor or unnecessary stuff.
+- List the main features first and ask me which to do before implementing. A crucial step that dramatically improves the result is worth spending tokens on.
+- Build a good product, but don't polish or be a perfectionist.
+- Verify lightly: one sanity check per change, no exhaustive testing.
+- Merge and push directly to the main branch. No feature branches or PRs.
 
 ## Layout
 Single file `index.html` plus vendored `three.module.min.js` (three.js, loaded through an import map).
+Pushing to `main` deploys to GitHub Pages (`.github/workflows/deploy.yml`).
 - **CSS** at the top. In WebGL mode: `.webgl .screen{background:none}` (the HTML UI sits over the WebGL glass),
   `.glass` sheen fades with `--gs`, and `.shade` dims only a little (factor `.1` in `apply()`).
 - **Script 1** holds the page logic and the scroll story: i18n (ru/en/es), the CSS 3D fallback model, and
