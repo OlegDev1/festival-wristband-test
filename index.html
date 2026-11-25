@@ -468,7 +468,7 @@ function size(){
 
 /* opening pose: three-quarter, not a flat profile, so the loop reads as a ring with depth and a sliver of glass shows.
    cx/cy: centre of case + loop on screen for this pose, in band units (recompute if the pose or the loop size changes) */
-const R0={ry:-62,rx:0,rz:0,s:.86,cx:114,cy:0};
+const R0={ry:-62,rx:0,rz:0,s:.86,cx:82,cy:0};
 /* scroll → targets; a light spring follows them */
 const tgt={x:0,y:0,s:R0.s,ry:R0.ry,rx:R0.rx,rz:R0.rz};let cur=null,raf=0;
 const st={si:-2,ci:-2,ring:'#ff5a3c',glow:false,sos:false};
@@ -539,7 +539,7 @@ import * as THREE from 'three';
 /* WebGL band: lathe-turned silver case, braided loop strap with real relief, light ring. Units match the CSS model (k = 1), so the HTML screen sits exactly on the glass. */
 /* braid, in band units: how far the strands stand proud of the tube (amp), the width of one texture tile (tile, 4 x 4 cells),
    and how much longer a tile is along the band than across it (aspect: steeper strands). loopGeometry fits whole tiles. */
-const BRAID={amp:3.6,tile:66,cells:4,aspect:1.2};
+const BRAID={amp:4.4,tile:66,cells:4,aspect:1.2};
 function braidTextures(maxAniso){
   /* a 2/2 diagonal braid, like a braided solo loop: two families of strands cross at an angle, each strand passing over two
      and under two of the other family, so the surface is a herringbone of puffy segments with rounded ends. Every strand is a
@@ -563,7 +563,7 @@ function braidTextures(maxAniso){
       if(over){
         const ap=p<0?-p:p,q=(sg<0?-sg:sg)/1.1,e=1-p*p*(.55+.45*ap)-q*q*q;
         if(e>0){
-          const pill=Math.sin(Math.PI/2*Math.min(1,e/.75));
+          const pill=Math.sqrt(Math.min(1,e/.85));
           dh=pill*lift[f*N+mN(st)]*(.88+.12*sg);h=body+(1-body)*dh;
         }
       }
@@ -572,14 +572,15 @@ function braidTextures(maxAniso){
     const i=y*S+x,st=bf?ib:ia;
     D[i]=best;FA[i]=bf;
     /* twisted yarn: slanted ply ridges, each split into fine filaments with their own tone */
-    const on=Math.min(1,best*2),tw=bp*1.4+bs*7,tick=Math.cos(2*Math.PI*tw),fl=tw*7,fi=Math.floor(fl),ff=fl-fi;
-    const fh=Math.abs(Math.sin(fi*12.9898+st*78.233+bf*37.719)*43758.5453)%1,fp=1-Math.abs(2*ff-1);
-    H[i]=best+on*(.03*tick+.014*(fp-.5)+.01*(fh-.5))+(fib[i]-.5)*.008;
-    C[i]=tone[bf*N+mN(st)]*(.3+.7*Math.min(1,best*1.15))*(1+.06*tick)*(.92+.12*fh*on);
-    R[i]=.95-.3*bd-.06*fh*on;
+    /* yarn: ~7 rounded cords run along each strand with a slight twist, dark seams between them, every cord split into filaments */
+    const on=Math.min(1,best*2.2),tw=bp*3.5+bs*.7,cf=tw-Math.floor(tw),cord=Math.sqrt(Math.max(0,1-(2*cf-1)**2)),fl=tw*4,fi=Math.floor(fl);
+    const fh=Math.abs(Math.sin(fi*12.9898+st*78.233+bf*37.719)*43758.5453)%1;
+    H[i]=best+on*(.07*(cord-.75)+.008*(fh-.5))+(fib[i]-.5)*.006;
+    C[i]=tone[bf*N+mN(st)]*(.24+.76*Math.min(1,best*1.15))*(1-on*.2*(1-cord))*(.94+.1*fh*on);
+    R[i]=.95-.3*bd*cord-.05*fh*on;
   }
   const n=new ImageData(S,S),c=new ImageData(S,S),d=new ImageData(S,S),an=new ImageData(S,S),at=(x,y)=>H[((y+S)%S)*S+(x+S)%S];
-  const gx=BRAID.amp*S/(2*TU)*.7,gy=BRAID.amp*S/(2*TV)*.7;
+  const gx=BRAID.amp*S/(2*TU)*.85,gy=BRAID.amp*S/(2*TV)*.85;
   /* strand directions in the tangent frame (u right, v up; canvas y runs down): family 0 = (+u,-v), family 1 = (+u,+v) */
   const dl=Math.hypot(TU*TU,TV*TV),d0=[TU*TU/dl,-TV*TV/dl],d1=[TU*TU/dl,TV*TV/dl];
   for(let y=0;y<S;y++)for(let x=0;x<S;x++){
@@ -605,13 +606,16 @@ function envScene(){
   return s;
 }
 function caseGeometry(){
-  const p=[[86,-23],[100,-23],[112,-22.3],[121,-20.4],[126.8,-16.6],[129.5,-10.5],[130.2,-3],[130.2,3],[129.5,10.5],[127,16.5],[123,20.6],[119.5,22.6],[117,23.2],[114.6,23.2],[113.6,22.4]];
-  const pts=new THREE.SplineCurve(p.map(([r,h])=>new THREE.Vector2(r,h))).getPoints(140);
-  const g=new THREE.LatheGeometry(pts,200);g.rotateX(Math.PI/2);return g;
+  /* machined profile (r, z), split where the straight flank meets the rolled top edge: body = satin, bezel = polished.
+     Outer radius 130.2, half-thickness 23 and the lip at z 23.2 / glass at 114.2 keep the HTML screen and light ring aligned. */
+  const V=(r,z)=>new THREE.Vector2(r,z),arc=(cx,cz,rx,rz,a0,a1,n,o)=>{for(let k=0;k<=n;k++){const a=a0+(a1-a0)*k/n;o.push(V(cx+Math.cos(a)*rx,cz+Math.sin(a)*rz))}};
+  const body=[V(86,-23),V(100,-23)];arc(110,-8,20.2,15,-Math.PI/2,0,20,body);body.push(V(130.2,0),V(130.2,7));
+  const top=[];arc(119,7,11.2,16.2,0,Math.PI/2,22,top);top.push(V(116.5,23.2),V(114.6,23.2),V(113.6,22.4));
+  return [body,top].map(p=>{const g=new THREE.LatheGeometry(p,256);g.rotateX(Math.PI/2);return g});
 }
 function loopGeometry(){
   /* a round loop in the Y-Z plane, like a band around a wrist: a touch flatter where it runs under the case, round everywhere else */
-  const a=170,b=152,nf=2.4,nb=2,raw=[];
+  const a=176,b=118,nf=2.4,nb=2,raw=[];
   for(let i=0;i<=4000;i++){const t=i/4000*Math.PI*2,c=Math.cos(t),s=Math.sin(t),e=2/(c>=0?nf:nb);
     raw.push(new THREE.Vector2(a*Math.sign(s)*Math.abs(s)**e,-b+b*Math.sign(c)*Math.abs(c)**e));}
   const cum=[0];for(let i=1;i<raw.length;i++)cum.push(cum[i-1]+raw[i].distanceTo(raw[i-1]));
@@ -664,7 +668,9 @@ function init(){
   const g=new THREE.Group();scene.add(g);
   /* polished steel: pure metal, no clearcoat (a second lobe on metal only blurs the streaks and costs a pass on phones) */
   const silver=new THREE.MeshStandardMaterial({color:0xe4e4e8,metalness:1,roughness:.17,envMapIntensity:1.25,side:THREE.DoubleSide});
-  g.add(new THREE.Mesh(caseGeometry(),silver));
+  /* satin flank and back edge: circular-brushed metal (highlight smeared around the case), polished top edge and lip */
+  const satin=new THREE.MeshPhysicalMaterial({color:0xb4b5ba,metalness:1,roughness:.26,anisotropy:.6,envMapIntensity:1,side:THREE.DoubleSide});
+  const [cb,ct]=caseGeometry();g.add(new THREE.Mesh(cb,satin));g.add(new THREE.Mesh(ct,silver));
   const back=new THREE.Mesh(new THREE.CircleGeometry(87,128),new THREE.MeshPhysicalMaterial({color:0x17161b,roughness:.3,clearcoat:1,clearcoatRoughness:.1}));
   back.geometry.rotateY(Math.PI);back.position.z=-23.05;g.add(back);
   /* black sapphire over an off OLED: flat disc (so the HTML screen still lines up) with normals bent like a dome that rolls off at
