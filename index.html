@@ -10,7 +10,7 @@
 <style>
 /* VOICE: a product launch on a festival night — confident, warm, few words.
    IDEA: the band itself is the presenter: it stands edge-on, turns to you, then its screen walks through each feature.
-   PICTURE: a 3D CSS wristband (graphite case, coral woven strap, light ring) over stage beams and a crowd silhouette.
+   PICTURE: a WebGL wristband (polished silver case, knit coral loop strap, light ring) with an HTML screen laid exactly on top; CSS 3D fallback.
    COLOUR and TYPE: warm black night, coral strap as the dominant colour, lagoon cyan for friends, sun yellow for places; Unbounded + Inter.
    LAYOUT: one sticky stage; phone = band on top, caption below; wide = caption left, band right; then how-it-works and the colour range. */
 :root{color-scheme:dark;--bg:#0b0809;--ink:#f7efe8;--mute:#b5a79f;--coral:#ff5a3c;--cyan:#43d9ff;--lime:#c6f24e;--sun:#ffc23d;--ring:#ff5a3c;--k:1}
@@ -52,11 +52,16 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-
 
 .view{position:absolute;inset:0;z-index:2;pointer-events:none;perspective:calc(var(--k)*1800px)}
 .pos{position:absolute;left:50%;top:50%;transform-style:preserve-3d;will-change:transform}
-.halo{position:absolute;left:calc(var(--k)*-400px);top:calc(var(--k)*-400px);width:calc(var(--k)*800px);height:calc(var(--k)*800px);border-radius:50%;transform:translateZ(calc(var(--k)*-300px));background:radial-gradient(closest-side,color-mix(in srgb,var(--ring) 60%,transparent),transparent);opacity:.2;transition:opacity .6s}
+.haloL{position:absolute;left:50%;top:50%;z-index:1;pointer-events:none;will-change:transform}
+.gl{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .7s}
+.gl.on{opacity:1}.gl canvas{display:block;width:100%;height:100%}
+.view{z-index:2}
+.halo{position:absolute;left:calc(var(--k)*-400px);top:calc(var(--k)*-400px);width:calc(var(--k)*800px);height:calc(var(--k)*800px);border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--ring) 60%,transparent),transparent);opacity:.2;transition:opacity .6s}
 .glowing .halo{opacity:.75}
 .bz{position:absolute;transform-style:preserve-3d}
 .bz.go{animation:bz .45s linear}
-.watch{position:absolute;left:0;top:0;transform-style:preserve-3d;will-change:transform;--D:calc(var(--k)*260px);--R:calc(var(--k)*130px);--T:calc(var(--k)*58px);--W:calc(var(--k)*128px);--ts:calc(var(--k)*12px)}
+.watch{position:absolute;left:0;top:0;transform-style:preserve-3d;will-change:transform;--D:calc(var(--k)*260px);--R:calc(var(--k)*130px);--T:calc(var(--k)*46px);--W:calc(var(--k)*128px);--ts:calc(var(--k)*14px)}
+.webgl .face{background:none}.webgl .ringl,.webgl .back,.webgl .btn{display:none}.webgl .shade{inset:calc(var(--k)*17px)}
 .st,.face,.back,.btn,.sf,.sb,.sl,.sr{position:absolute;display:block;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .st{width:calc(var(--D)*.02618 + 1px);height:var(--T);left:calc((var(--D)*.0785 + 1px)/-2);top:calc(var(--T)/-2);transform:rotateZ(var(--a)) translateY(calc(var(--R)*-1 + .5px)) rotateX(90deg)}
 .face{width:var(--D);height:var(--D);left:calc(var(--R)*-1);top:calc(var(--R)*-1);border-radius:50%;transform:translateZ(calc(var(--T)/2 + .5px));background:conic-gradient(from calc(var(--spec,0)*1deg),#35343a,#87858d 10%,#2b2a30 28%,#5d5b62 50%,#26252b 70%,#79777f 88%,#35343a)}
@@ -190,11 +195,12 @@ footer{padding:28px max(5vw,20px) 40px;border-top:1px solid rgba(255,255,255,.08
     <div class="horizon" id="horizon"></div>
     <h1 class="hero-t" id="heroT">Tribu</h1>
 
+    <div class="haloL" id="haloL"><div class="halo"></div></div>
+    <div class="gl" id="gl"></div>
     <div class="view">
       <div class="pos" id="pos">
-        <div class="halo"></div>
         <div class="bz" id="bz">
-          <div class="watch" id="watch">
+          <div class="watch webgl" id="watch">
             <i class="back"></i>
             <i class="btn"></i>
             <div class="face">
@@ -375,7 +381,8 @@ const N=8,INTRO=1.6,U=INTRO+N;
 const P=[[-10,4,0],[12,6,-2],[-8,-5,0],[16,3,2],[-14,6,0],[10,-4,-2],[-26,12,0],[-46,6,0]];
 const RING=['#ff5a3c','#43d9ff','#c6f24e','#ffc23d'],SPD=[80,60,140],SPA=[-30,50,140];
 
-/* case: 120 thin facets around the rim, lit from the upper right */
+/* CSS 3D fallback, used only when WebGL is not available */
+function buildCSS(){
 let h='';
 for(let i=0;i<120;i++){
   const a=i*3,c1=Math.max(0,Math.cos((a-50)*Math.PI/180)),c2=Math.max(0,Math.cos((a-235)*Math.PI/180));
@@ -398,6 +405,10 @@ function strap(dir){
   watch.insertAdjacentHTML('beforeend',h);
 }
 strap(-1);strap(1);
+}
+function fallback(){if(window.tribuGL||window.tribuFell)return;window.tribuFell=true;watch.classList.remove('webgl');buildCSS();kick()}
+window.tribuFallback=fallback;
+setTimeout(()=>{if(!window.tribuGL)fallback()},6000);
 
 /* crowd silhouette */
 {let s='',x=-12,seed=11;const r=()=>(seed=(seed*9301+49297)%233280)/233280;
@@ -442,19 +453,21 @@ function draw(){
   $('#holdArc').setAttribute('stroke-dasharray',`${(S.hold*100).toFixed(1)} 100`);
   s7.classList.toggle('sent',S.sent);txt($('#sosA'),S.sent?d.sos_sent:d.sos_hold);txt($('#sosB'),S.sent?d.sos_meet:'');
 }
-function buzz(){if(reduce)return;bz.classList.remove('go');void bz.offsetWidth;bz.classList.add('go')}
+let bzT=-1e9;
+function buzz(){if(reduce)return;bzT=performance.now();kick()}
 
 /* size: the band is drawn at real pixels through --k, so text stays sharp */
-let wide=true;
+let wide=true,kk=1;
 function size(){
   const w=innerWidth,hh=stage.clientHeight;wide=w>760;
   const k=wide?Math.min(hh*.44/260,w*.3/260):Math.min(w*.56/260,hh*.32/260);
-  stage.style.setProperty('--k',clamp(k,.5,1.8).toFixed(3));
+  kk=+clamp(k,.5,1.8).toFixed(3);stage.style.setProperty('--k',kk);
 }
 
 /* scroll → targets; a light spring follows them */
 const tgt={x:0,y:0,s:.86,ry:-90,rx:0,rz:0};let cur=null,raf=0;
-const st={si:-2,ci:-2,ring:''};
+const st={si:-2,ci:-2,ring:'#ff5a3c',glow:false,sos:false};
+const haloL=$('#haloL');
 function update(){
   const vh=stage.clientHeight,vw=innerWidth,len=Math.max(1,story.offsetHeight-vh);
   const p=clamp(-story.getBoundingClientRect().top/len,0,1),u=p*U;
@@ -484,21 +497,28 @@ function update(){
   if(si===7){S.hold=clamp(lt/.4,0,1);S.sent=lt>=.4}
   const ring=si===6?RING[S.gi]:RING[0];
   if(ring!==st.ring){stage.style.setProperty('--ring',ring);st.ring=ring}
-  watch.classList.toggle('glow',si===6);stage.classList.toggle('glowing',si===6);watch.classList.toggle('sos',si===7);
+  st.glow=si===6;st.sos=si===7;
+  watch.classList.toggle('glow',st.glow);stage.classList.toggle('glowing',st.glow);watch.classList.toggle('sos',st.sos);
   draw();
   if(!cur){cur={...tgt};apply()}
-  if(!raf)raf=requestAnimationFrame(tick);
+  kick();
 }
+function kick(){if(cur&&!raf)raf=requestAnimationFrame(tick)}
+window.tribuKick=kick;
 function apply(){
-  pos.style.transform=`translate3d(${cur.x.toFixed(1)}px,${cur.y.toFixed(1)}px,0)`;
+  const bt=performance.now()-bzT,bx=bt<450?Math.sin(bt*.085)*5*kk*(1-bt/450):0;
+  const tr=`translate3d(${(cur.x+bx).toFixed(1)}px,${cur.y.toFixed(1)}px,0)`;
+  pos.style.transform=tr;haloL.style.transform=tr;
   watch.style.transform=`scale(${cur.s.toFixed(4)}) rotateZ(${cur.rz.toFixed(2)}deg) rotateX(${cur.rx.toFixed(2)}deg) rotateY(${cur.ry.toFixed(2)}deg)`;
   const cf=Math.cos(cur.ry*Math.PI/180)*Math.cos(cur.rx*Math.PI/180);
-  watch.style.setProperty('--fs',((1-cf)*.55).toFixed(3));
+  watch.style.setProperty('--fs',((1-cf)*(window.tribuGL?.35:.55)).toFixed(3));
   watch.style.setProperty('--spec',(cur.ry*1.6+cur.rx).toFixed(1));
+  if(window.tribuGL)window.tribuGL.draw({x:cur.x+bx,y:cur.y,s:cur.s,ry:cur.ry,rx:cur.rx,rz:cur.rz,k:kk,w:stage.clientWidth,h:stage.clientHeight,ring:st.ring,glow:st.glow,sos:st.sos});
 }
 function tick(){
   let moving=false;const f=reduce?1:.14;
   for(const k in tgt){const d=tgt[k]-cur[k];if(Math.abs(d)>.02){cur[k]+=d*f;moving=true}else cur[k]=tgt[k]}
+  if(performance.now()-bzT<480)moving=true;
   apply();raf=moving?requestAnimationFrame(tick):0;
 }
 function clock(){const t=new Date();txt($('#clock'),String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0'))}
@@ -507,6 +527,113 @@ addEventListener('scroll',update,{passive:true});
 addEventListener('resize',()=>{size();update()});
 size();setLang(L);clock();setInterval(clock,15000);update();
 }
+</script>
+<script type="importmap">{"imports":{"three":"./three.module.min.js"}}</script>
+<script type="module">
+import * as THREE from 'three';
+/* WebGL band: lathe-turned silver case, knit loop strap, light ring. Units match the CSS model (k = 1), so the HTML screen sits exactly on the glass. */
+function knitTextures(maxAniso){
+  const S=256,C=16,cell=S/C,H=new Float32Array(S*S);let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+  for(let y=0;y<S;y++)for(let x=0;x<S;x++){
+    const row=Math.floor(y/cell),off=(row%2)*cell/2,cx=((x+off)%cell)/cell-.5,cy=(y%cell)/cell-.5;
+    const d=Math.hypot(cx/.47,cy/.43);H[y*S+x]=(d<1?Math.cos(d*Math.PI/2)**.75:0)+rnd()*.06;
+  }
+  const n=new ImageData(S,S),c=new ImageData(S,S),at=(x,y)=>H[((y+S)%S)*S+(x+S)%S];
+  for(let y=0;y<S;y++)for(let x=0;x<S;x++){
+    const dx=(at(x+1,y)-at(x-1,y))*2.2,dy=(at(x,y+1)-at(x,y-1))*2.2,l=Math.hypot(dx,dy,1),i=(y*S+x)*4;
+    n.data[i]=(-dx/l*.5+.5)*255;n.data[i+1]=(dy/l*.5+.5)*255;n.data[i+2]=(1/l*.5+.5)*255;n.data[i+3]=255;
+    const v=(.74+.26*at(x,y)+(rnd()-.5)*.05)*255;c.data[i]=c.data[i+1]=c.data[i+2]=Math.min(255,v);c.data[i+3]=255;
+  }
+  const tex=(img,srgb)=>{const cv=document.createElement('canvas');cv.width=cv.height=S;cv.getContext('2d').putImageData(img,0,0);
+    const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=Math.min(8,maxAniso);if(srgb)t.colorSpace=THREE.SRGBColorSpace;return t};
+  return [tex(c,true),tex(n,false)];
+}
+function envScene(){
+  const s=new THREE.Scene();s.background=new THREE.Color(0x060407);
+  const add=(w,h,col,i,p)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:new THREE.Color(col).multiplyScalar(i),side:THREE.DoubleSide}));m.position.set(...p);m.lookAt(0,0,0);s.add(m)};
+  add(9,3,'#ffffff',5,[0,6,3]);add(2,9,'#ffffff',2.6,[6.5,1,4]);add(3,3,'#ffffff',2,[-3,3,6]);
+  add(1.6,9,'#ff5a3c',3.4,[-6,0,2]);add(1.6,7,'#43d9ff',2.2,[5,0,-5]);add(11,2,'#ffb48a',.9,[0,-6,2]);
+  return s;
+}
+function caseGeometry(){
+  const p=[[86,-23],[100,-23],[112,-22.3],[121,-20.4],[126.8,-16.6],[129.5,-10.5],[130.2,-3],[130.2,3],[129.5,10.5],[127,16.5],[123,20.6],[119.5,22.6],[117,23.2],[114.6,23.2],[113.6,22.4]];
+  const pts=new THREE.SplineCurve(p.map(([r,h])=>new THREE.Vector2(r,h))).getPoints(140);
+  const g=new THREE.LatheGeometry(pts,200);g.rotateX(Math.PI/2);return g;
+}
+function loopGeometry(){
+  /* a rounded loop in the Y-Z plane, flat in front (through the case), wrapping back like a band on a wrist */
+  const a=300,b=96,n=3.2,raw=[];
+  for(let i=0;i<=4000;i++){const t=i/4000*Math.PI*2,c=Math.cos(t),s=Math.sin(t);
+    raw.push(new THREE.Vector2(a*Math.sign(s)*Math.abs(s)**(2/n),-b+b*Math.sign(c)*Math.abs(c)**(2/n)));}
+  const cum=[0];for(let i=1;i<raw.length;i++)cum.push(cum[i-1]+raw[i].distanceTo(raw[i-1]));
+  const L=cum[cum.length-1],NS=420,pts=[];let j=0;
+  for(let i=0;i<NS;i++){const d=i/NS*L;while(cum[j+1]<d)j++;const f=(d-cum[j])/(cum[j+1]-cum[j]);pts.push(raw[j].clone().lerp(raw[j+1],f))}
+  const w2=64,h2=7,cr=6,sec=[];
+  const corner=(cx,cy,a0)=>{for(let k=0;k<=8;k++){const a1=a0+k/8*Math.PI/2;sec.push([cx+Math.cos(a1)*cr,cy+Math.sin(a1)*cr,Math.cos(a1),Math.sin(a1)])}};
+  corner(w2-cr,h2-cr,0);corner(-w2+cr,h2-cr,Math.PI/2);corner(-w2+cr,-h2+cr,Math.PI);corner(w2-cr,-h2+cr,Math.PI*1.5);
+  sec.push(sec[0]);
+  const per=[0];for(let i=1;i<sec.length;i++)per.push(per[i-1]+Math.hypot(sec[i][0]-sec[i-1][0],sec[i][1]-sec[i-1][1]));
+  const P=per[per.length-1],M=sec.length,pos=[],nor=[],uv=[],idx=[];
+  for(let i=0;i<=NS;i++){
+    const q=pts[i%NS],q0=pts[(i-1+NS)%NS],q1=pts[(i+1)%NS];
+    const ty=q1.x-q0.x,tz=q1.y-q0.y,tl=Math.hypot(ty,tz);let ny=tz/tl,nz=-ty/tl;
+    if(ny*(q.x)+nz*(q.y+b)<0){ny=-ny;nz=-nz}
+    for(let m=0;m<M;m++){const [sx,sn,ax,an]=sec[m];
+      pos.push(sx,q.x+ny*sn,q.y+nz*sn);nor.push(ax,ny*an,nz*an);uv.push(per[m]/80,i/NS*L/80);}
+  }
+  for(let i=0;i<NS;i++)for(let m=0;m<M-1;m++){const A=i*M+m,B=(i+1)*M+m;idx.push(A,B,A+1,B,B+1,A+1)}
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));
+  g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);return g;
+}
+function glowTexture(){
+  const cv=document.createElement('canvas');cv.width=cv.height=256;const x=cv.getContext('2d');
+  const g=x.createRadialGradient(128,128,0,128,128,128);
+  g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(.5,'rgba(255,255,255,0)');g.addColorStop(.56,'rgba(255,255,255,1)');
+  g.addColorStop(.68,'rgba(255,255,255,.35)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,256,256);
+  return new THREE.CanvasTexture(cv);
+}
+function init(){
+  if(window.tribuFell)return;
+  const host=document.getElementById('gl');
+  const r=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});
+  r.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  r.toneMapping=THREE.ACESFilmicToneMapping;r.toneMappingExposure=1.08;r.outputColorSpace=THREE.SRGBColorSpace;
+  const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(30,1,100,10000);
+  const pm=new THREE.PMREMGenerator(r);scene.environment=pm.fromScene(envScene(),.03).texture;pm.dispose();
+  scene.add(new THREE.HemisphereLight(0xffffff,0x2a1210,.35));
+  const key=new THREE.DirectionalLight(0xfff1e6,2.1);key.position.set(300,500,600);scene.add(key);
+  const rim=new THREE.DirectionalLight(0x43d9ff,1.1);rim.position.set(-500,120,-400);scene.add(rim);
+  const warm=new THREE.DirectionalLight(0xff5a3c,.7);warm.position.set(-400,-300,300);scene.add(warm);
+  const g=new THREE.Group();scene.add(g);
+  const silver=new THREE.MeshPhysicalMaterial({color:0xe9e9ee,metalness:1,roughness:.13,clearcoat:.4,clearcoatRoughness:.08,side:THREE.DoubleSide});
+  g.add(new THREE.Mesh(caseGeometry(),silver));
+  const back=new THREE.Mesh(new THREE.CircleGeometry(87,128),new THREE.MeshPhysicalMaterial({color:0x17161b,roughness:.3,clearcoat:1,clearcoatRoughness:.1}));
+  back.geometry.rotateY(Math.PI);back.position.z=-23.05;g.add(back);
+  const glass=new THREE.Mesh(new THREE.CircleGeometry(114.2,128),new THREE.MeshBasicMaterial({color:0}));glass.position.z=22.7;g.add(glass);
+  const ringMat=new THREE.MeshBasicMaterial({color:0xff5a3c,transparent:true,opacity:.6,toneMapped:false});
+  const ring=new THREE.Mesh(new THREE.RingGeometry(114.9,117.5,200),ringMat);ring.position.z=23.26;g.add(ring);
+  const glowMat=new THREE.MeshBasicMaterial({map:glowTexture(),color:0xff5a3c,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
+  const glow=new THREE.Mesh(new THREE.PlaneGeometry(420,420),glowMat);glow.position.z=23.4;g.add(glow);
+  const btnMat=new THREE.MeshPhysicalMaterial({color:0xe2553a,roughness:.42,clearcoat:.6,emissive:0xff5a3c,emissiveIntensity:0});
+  const btn=new THREE.Mesh(new THREE.CapsuleGeometry(6.5,34,8,24),btnMat);btn.position.x=131;g.add(btn);
+  const [map,nmap]=knitTextures(r.capabilities.getMaxAnisotropy());
+  const strapMat=new THREE.MeshPhysicalMaterial({color:0xc4513a,map,normalMap:nmap,normalScale:new THREE.Vector2(.75,.75),roughness:.72,sheen:1,sheenRoughness:.45,sheenColor:new THREE.Color(0xffb9a3),side:THREE.DoubleSide});
+  g.add(new THREE.Mesh(loopGeometry(),strapMat));
+  host.appendChild(r.domElement);
+  const D=Math.PI/180,col=new THREE.Color();let lw=0,lh=0,lk=0,shown=false;
+  window.tribuGL={draw(v){
+    if(v.w!==lw||v.h!==lh||v.k!==lk){lw=v.w;lh=v.h;lk=v.k;r.setSize(v.w,v.h,false);const d=1800*v.k;
+      cam.aspect=v.w/v.h;cam.fov=2*Math.atan(v.h/2/d)/D;cam.position.set(0,0,d);cam.near=d*.3;cam.far=d*3;cam.updateProjectionMatrix();}
+    g.position.set(v.x,-v.y,0);g.scale.setScalar(v.s*v.k);g.rotation.set(-v.rx*D,v.ry*D,-v.rz*D,'ZXY');
+    col.set(v.ring);ringMat.color.copy(col);glowMat.color.copy(col);ringMat.opacity=v.glow?1:.6;glowMat.opacity=v.glow?1:0;
+    btnMat.emissiveIntensity=v.sos?2.2:0;
+    r.render(scene,cam);
+    if(!shown){shown=true;host.classList.add('on')}
+  }};
+  window.tribuKick&&window.tribuKick();
+}
+try{init()}catch(e){console.warn('WebGL unavailable, using CSS model',e);window.tribuGL=null;window.tribuFallback&&window.tribuFallback()}
 </script>
 </body>
 </html>
