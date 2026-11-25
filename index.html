@@ -6,7 +6,7 @@
 <title>Tribu — festival band</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@500;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=Unbounded:wght@500;600;800&display=swap" rel="stylesheet">
 <style>
 /* VOICE: a product launch on a festival night — confident, warm, few words.
    IDEA: the band itself is the presenter: it stands three-quarter, turns to you, then its screen walks through each feature.
@@ -35,18 +35,30 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-
 .beams i{position:absolute;top:-12vh;width:40vw;height:130vh;transform-origin:50% 0;clip-path:polygon(47% 0,53% 0,100% 100%,0 100%);background:linear-gradient(rgba(255,90,60,.26),rgba(255,90,60,0) 72%);animation:sway 9s ease-in-out infinite alternate}
 .beams i.c{background:linear-gradient(rgba(67,217,255,.17),rgba(67,217,255,0) 70%);animation-duration:11s}
 .horizon{position:absolute;inset:auto 0 0;height:50vh;z-index:0;background:radial-gradient(70% 75% at 50% 100%,rgba(255,90,60,.32),rgba(255,90,60,0) 70%)}
-.hero-t{position:absolute;left:0;right:0;top:50%;z-index:1;margin:0;transform:translateY(-50%);text-align:center;font-weight:800;font-size:clamp(64px,22vw,340px);line-height:.9;letter-spacing:-.04em;pointer-events:none}
-.hero-f{position:absolute;left:16px;right:16px;bottom:max(7vh,26px);z-index:5;text-align:center;text-shadow:0 2px 24px var(--bg)}
-.tag{margin:0 auto 8px;max-width:22ch;font:600 clamp(20px,2.3vw,30px)/1.2 Unbounded,Inter,sans-serif;text-wrap:balance}
-.sub{margin:0 auto;max-width:36ch;color:var(--mute)}
-.hint{display:inline-flex;flex-direction:column;align-items:center;gap:8px;margin-top:16px;font-size:13px;color:var(--mute)}
-.hint::after{content:"";width:1px;height:28px;background:linear-gradient(var(--mute),transparent);animation:drip 1.8s ease-in-out infinite}
+/* hero: the wordmark never sits under the band. Wide = text column on the left, band on the right (where the features continue);
+   phone = wordmark on top, band in the middle, tagline below. --hy lifts the text as you start scrolling. */
+.hero-t{position:absolute;left:max(6vw,24px);top:50%;z-index:1;margin:0;font:400 clamp(120px,16vw,300px)/.86 Anton,Impact,"Arial Narrow",sans-serif;letter-spacing:.005em;text-transform:uppercase;color:var(--ink);
+  transform:translateY(calc(-100% - clamp(12px,1.6vw,26px) + var(--hy,0px)));pointer-events:none}
+.hero-f{position:absolute;left:max(6vw,24px);top:50%;z-index:5;width:min(460px,40vw);transform:translateY(var(--hy,0px))}
+.eyebrow{display:block;margin:0 0 14px;font:600 12px/1 Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--coral)}
+.tag{margin:0 0 10px;max-width:22ch;font:600 clamp(20px,2.1vw,30px)/1.2 Unbounded,Inter,sans-serif;text-wrap:balance}
+.sub{margin:0;max-width:34ch;color:var(--mute)}
+.hint{display:inline-flex;align-items:center;gap:10px;margin-top:22px;font-size:13px;color:var(--mute)}
+.hint::before{content:"";width:1px;height:28px;background:linear-gradient(var(--mute),transparent);animation:drip 1.8s ease-in-out infinite}
 .crowd{position:absolute;left:0;bottom:0;width:100%;height:24vh;z-index:3;fill:#040203;stroke:#040203;pointer-events:none}
 .dimB{position:absolute;inset:auto 0 0;height:46%;z-index:3;opacity:0;pointer-events:none;background:linear-gradient(rgba(11,8,9,0),var(--bg) 62%)}
 
 .caps{position:absolute;z-index:4;left:max(6vw,24px);top:50%;width:min(440px,36vw);height:0}
-.cap{position:absolute;left:0;right:0;top:0;opacity:0;transform:translateY(calc(-50% + 18px));transition:opacity .5s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
-.cap.on{opacity:1;transform:translateY(-50%)}
+.cap{position:absolute;left:0;right:0;top:0;opacity:0;pointer-events:none;transform:translateY(calc(-50% + 18px));transition:opacity .5s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
+.cap.on{opacity:1;pointer-events:auto;transform:translateY(-50%)}
+.rail button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+/* chapter rail: where you are in the story, tap to jump */
+.rail{position:absolute;z-index:6;right:max(2.2vw,12px);top:50%;display:flex;flex-direction:column;transform:translateY(-50%);opacity:0;pointer-events:none;transition:opacity .4s}
+.rail.on{opacity:1;pointer-events:auto}
+.rail button{appearance:none;display:grid;place-items:center;width:30px;height:30px;padding:0;border:0;background:none;cursor:pointer}
+.rail button::before{content:"";width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.26);transition:height .35s,width .35s,background .35s}
+.rail button:hover::before{background:rgba(255,255,255,.6)}
+.rail button[aria-current=step]::before{height:22px;background:var(--ink)}
 .cap h2{margin:0 0 14px;font-weight:600;font-size:clamp(30px,3.3vw,48px);line-height:1.05;letter-spacing:-.02em;text-wrap:balance}
 .cap p{margin:0;max-width:36ch;font-size:17px;color:var(--mute)}
 
@@ -82,66 +94,70 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-
 .sr{left:calc(var(--W) - var(--ts)/2);transform:rotateY(90deg)}
 .sf::after,.sl::after,.sr::after{content:"";position:absolute;inset:0;background:#0b0809;opacity:var(--o,0)}
 
-/* screens: drawn at 228px design size, scaled by --k */
-.scr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;opacity:0;transform:scale(.94);transition:opacity .45s ease,transform .5s cubic-bezier(.2,.7,.2,1)}
+/* screens: drawn at 228px design size, scaled by --k. One system on every screen:
+   a small coloured label (.we), one big value (.wb / .wm / .nd), one quiet line (.ws). Thin arcs, no clutter. */
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;opacity:0;transform:scale(.94);transition:opacity .45s ease,transform .5s cubic-bezier(.2,.7,.2,1);--a:rgba(255,255,255,.72)}
 .scr.on{opacity:1;transform:none}
-.wb{font:600 calc(var(--k)*50px)/1 Unbounded,Inter,sans-serif;letter-spacing:-.03em}
-.wm{font:600 calc(var(--k)*20px)/1.15 Unbounded,Inter,sans-serif;min-height:1.15em}
-.ws{font:500 calc(var(--k)*14px)/1.25 Inter,sans-serif;color:rgba(255,255,255,.74)}
+.we{margin-bottom:calc(var(--k)*8px);font:600 calc(var(--k)*12px)/1 Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--a)}
+.wb{font:600 calc(var(--k)*51px)/1 Unbounded,Inter,sans-serif;letter-spacing:-.05em}
+.wm{font:600 calc(var(--k)*24px)/1.1 Unbounded,Inter,sans-serif;letter-spacing:-.02em;min-height:1.1em}
+.ws{font:500 calc(var(--k)*16px)/1.25 Inter,sans-serif;color:rgba(255,255,255,.72)}
 .dim{color:rgba(255,255,255,.46)}
 .edge{position:absolute;inset:0;width:100%;height:100%}
-.edge circle{fill:none;stroke-width:6}
-.trk{stroke:rgba(255,255,255,.1)}
+.edge circle{fill:none;stroke-width:3.5}
+.trk{stroke:rgba(255,255,255,.08)}
 .val{stroke-linecap:round;transition:stroke-dasharray .3s}
-.av{display:inline-grid;place-items:center;width:calc(var(--k)*24px);height:calc(var(--k)*24px);border-radius:50%;background:var(--c);color:#14100e;font:700 calc(var(--k)*12px)/1 Inter,sans-serif;font-style:normal}
-.row{display:flex;align-items:center;gap:calc(var(--k)*8px);margin-top:calc(var(--k)*12px)}
+.av{display:inline-grid;place-items:center;width:calc(var(--k)*26px);height:calc(var(--k)*26px);border-radius:50%;background:var(--c);color:#14100e;font:700 calc(var(--k)*12px)/1 Inter,sans-serif;font-style:normal}
+.row{display:flex;align-items:center;gap:calc(var(--k)*8px);margin-top:calc(var(--k)*14px)}
 .stack .av{box-shadow:0 0 0 calc(var(--k)*2px) #000}.stack .av+.av{margin-left:calc(var(--k)*-9px)}
-.radar{position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 calc(var(--k)*37px),rgba(255,255,255,.12) calc(var(--k)*37px) calc(var(--k)*38px)),radial-gradient(circle,rgba(67,217,255,.13),transparent 70%)}
-.radar::before,.radar::after{content:"";position:absolute;background:rgba(255,255,255,.08)}
+.radar{position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 calc(var(--k)*37px),rgba(255,255,255,.1) calc(var(--k)*37px) calc(var(--k)*38px)),radial-gradient(circle,rgba(67,217,255,.13),transparent 70%)}
+.radar::before,.radar::after{content:"";position:absolute;background:rgba(255,255,255,.06)}
 .radar::before{left:50%;top:0;bottom:0;width:1px}.radar::after{top:50%;left:0;right:0;height:1px}
 .sweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 280deg,rgba(67,217,255,.4) 360deg);animation:spin 3.2s linear infinite}
 .me{position:absolute;left:50%;top:50%;width:calc(var(--k)*12px);height:calc(var(--k)*12px);margin:calc(var(--k)*-6px);border-radius:50%;background:#fff;box-shadow:0 0 0 calc(var(--k)*5px) rgba(255,255,255,.16)}
-.fr{position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-50%)}
+.fr{position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-50%);width:calc(var(--k)*28px);height:calc(var(--k)*28px);font-size:calc(var(--k)*13px)}
 .fr::after{content:"";position:absolute;inset:calc(var(--k)*-6px);border-radius:50%;border:calc(var(--k)*2px) solid var(--c);opacity:0;animation:pulse 2.4s ease-out infinite;animation-delay:var(--dl)}
-.fr.hi{width:calc(var(--k)*30px);height:calc(var(--k)*30px);font-size:calc(var(--k)*14px)}
-.rl{position:absolute;left:0;right:0;bottom:calc(var(--k)*26px)}
+.fr.hi{width:calc(var(--k)*34px);height:calc(var(--k)*34px);font-size:calc(var(--k)*15px)}
+.rl{position:absolute;left:0;right:0;bottom:calc(var(--k)*24px)}
 .rl b{color:#fff}
-.ntop{position:absolute;top:calc(var(--k)*24px);left:0;right:0;display:flex;justify-content:center;align-items:center;gap:calc(var(--k)*7px);font:600 calc(var(--k)*14px)/1 Inter,sans-serif}
-.ar{position:absolute;left:calc(50% - var(--k)*38px);top:calc(var(--k)*54px);width:calc(var(--k)*76px);height:calc(var(--k)*76px)}
+.ntop{display:flex;justify-content:center;align-items:center;gap:calc(var(--k)*7px);font:600 calc(var(--k)*15px)/1 Inter,sans-serif}
+.ar{position:relative;width:calc(var(--k)*62px);height:calc(var(--k)*62px);margin:calc(var(--k)*10px) 0 calc(var(--k)*6px)}
 .ar svg{width:100%;height:100%;fill:var(--cyan);transition:transform .3s,opacity .3s}
-.ping{position:absolute;inset:calc(var(--k)*8px);border-radius:50%;background:var(--cyan);opacity:0}
+.ping{position:absolute;inset:calc(var(--k)*4px);border-radius:50%;background:var(--cyan);opacity:0}
 .near .ar svg{opacity:0;transform:scale(.4)}
 .near .ping{animation:ping 1.1s ease-out infinite}
 .nd{display:flex;align-items:baseline;justify-content:center;gap:calc(var(--k)*4px)}
-.nd b{font:600 calc(var(--k)*40px)/1 Unbounded,Inter,sans-serif}
-.nd span{font:500 calc(var(--k)*16px)/1 Inter,sans-serif;color:rgba(255,255,255,.6)}
-.s2 .nd{position:absolute;left:0;right:0;top:calc(var(--k)*136px)}
-.s2 .ws{position:absolute;left:0;right:0;bottom:calc(var(--k)*26px)}
-.bump{position:relative;width:calc(var(--k)*150px);height:calc(var(--k)*72px);margin-bottom:calc(var(--k)*10px);--g:0px}
-.bb{position:absolute;top:calc(var(--k)*6px);width:calc(var(--k)*60px);height:calc(var(--k)*60px);border-radius:50%;display:grid;place-items:center;font:700 calc(var(--k)*15px)/1 Inter,sans-serif;font-style:normal;color:#14100e;transition:transform .3s}
+.nd b{font:600 calc(var(--k)*48px)/1 Unbounded,Inter,sans-serif;letter-spacing:-.04em}
+.nd span{font:500 calc(var(--k)*17px)/1 Inter,sans-serif;color:rgba(255,255,255,.6)}
+.s2 .ws{margin-top:calc(var(--k)*6px);font-size:calc(var(--k)*14px)}
+.bump{position:relative;width:calc(var(--k)*156px);height:calc(var(--k)*76px);margin-bottom:calc(var(--k)*12px);--g:0px}
+.bb{position:absolute;top:calc(var(--k)*6px);width:calc(var(--k)*64px);height:calc(var(--k)*64px);border-radius:50%;display:grid;place-items:center;font:700 calc(var(--k)*16px)/1 Inter,sans-serif;font-style:normal;color:#14100e;transition:transform .3s}
 .bb.a{left:0;background:var(--coral);transform:translateX(var(--g))}
 .bb.b{right:0;background:var(--lime);transform:translateX(calc(var(--g)*-1))}
-.burst{position:absolute;left:calc(50% - var(--k)*40px);top:calc(var(--k)*-4px);width:calc(var(--k)*80px);height:calc(var(--k)*80px);border-radius:50%;border:calc(var(--k)*3px) solid #fff;opacity:0}
+.burst{position:absolute;left:calc(50% - var(--k)*42px);top:calc(var(--k)*-4px);width:calc(var(--k)*84px);height:calc(var(--k)*84px);border-radius:50%;border:calc(var(--k)*3px) solid #fff;opacity:0}
 .ok .burst{animation:ring 1s ease-out infinite}
-.chips{position:absolute;top:calc(var(--k)*24px);left:0;right:0;display:flex;justify-content:center;gap:calc(var(--k)*8px)}
-.chip{display:grid;place-items:center;width:calc(var(--k)*36px);height:calc(var(--k)*36px);border-radius:50%;background:rgba(255,255,255,.1);font:700 calc(var(--k)*11px)/1 Inter,sans-serif;font-style:normal;transition:background .3s,color .3s}
-.chip svg{width:calc(var(--k)*19px);height:calc(var(--k)*19px);fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.s3 .ws{margin-top:calc(var(--k)*4px)}
+.chips{display:flex;justify-content:center;gap:calc(var(--k)*8px);margin-bottom:calc(var(--k)*14px)}
+.chip{display:grid;place-items:center;width:calc(var(--k)*38px);height:calc(var(--k)*38px);border-radius:50%;background:rgba(255,255,255,.1);font:700 calc(var(--k)*11px)/1 Inter,sans-serif;font-style:normal;transition:background .3s,color .3s}
+.chip svg{width:calc(var(--k)*20px);height:calc(var(--k)*20px);fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .chip.on{background:var(--sun);color:#14100e}
-.s4 .wm{margin-top:calc(var(--k)*40px)}
+.s4 .nd{margin:calc(var(--k)*6px) 0 calc(var(--k)*6px)}
 .s4 .nd svg{width:calc(var(--k)*20px);height:calc(var(--k)*20px);fill:var(--sun);align-self:center;transition:transform .4s}
-.eq{display:flex;align-items:flex-end;gap:calc(var(--k)*4px);height:calc(var(--k)*20px);margin:calc(var(--k)*8px) 0 calc(var(--k)*10px)}
-.eq i{width:calc(var(--k)*5px);height:100%;border-radius:calc(var(--k)*2px);background:var(--sun);transform-origin:50% 100%;animation:eq .8s ease-in-out infinite alternate;animation-delay:calc(var(--i)*-.19s)}
-.sw{position:absolute;left:50%;top:50%;width:calc(var(--k)*20px);height:calc(var(--k)*20px);margin:calc(var(--k)*-10px);border-radius:50%;background:var(--c);transform:rotate(var(--a)) translateY(calc(var(--k)*-82px));transition:transform .35s,box-shadow .35s}
-.sw.on{transform:rotate(var(--a)) translateY(calc(var(--k)*-82px)) scale(1.5);box-shadow:0 0 0 calc(var(--k)*3px) #000,0 0 0 calc(var(--k)*5px) var(--c)}
+.s4 .ws{font-size:calc(var(--k)*14px)}
+.eq{display:flex;align-items:flex-end;gap:calc(var(--k)*5px);height:calc(var(--k)*22px);margin:calc(var(--k)*12px) 0}
+.eq i{width:calc(var(--k)*6px);height:100%;border-radius:calc(var(--k)*3px);background:var(--sun);transform-origin:50% 100%;animation:eq .8s ease-in-out infinite alternate;animation-delay:calc(var(--i)*-.19s)}
+.s5 .ws{font-size:calc(var(--k)*14px)}
+.sw{position:absolute;left:50%;top:50%;width:calc(var(--k)*20px);height:calc(var(--k)*20px);margin:calc(var(--k)*-10px);border-radius:50%;background:var(--c);transform:rotate(var(--a)) translateY(calc(var(--k)*-84px));transition:transform .35s,box-shadow .35s}
+.sw.on{transform:rotate(var(--a)) translateY(calc(var(--k)*-84px)) scale(1.5);box-shadow:0 0 0 calc(var(--k)*3px) #000,0 0 0 calc(var(--k)*5px) var(--c)}
 .s6::before{content:"";position:absolute;inset:22%;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--ring) 45%,transparent),transparent)}
-.s6 .wm{color:var(--ring);position:relative}.s6 .ws{position:relative}
+.s6 .wm{color:var(--ring);position:relative;font-size:calc(var(--k)*28px)}.s6 .we{position:relative}
 .s7{background:radial-gradient(circle,#3a0f07,#000 72%);transition:opacity .45s,transform .5s,background .5s}
 .s7.sent{background:radial-gradient(circle,#ff6a4a 0,#a3240f 58%,#2a0703 100%)}
 .sr2{position:absolute;inset:18%;border-radius:50%;border:calc(var(--k)*2px) solid rgba(255,120,90,.8);animation:ring 2s ease-out infinite}
 .sr2+.sr2{animation-delay:-1s}
-.s7 .wb{position:relative;font-size:calc(var(--k)*44px)}
-.s7 .ws{position:relative;margin-top:calc(var(--k)*8px);max-width:80%}
-.s7 .dim{margin-top:calc(var(--k)*3px);color:rgba(255,255,255,.7)}
+.s7 .wb{position:relative;font-size:calc(var(--k)*54px)}
+.s7 .ws{position:relative;margin-top:calc(var(--k)*10px);max-width:80%}
+.s7 .dim{margin-top:calc(var(--k)*4px);font-size:calc(var(--k)*14px);color:rgba(255,255,255,.75)}
 
 .band{padding:clamp(56px,9vw,120px) max(5vw,20px)}
 .wrap{max-width:1240px;margin:0 auto}
@@ -170,6 +186,13 @@ footer{padding:28px max(5vw,20px) 40px;border-top:1px solid rgba(255,255,255,.08
 @keyframes bz{0%,100%{transform:none}20%{transform:translateX(calc(var(--k)*-5px))}40%{transform:translateX(calc(var(--k)*5px))}60%{transform:translateX(calc(var(--k)*-4px))}80%{transform:translateX(calc(var(--k)*3px))}}
 
 @media (max-width:760px){
+  .hero-t{left:0;right:0;top:calc(60px + 1.5vh);text-align:center;font-size:min(38vw,21vh);transform:translateY(var(--hy,0px))}
+  .hero-f{left:16px;right:16px;top:auto;bottom:max(6vh,24px);width:auto;text-align:center;transform:none;text-shadow:0 2px 24px var(--bg)}
+  .tag,.sub{margin-left:auto;margin-right:auto}
+  .hint{margin-top:14px}
+  .rail{right:auto;left:50%;top:60px;flex-direction:row;transform:translateX(-50%)}
+  .rail button{width:26px;height:32px}
+  .rail button[aria-current=step]::before{height:6px;width:20px}
   .caps{left:20px;right:20px;top:auto;bottom:max(5vh,22px);width:auto}
   .cap{top:auto;bottom:0;transform:translateY(18px);text-align:center}
   .cap.on{transform:none}
@@ -210,8 +233,8 @@ footer{padding:28px max(5vw,20px) 40px;border-top:1px solid rgba(255,255,255,.08
               <div class="screen">
                 <div class="scr s0">
                   <svg class="edge" viewBox="0 0 228 228" aria-hidden="true"><circle class="trk" cx="114" cy="114" r="106"/><circle class="val" cx="114" cy="114" r="106" pathLength="100" stroke-dasharray="86 100" transform="rotate(-90 114 114)" style="stroke:var(--lime)"/></svg>
-                  <span class="ws" data-i="w_day"></span>
-                  <b class="wb" id="clock">23:41</b>
+                  <span class="we" data-i="w_day"></span>
+                  <b class="wb clock">23:41</b>
                   <span class="row"><span class="stack"><i class="av" style="--c:var(--cyan)"></i><i class="av" style="--c:var(--lime)"></i><i class="av" style="--c:var(--sun)"></i></span><span class="ws" data-i="w_near"></span></span>
                 </div>
                 <div class="scr s1">
@@ -246,14 +269,14 @@ footer{padding:28px max(5vw,20px) 40px;border-top:1px solid rgba(255,255,255,.08
                 </div>
                 <div class="scr s5">
                   <svg class="edge" viewBox="0 0 228 228" aria-hidden="true"><circle class="trk" cx="114" cy="114" r="106"/><circle class="val" id="setArc" cx="114" cy="114" r="106" pathLength="100" stroke-dasharray="30 100" transform="rotate(-90 114 114)" style="stroke:var(--sun)"/></svg>
-                  <span class="ws" data-i="w_now"></span>
-                  <b class="wm" style="margin-top:calc(var(--k)*6px)">Kora Lumen</b>
+                  <span class="we" data-i="w_now" style="--a:var(--sun)"></span>
+                  <b class="wm">Kora Lumen</b>
                   <span class="eq"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i></span>
                   <span class="ws dim" data-i="w_next"></span>
                 </div>
                 <div class="scr s6">
                   <i class="sw" style="--a:0deg;--c:#ff5a3c"></i><i class="sw" style="--a:60deg;--c:#43d9ff"></i><i class="sw" style="--a:120deg;--c:#c6f24e"></i><i class="sw" style="--a:180deg;--c:#ffc23d"></i><i class="sw" style="--a:240deg;--c:#ff7ab6"></i><i class="sw" style="--a:300deg;--c:#f4f1ec"></i>
-                  <span class="ws" data-i="w_crew"></span>
+                  <span class="we" data-i="w_crew"></span>
                   <b class="wm" id="glN"></b>
                 </div>
                 <div class="scr s7" id="s7">
@@ -279,15 +302,16 @@ footer{padding:28px max(5vw,20px) 40px;border-top:1px solid rgba(255,255,255,.08
       <p class="sub" data-i="sub"></p>
       <span class="hint" data-i="scroll"></span>
     </div>
+    <nav class="rail" id="rail"></nav>
     <div class="caps">
-      <article class="cap"><h2 data-i="f0t"></h2><p data-i="f0b"></p></article>
-      <article class="cap"><h2 data-i="f1t"></h2><p data-i="f1b"></p></article>
-      <article class="cap"><h2 data-i="f2t"></h2><p data-i="f2b"></p></article>
-      <article class="cap"><h2 data-i="f3t"></h2><p data-i="f3b"></p></article>
-      <article class="cap"><h2 data-i="f4t"></h2><p data-i="f4b"></p></article>
-      <article class="cap"><h2 data-i="f5t"></h2><p data-i="f5b"></p></article>
-      <article class="cap"><h2 data-i="f6t"></h2><p data-i="f6b"></p></article>
-      <article class="cap"><h2 data-i="f7t"></h2><p data-i="f7b"></p></article>
+      <article class="cap"><span class="eyebrow" data-e="0"></span><h2 data-i="f0t"></h2><p data-i="f0b"></p></article>
+      <article class="cap"><span class="eyebrow" data-e="1"></span><h2 data-i="f1t"></h2><p data-i="f1b"></p></article>
+      <article class="cap"><span class="eyebrow" data-e="2"></span><h2 data-i="f2t"></h2><p data-i="f2b"></p></article>
+      <article class="cap"><span class="eyebrow" data-e="3"></span><h2 data-i="f3t"></h2><p data-i="f3b"></p></article>
+      <article class="cap"><span class="eyebrow" data-e="4"></span><h2 data-i="f4t"></h2><p data-i="f4b"></p></article>
+      <article class="cap"><span class="eyebrow" data-e="5"></span><h2 data-i="f5t"></h2><p data-i="f5b"></p></article>
+      <article class="cap"><span class="eyebrow" data-e="6"></span><h2 data-i="f6t"></h2><p data-i="f6b"></p></article>
+      <article class="cap"><span class="eyebrow" data-e="7"></span><h2 data-i="f7t"></h2><p data-i="f7b"></p></article>
     </div>
   </div>
 </section>
@@ -319,7 +343,7 @@ footer{padding:28px max(5vw,20px) 40px;border-top:1px solid rgba(255,255,255,.08
 {
 const T={
 ru:{tag:"Найди своих в любой толпе.",sub:"Браслет для фестивалей, который знает, где твои друзья.",scroll:"Листай вниз",
-f0t:"Один взгляд — и ты в курсе.",f0b:"Время, сколько друзей рядом и заряд. Без телефона в руке, без разблокировки, без поиска сети.",
+f0t:"Один взгляд — и ты в курсе.",f0b:"Время, друзья рядом и заряд — прямо на руке. Без телефона, без разблокировки, без поиска сети.",
 f1t:"Видишь всю компанию.",f1b:"Радар показывает, где каждый из твоих друзей — даже в толпе на 50 000 человек.",
 f2t:"Просто иди по стрелке.",f2b:"Выбери друга — браслет поведёт тебя к нему и мягко завибрирует, когда вы будете рядом.",
 f3t:"Стукнитесь браслетами.",f3b:"Познакомился с кем-то у сцены? Одно касание — и новый друг уже в твоей компании.",
@@ -327,6 +351,8 @@ f4t:"Бар, вода, туалет — что ближе.",f4b:"Браслет 
 f5t:"Не пропусти свой сет.",f5b:"Отметь артистов заранее — за 10 минут до начала браслет напомнит и покажет дорогу к сцене.",
 f6t:"Светится цветом вашей компании.",f6b:"Ночью ободок горит вашим общим цветом — своих видно издалека.",
 f7t:"Потерялся? Одна кнопка.",f7b:"Удержи боковую кнопку — друзья получат твою точку и место сбора. Работает даже без мобильной сети.",
+ch:"Главы",
+e:["Главный экран","Радар","Навигация","Знакомство","Места","Лайнап","Подсветка","SOS"],
 how_t:"Работает там, где телефон сдаётся",
 h1t:"Mesh-сеть из браслетов",h1b:"Браслеты передают сигнал друг другу по Bluetooth, поэтому всё работает, даже когда мобильный интернет лёг из-за толпы.",
 h2t:"5 дней без зарядки",h2b:"Хватает на весь фестиваль: экран загорается, только когда ты на него смотришь.",
@@ -337,7 +363,7 @@ w_day:"Сб · день 2",you:"Ты",w_near:"3 рядом",names:["Маша","�
 bump_pre:"Поднеси браслеты",bump_ok:"теперь в компании",spots:[["Бар","очередь ~4 мин"],["Вода","бесплатно"],["Туалет","без очереди"]],
 w_now:"Сейчас · Main Stage",w_next:"Далее 00:30 · Duo Brisa",w_crew:"Цвет компании",sos_hold:"Удерживай кнопку",sos_sent:"Отправлено 4 друзьям",sos_meet:"Сбор: колесо обозрения"},
 en:{tag:"Never lose your people in the crowd.",sub:"A festival wristband that knows where your friends are.",scroll:"Scroll down",
-f0t:"One glance and you know.",f0b:"The time, how many friends are nearby, battery. No phone in hand, no unlocking, no hunting for signal.",
+f0t:"One glance and you know.",f0b:"Time, friends nearby and battery, right on your wrist. No phone, no unlocking, no hunting for signal.",
 f1t:"See your whole crew.",f1b:"The radar shows where each of your friends is — even in a crowd of 50,000.",
 f2t:"Just follow the arrow.",f2b:"Pick a friend and the band guides you there, with a gentle buzz when you're close.",
 f3t:"Bump bands.",f3b:"Met someone by the stage? One tap and they're in your crew.",
@@ -345,6 +371,8 @@ f4t:"Bar, water, toilets — closest first.",f4b:"The band knows the festival ma
 f5t:"Never miss your set.",f5b:"Star artists in advance — ten minutes before they start, the band reminds you and points the way to the stage.",
 f6t:"Glows in your crew's colour.",f6b:"At night the ring lights up in your shared colour, so your people can spot you from afar.",
 f7t:"Lost? One button.",f7b:"Hold the side button — your friends get your location and a meeting point. Works even with no mobile signal.",
+ch:"Chapters",
+e:["Home screen","Radar","Find","Bump","Places","Lineup","Glow","SOS"],
 how_t:"Works where your phone gives up",
 h1t:"A mesh between bands",h1b:"Bands relay the signal to each other over Bluetooth, so everything keeps working when the crowd knocks out mobile data.",
 h2t:"5 days per charge",h2b:"Enough for the whole festival: the screen only wakes when you look at it.",
@@ -355,7 +383,7 @@ w_day:"Sat · Day 2",you:"You",w_near:"3 nearby",names:["Masha","Lucas","Ana","P
 bump_pre:"Bring bands together",bump_ok:"joined your crew",spots:[["Bar","~4 min queue"],["Water","free"],["Toilets","no queue"]],
 w_now:"Now · Main Stage",w_next:"Next 00:30 · Duo Brisa",w_crew:"Crew colour",sos_hold:"Hold the button",sos_sent:"Sent to 4 friends",sos_meet:"Meet: Ferris wheel"},
 es:{tag:"No vuelvas a perder a los tuyos.",sub:"Una pulsera para festivales que sabe dónde están tus amigos.",scroll:"Desliza hacia abajo",
-f0t:"Un vistazo y lo sabes.",f0b:"La hora, cuántos amigos tienes cerca y la batería. Sin sacar el móvil, sin desbloquear, sin buscar cobertura.",
+f0t:"Un vistazo y lo sabes.",f0b:"La hora, tus amigos cerca y la batería, en tu muñeca. Sin móvil, sin desbloquear, sin buscar cobertura.",
 f1t:"Ve a todo tu grupo.",f1b:"El radar muestra dónde está cada uno de tus amigos, incluso entre 50.000 personas.",
 f2t:"Solo sigue la flecha.",f2b:"Elige a un amigo y la pulsera te guía hasta él, con una vibración suave cuando estéis cerca.",
 f3t:"Choca las pulseras.",f3b:"¿Has conocido a alguien junto al escenario? Un toque y ya está en tu grupo.",
@@ -363,6 +391,8 @@ f4t:"Barra, agua, baños: lo más cerca.",f4b:"La pulsera conoce el mapa del fes
 f5t:"No te pierdas tu concierto.",f5b:"Marca a tus artistas y, diez minutos antes, la pulsera te avisa y te indica el camino al escenario.",
 f6t:"Brilla con el color de tu grupo.",f6b:"De noche, el aro se ilumina con vuestro color para que los tuyos te vean desde lejos.",
 f7t:"¿Perdido? Un solo botón.",f7b:"Mantén pulsado el botón lateral: tus amigos reciben tu ubicación y un punto de encuentro. Funciona incluso sin cobertura.",
+ch:"Capítulos",
+e:["Inicio","Radar","Guía","Choque","Lugares","Cartel","Luz","SOS"],
 how_t:"Funciona donde el móvil se rinde",
 h1t:"Red mesh entre pulseras",h1b:"Las pulseras se pasan la señal por Bluetooth, así que todo sigue funcionando aunque la multitud sature la red móvil.",
 h2t:"5 días de batería",h2b:"Suficiente para todo el festival: la pantalla solo se enciende cuando la miras.",
@@ -420,6 +450,10 @@ setTimeout(()=>{if(!window.tribuGL)fallback()},6000);
   x+=hr*2.3+r()*10;}
  crowd.innerHTML=s;}
 
+/* chapter rail */
+const rail=$('#rail');rail.innerHTML=Array.from({length:N},()=>'<button type="button"></button>').join('');
+const rails=[...rail.children];
+
 /* language */
 let L='';try{L=localStorage.getItem('tribu-lang')||''}catch(e){}
 if(!T[L]){const n=(navigator.language||'en').toLowerCase();L=/^(ru|uk|be|kk)/.test(n)?'ru':/^(es|ca|gl|eu)/.test(n)?'es':'en'}
@@ -430,6 +464,8 @@ function setLang(l){
   $$('[data-c]').forEach(e=>txt(e,d.cols[+e.dataset.c]));
   $$('.lang button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.l===l)));
   frs.forEach((e,i)=>txt(e,d.names[i][0]));
+  $$('[data-e]').forEach(e=>txt(e,`${String(+e.dataset.e+1).padStart(2,'0')} · ${d.e[+e.dataset.e]}`));
+  rail.setAttribute('aria-label',d.ch);rails.forEach((b,i)=>b.setAttribute('aria-label',`${i+1}. ${d.e[i]}`));
   try{localStorage.setItem('tribu-lang',l)}catch(e){}
   draw();
 }
@@ -462,7 +498,7 @@ function buzz(){if(reduce)return;bzT=performance.now();kick()}
 let wide=true,kk=1;
 function size(){
   const w=innerWidth,hh=stage.clientHeight;wide=w>760;
-  const k=wide?Math.min(hh*.44/260,w*.3/260):Math.min(w*.56/260,hh*.32/260);
+  const k=wide?Math.min(hh*.44/260,w*.3/260):Math.min(w*.63/260,hh*.34/260);
   kk=+clamp(k,.5,1.8).toFixed(3);stage.style.setProperty('--k',kk);
 }
 
@@ -471,22 +507,23 @@ function size(){
 const R0={ry:-62,rx:0,rz:0,s:.86,cx:97,cy:0};
 /* scroll → targets; a light spring follows them */
 const tgt={x:0,y:0,s:R0.s,ry:R0.ry,rx:R0.rx,rz:R0.rz};let cur=null,raf=0;
-const st={si:-2,ci:-2,ring:'#ff5a3c',glow:false,sos:false,scr:0};
+const st={si:-2,ci:-2,ri:-2,ring:'',glow:false,sos:false,scr:0};
 const haloL=$('#haloL');
 function update(){
   const vh=stage.clientHeight,vw=innerWidth,len=Math.max(1,story.offsetHeight-vh);
   const p=clamp(-story.getBoundingClientRect().top/len,0,1),u=p*U;
   prog.style.transform=`scaleX(${p.toFixed(4)})`;
   const ho=1-clamp((u-.04)/.5,0,1);
-  heroT.style.opacity=ho;heroT.style.transform=`translateY(calc(-50% - ${(u*50).toFixed(1)}px))`;
-  heroF.style.opacity=ho;heroF.style.visibility=ho>0?'visible':'hidden';
+  const hy=`${(-u*60).toFixed(1)}px`;
+  heroT.style.opacity=ho;heroT.style.setProperty('--hy',hy);heroT.style.visibility=ho>0?'visible':'hidden';
+  heroF.style.opacity=ho;heroF.style.setProperty('--hy',hy);heroF.style.visibility=ho>0?'visible':'hidden';
   crowd.style.opacity=ho;horizon.style.opacity=.35+.65*ho;
   const r=sm(clamp((u-.1)/1.15,0,1)),q=u-INTRO;
   st.scr=clamp((r-.45)/.3,0,1);watch.style.setProperty('--gs',st.scr.toFixed(3));
   let fi=0,fr=0;if(q>=0){fi=Math.min(N-1,Math.floor(q));fr=q-fi}
   let A=P[0],B=P[0],m=0;if(q>=0){A=P[fi];B=P[Math.min(N-1,fi+1)];m=sm(clamp((fr-.5)/.5,0,1))}
   const m2=sm(clamp((u-.9)/.8,0,1));
-  tgt.x=(wide?vw*.17*m2:0)-R0.cx*kk*R0.s*(1-r);tgt.y=(wide?0:-vh*.14*m2)-R0.cy*kk*R0.s*(1-r);tgt.s=lerp(R0.s,1,r);
+  tgt.x=(wide?vw*.17:0)-R0.cx*kk*R0.s*(1-r);tgt.y=(wide?0:-vh*.13*m2+vh*.015*(1-m2))-R0.cy*kk*R0.s*(1-r);tgt.s=lerp(R0.s,1,r);
   tgt.ry=lerp(R0.ry,lerp(A[0],B[0],m),r);tgt.rx=lerp(R0.rx,lerp(A[1],B[1],m),r);tgt.rz=lerp(R0.rz,lerp(A[2],B[2],m),r);
   dimB.style.opacity=wide?0:m2;beams.style.opacity=1-.55*m2;
   const si=r<.72?-1:(q<0?0:Math.min(N-1,Math.floor(q+.25)));
@@ -502,6 +539,8 @@ function update(){
   if(si===6)S.gi=Math.min(3,Math.floor(lt*4));
   if(si===7){S.hold=clamp(lt/.4,0,1);S.sent=lt>=.4}
   const ring=si===6?RING[S.gi]:RING[0];
+  const ri=q<-.3||p>=.999?-1:clamp(Math.round(q-.55),0,N-1);
+  if(ri!==st.ri){rail.classList.toggle('on',ri>=0);rails.forEach((b,i)=>i===ri?b.setAttribute('aria-current','step'):b.removeAttribute('aria-current'));st.ri=ri}
   if(ring!==st.ring){stage.style.setProperty('--ring',ring);st.ring=ring}
   st.glow=si===6;st.sos=si===7;
   watch.classList.toggle('glow',st.glow);stage.classList.toggle('glowing',st.glow);watch.classList.toggle('sos',st.sos);
@@ -527,7 +566,19 @@ function tick(){
   if(performance.now()-bzT<480)moving=true;
   apply();raf=moving?requestAnimationFrame(tick):0;
 }
-function clock(){const t=new Date();txt($('#clock'),String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0'))}
+function clock(){const t=new Date(),s=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');$$('.clock').forEach(e=>txt(e,s))}
+
+/* chapters: jump to the middle of feature i (the screen is fully on there); keyboard arrows / page keys step through them */
+function go(i){const len=Math.max(1,story.offsetHeight-stage.clientHeight);
+  scrollTo({top:story.offsetTop+((INTRO+clamp(i,0,N-1)+.55)/U)*len,behavior:reduce?'auto':'smooth'})}
+rails.forEach((b,i)=>b.addEventListener('click',()=>go(i)));
+addEventListener('keydown',e=>{
+  if(e.altKey||e.ctrlKey||e.metaKey||e.shiftKey||/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))return;
+  const d={ArrowRight:1,PageDown:1,ArrowLeft:-1,PageUp:-1}[e.key];if(!d)return;
+  const len=Math.max(1,story.offsetHeight-stage.clientHeight),p=(scrollY-story.offsetTop)/len;if(p<-.01||p>1)return;
+  const q=p*U-INTRO,c=q<0?-1:Math.round(q-.55),n=c+d;
+  if(n>=N)return;e.preventDefault();if(n<0)scrollTo({top:story.offsetTop,behavior:reduce?'auto':'smooth'});else go(n);
+});
 
 addEventListener('scroll',update,{passive:true});
 addEventListener('resize',()=>{size();update()});
