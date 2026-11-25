@@ -57,7 +57,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-
 .gl.on{opacity:1}.gl canvas{display:block;width:100%;height:100%}
 .view{z-index:2}
 .halo{position:absolute;left:calc(var(--k)*-400px);top:calc(var(--k)*-400px);width:calc(var(--k)*800px);height:calc(var(--k)*800px);border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--ring) 60%,transparent),transparent);opacity:.2;transition:opacity .6s}
-.glowing .halo{opacity:.75}
+.glowing .halo{opacity:.5}
 .bz{position:absolute;transform-style:preserve-3d}
 .bz.go{animation:bz .45s linear}
 .watch{position:absolute;left:0;top:0;transform-style:preserve-3d;will-change:transform;--D:calc(var(--k)*260px);--R:calc(var(--k)*130px);--T:calc(var(--k)*46px);--W:calc(var(--k)*128px);--ts:calc(var(--k)*14px)}
@@ -480,7 +480,7 @@ function update(){
   let fi=0,fr=0;if(q>=0){fi=Math.min(N-1,Math.floor(q));fr=q-fi}
   let A=P[0],B=P[0],m=0;if(q>=0){A=P[fi];B=P[Math.min(N-1,fi+1)];m=sm(clamp((fr-.72)/.28,0,1))}
   const m2=sm(clamp((u-.9)/.8,0,1));
-  tgt.x=wide?vw*.17*m2:0;tgt.y=wide?0:-vh*.14*m2;tgt.s=lerp(.86,1,r);
+  tgt.x=(wide?vw*.17*m2:0)-122*kk*.86*(1-r);tgt.y=wide?0:-vh*.14*m2;tgt.s=lerp(.86,1,r);
   tgt.ry=lerp(-90,lerp(A[0],B[0],m),r);tgt.rx=lerp(0,lerp(A[1],B[1],m),r);tgt.rz=lerp(0,lerp(A[2],B[2],m),r);
   dimB.style.opacity=wide?0:m2;beams.style.opacity=1-.55*m2;
   const si=r<.72?-1:(q<0?0:Math.min(N-1,Math.floor(q+.12)));
@@ -532,17 +532,24 @@ size();setLang(L);clock();setInterval(clock,15000);update();
 <script type="module">
 import * as THREE from 'three';
 /* WebGL band: lathe-turned silver case, knit loop strap, light ring. Units match the CSS model (k = 1), so the HTML screen sits exactly on the glass. */
-function knitTextures(maxAniso){
-  const S=256,C=16,cell=S/C,H=new Float32Array(S*S);let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+function fabricTextures(maxAniso){
+  /* plain-weave nylon: round warp and weft threads passing over and under each other, two-tone yarn, fine ribs, fibre noise */
+  const S=512,TH=32,p=S/TH,H=new Float32Array(S*S),C=new Float32Array(S*S);let seed=11;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+  const tone=[];for(let i=0;i<TH;i++)tone.push(i%5===2?.8:.97+rnd()*.06);
+  const fib=new Float32Array(S*S);for(let i=0;i<S*S;i++)fib[i]=rnd();
+  const prof=f=>{const q=1-(2*f/.9)**2;return q>0?Math.sqrt(q):0};
   for(let y=0;y<S;y++)for(let x=0;x<S;x++){
-    const row=Math.floor(y/cell),off=(row%2)*cell/2,cx=((x+off)%cell)/cell-.5,cy=(y%cell)/cell-.5;
-    const d=Math.hypot(cx/.47,cy/.43);H[y*S+x]=(d<1?Math.cos(d*Math.PI/2)**.75:0)+rnd()*.06;
+    const i=Math.floor(x/p),j=Math.floor(y/p),fx=(x%p)/p-.5,fy=(y%p)/p-.5;
+    const zw=Math.cos(Math.PI*(y/p-.5)+Math.PI*i),zf=-Math.cos(Math.PI*(x/p-.5)+Math.PI*j);
+    const rib=j%4===0?1:.9;
+    const hw=(.52+.36*zw)*prof(fx)+(fib[y*S+x]-.5)*.05,hf=(.52+.36*zf)*prof(fy/rib)*rib+(fib[x*S+y]-.5)*.05;
+    const k=y*S+x;if(hw>=hf){H[k]=hw;C[k]=tone[i]}else{H[k]=hf;C[k]=j%4===0?.82:.92}
   }
   const n=new ImageData(S,S),c=new ImageData(S,S),at=(x,y)=>H[((y+S)%S)*S+(x+S)%S];
   for(let y=0;y<S;y++)for(let x=0;x<S;x++){
-    const dx=(at(x+1,y)-at(x-1,y))*2.2,dy=(at(x,y+1)-at(x,y-1))*2.2,l=Math.hypot(dx,dy,1),i=(y*S+x)*4;
+    const dx=(at(x+1,y)-at(x-1,y))*3,dy=(at(x,y+1)-at(x,y-1))*3,l=Math.hypot(dx,dy,1),i=(y*S+x)*4,h=at(x,y);
     n.data[i]=(-dx/l*.5+.5)*255;n.data[i+1]=(dy/l*.5+.5)*255;n.data[i+2]=(1/l*.5+.5)*255;n.data[i+3]=255;
-    const v=(.74+.26*at(x,y)+(rnd()-.5)*.05)*255;c.data[i]=c.data[i+1]=c.data[i+2]=Math.min(255,v);c.data[i+3]=255;
+    const v=Math.min(255,C[y*S+x]*(.42+.58*Math.min(1,h*1.25))*255);c.data[i]=c.data[i+1]=c.data[i+2]=v;c.data[i+3]=255;
   }
   const tex=(img,srgb)=>{const cv=document.createElement('canvas');cv.width=cv.height=S;cv.getContext('2d').putImageData(img,0,0);
     const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=Math.min(8,maxAniso);if(srgb)t.colorSpace=THREE.SRGBColorSpace;return t};
@@ -561,36 +568,40 @@ function caseGeometry(){
   const g=new THREE.LatheGeometry(pts,200);g.rotateX(Math.PI/2);return g;
 }
 function loopGeometry(){
-  /* a rounded loop in the Y-Z plane, flat in front (through the case), wrapping back like a band on a wrist */
-  const a=300,b=96,n=3.2,raw=[];
+  /* a round loop in the Y-Z plane, like a band around a wrist: it leaves the case and curves back straight away */
+  const a=225,b=122,n=2.35,raw=[];
   for(let i=0;i<=4000;i++){const t=i/4000*Math.PI*2,c=Math.cos(t),s=Math.sin(t);
     raw.push(new THREE.Vector2(a*Math.sign(s)*Math.abs(s)**(2/n),-b+b*Math.sign(c)*Math.abs(c)**(2/n)));}
   const cum=[0];for(let i=1;i<raw.length;i++)cum.push(cum[i-1]+raw[i].distanceTo(raw[i-1]));
-  const L=cum[cum.length-1],NS=420,pts=[];let j=0;
+  const L=cum[cum.length-1],NS=480,pts=[];let j=0;
   for(let i=0;i<NS;i++){const d=i/NS*L;while(cum[j+1]<d)j++;const f=(d-cum[j])/(cum[j+1]-cum[j]);pts.push(raw[j].clone().lerp(raw[j+1],f))}
-  const w2=64,h2=7,cr=6,sec=[];
-  const corner=(cx,cy,a0)=>{for(let k=0;k<=8;k++){const a1=a0+k/8*Math.PI/2;sec.push([cx+Math.cos(a1)*cr,cy+Math.sin(a1)*cr,Math.cos(a1),Math.sin(a1)])}};
-  corner(w2-cr,h2-cr,0);corner(-w2+cr,h2-cr,Math.PI/2);corner(-w2+cr,-h2+cr,Math.PI);corner(w2-cr,-h2+cr,Math.PI*1.5);
+  /* cross-section: rounded rectangle; the rounded edges are a shade darker so the band reads as woven tape */
+  const w2=62,h2=5.5,cr=4.5,sec=[];
+  const corner=(cx,cy,a0)=>{for(let k=0;k<=8;k++){const a1=a0+k/8*Math.PI/2;sec.push([cx+Math.cos(a1)*cr,cy+Math.sin(a1)*cr,Math.cos(a1),Math.sin(a1),.74])}};
+  const face=(x0,y0,x1,y1,nx,ny)=>{for(let k=1;k<6;k++){const f=k/6;sec.push([x0+(x1-x0)*f,y0+(y1-y0)*f,nx,ny,1])}};
+  corner(w2-cr,h2-cr,0);face(w2-cr,h2,-w2+cr,h2,0,1);corner(-w2+cr,h2-cr,Math.PI/2);
+  corner(-w2+cr,-h2+cr,Math.PI);face(-w2+cr,-h2,w2-cr,-h2,0,-1);corner(w2-cr,-h2+cr,Math.PI*1.5);
   sec.push(sec[0]);
   const per=[0];for(let i=1;i<sec.length;i++)per.push(per[i-1]+Math.hypot(sec[i][0]-sec[i-1][0],sec[i][1]-sec[i-1][1]));
-  const P=per[per.length-1],M=sec.length,pos=[],nor=[],uv=[],idx=[];
+  const M=sec.length,TILE=46,pos=[],nor=[],uv=[],col=[],idx=[];
   for(let i=0;i<=NS;i++){
     const q=pts[i%NS],q0=pts[(i-1+NS)%NS],q1=pts[(i+1)%NS];
     const ty=q1.x-q0.x,tz=q1.y-q0.y,tl=Math.hypot(ty,tz);let ny=tz/tl,nz=-ty/tl;
-    if(ny*(q.x)+nz*(q.y+b)<0){ny=-ny;nz=-nz}
-    for(let m=0;m<M;m++){const [sx,sn,ax,an]=sec[m];
-      pos.push(sx,q.x+ny*sn,q.y+nz*sn);nor.push(ax,ny*an,nz*an);uv.push(per[m]/80,i/NS*L/80);}
+    if(ny*q.x+nz*(q.y+b)<0){ny=-ny;nz=-nz}
+    for(let m=0;m<M;m++){const [sx,sn,ax,an,sh]=sec[m];
+      pos.push(sx,q.x+ny*sn,q.y+nz*sn);nor.push(ax,ny*an,nz*an);uv.push(per[m]/TILE,i/NS*L/TILE);col.push(sh,sh,sh);}
   }
   for(let i=0;i<NS;i++)for(let m=0;m<M-1;m++){const A=i*M+m,B=(i+1)*M+m;idx.push(A,B,A+1,B,B+1,A+1)}
   const g=new THREE.BufferGeometry();
   g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));
-  g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);return g;
+  g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);return g;
 }
 function glowTexture(){
-  const cv=document.createElement('canvas');cv.width=cv.height=256;const x=cv.getContext('2d');
-  const g=x.createRadialGradient(128,128,0,128,128,128);
-  g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(.5,'rgba(255,255,255,0)');g.addColorStop(.56,'rgba(255,255,255,1)');
-  g.addColorStop(.68,'rgba(255,255,255,.35)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,256,256);
+  /* a narrow glow hugging the light ring around the glass, not the whole case */
+  const cv=document.createElement('canvas');cv.width=cv.height=512;const x=cv.getContext('2d');
+  const g=x.createRadialGradient(256,256,0,256,256,256);
+  g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(.862,'rgba(255,255,255,0)');g.addColorStop(.893,'rgba(255,255,255,1)');
+  g.addColorStop(.925,'rgba(255,255,255,.3)');g.addColorStop(.975,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,512,512);
   return new THREE.CanvasTexture(cv);
 }
 function init(){
@@ -612,13 +623,14 @@ function init(){
   back.geometry.rotateY(Math.PI);back.position.z=-23.05;g.add(back);
   const glass=new THREE.Mesh(new THREE.CircleGeometry(114.2,128),new THREE.MeshBasicMaterial({color:0}));glass.position.z=22.7;g.add(glass);
   const ringMat=new THREE.MeshBasicMaterial({color:0xff5a3c,transparent:true,opacity:.6,toneMapped:false});
-  const ring=new THREE.Mesh(new THREE.RingGeometry(114.9,117.5,200),ringMat);ring.position.z=23.26;g.add(ring);
+  const ring=new THREE.Mesh(new THREE.RingGeometry(114.7,117.7,200),ringMat);ring.position.z=23.26;g.add(ring);
   const glowMat=new THREE.MeshBasicMaterial({map:glowTexture(),color:0xff5a3c,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
-  const glow=new THREE.Mesh(new THREE.PlaneGeometry(420,420),glowMat);glow.position.z=23.4;g.add(glow);
+  const glow=new THREE.Mesh(new THREE.PlaneGeometry(260,260),glowMat);glow.position.z=23.4;g.add(glow);
   const btnMat=new THREE.MeshPhysicalMaterial({color:0xe2553a,roughness:.42,clearcoat:.6,emissive:0xff5a3c,emissiveIntensity:0});
-  const btn=new THREE.Mesh(new THREE.CapsuleGeometry(6.5,34,8,24),btnMat);btn.position.x=131;g.add(btn);
-  const [map,nmap]=knitTextures(r.capabilities.getMaxAnisotropy());
-  const strapMat=new THREE.MeshPhysicalMaterial({color:0xc4513a,map,normalMap:nmap,normalScale:new THREE.Vector2(.75,.75),roughness:.72,sheen:1,sheenRoughness:.45,sheenColor:new THREE.Color(0xffb9a3),side:THREE.DoubleSide});
+  const btn=new THREE.Mesh(new THREE.CapsuleGeometry(6,32,10,32),btnMat);btn.position.x=131.5;g.add(btn);
+  const collar=new THREE.Mesh(new THREE.CapsuleGeometry(8,34,10,32),silver);collar.scale.set(.45,1,1);collar.position.x=129.8;g.add(collar);
+  const [map,nmap]=fabricTextures(r.capabilities.getMaxAnisotropy());
+  const strapMat=new THREE.MeshPhysicalMaterial({color:0xcf5b42,map,normalMap:nmap,normalScale:new THREE.Vector2(.8,.8),roughness:.9,sheen:1,sheenRoughness:.55,sheenColor:new THREE.Color(0xff9c82),vertexColors:true,side:THREE.DoubleSide});
   g.add(new THREE.Mesh(loopGeometry(),strapMat));
   host.appendChild(r.domElement);
   const D=Math.PI/180,col=new THREE.Color();let lw=0,lh=0,lk=0,shown=false;
@@ -626,7 +638,7 @@ function init(){
     if(v.w!==lw||v.h!==lh||v.k!==lk){lw=v.w;lh=v.h;lk=v.k;r.setSize(v.w,v.h,false);const d=1800*v.k;
       cam.aspect=v.w/v.h;cam.fov=2*Math.atan(v.h/2/d)/D;cam.position.set(0,0,d);cam.near=d*.3;cam.far=d*3;cam.updateProjectionMatrix();}
     g.position.set(v.x,-v.y,0);g.scale.setScalar(v.s*v.k);g.rotation.set(-v.rx*D,v.ry*D,-v.rz*D,'ZXY');
-    col.set(v.ring);ringMat.color.copy(col);glowMat.color.copy(col);ringMat.opacity=v.glow?1:.6;glowMat.opacity=v.glow?1:0;
+    col.set(v.ring);ringMat.color.copy(col);glowMat.color.copy(col);ringMat.opacity=v.glow?1:.6;glowMat.opacity=v.glow?.9:0;
     btnMat.emissiveIntensity=v.sos?2.2:0;
     r.render(scene,cam);
     if(!shown){shown=true;host.classList.add('on')}
