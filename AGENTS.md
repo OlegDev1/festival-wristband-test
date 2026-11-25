@@ -20,12 +20,11 @@ Single file `index.html` plus vendored `three.module.min.js` (three.js, loaded t
 ## Where to change things (search for these strings)
 | What | Where |
 |---|---|
-| Scroll length | `#story{…height:1912vh}` (≈180vh per unit); units in `const N=9,INTRO=1.6,U=INTRO+N`. Adding a chapter = +1 to N, a pose in `P`, a `.scr`, a `.cap`, labels in `e:[…]`, +180vh |
+| Scroll length | `#story{…height:1732vh}` (≈180vh per unit); units in `const N=8,INTRO=1.6,U=INTRO+N`. Adding a chapter = +1 to N, a pose in `P`, a `.scr`, a `.cap`, labels in `e:[…]`, +180vh |
 | Turn between features | `m=sm(clamp((fr-.5)/.5…` (second half of each feature); screen switch `floor(q+.25)`; feature animation progress `lt=fr*1.17` |
-| Hero text | `.hero-t` / `.hero-f`: wide = text column left, band right (`tgt.x=vw*.17` from the start); phone = wordmark top, tagline bottom. `--hy` lifts them on scroll |
+| Hero text | Title is tall, solid white Anton (uppercase). `.hero-t` / `.hero-f`: wide = text column left, band right (`tgt.x=vw*.17` from the start); phone = wordmark top, tagline bottom. `--hy` lifts them on scroll |
 | Screen UI | one system: `.we` coloured label, `.wb` (clock 51) / `.wm` (24) / `.nd b` (48) value, `.ws` (16) line; arcs stroke 3.5. Design size 228, scaled by `--k`. Phone band size: `size()` `w*.63/260` |
-| Chapters | `.cap` has an `.eyebrow` (`data-e`, accent `--a`); `#rail` dots (`go(i)`), arrow/page keys step chapters |
-| Strap colour | `setCol(i)` (stored in `tribu-col`) → `--acc`, ring, `tribuGL.strap(i)` (`STRAP` table in the module), CSS fallback via `--hr` hue-rotate. Picker = last chapter `.pk`; end swatches `[data-g]` jump back to it |
+| Chapters | `.cap` has a coral `.eyebrow` (`data-e`); `#rail` dots (`go(i)`), arrow/page keys step chapters |
 | Opening pose | `R0={ry:-62,…cx:97}`. Recompute `cx` if the loop size changes: x-extent midpoint after a −62° Y rotation ≈ (0.469·62 + 0.883·(2b+9.5) − 81.3)/2 |
 | Braid texture | `BRAID` + `braidTextures()`: procedural 1024 tile, 2/2 diagonal braid. Cords run along each strand; per-strand tone and hue. Outputs: colour map, normal map, disp (R = height, G = roughness), anisotropy map |
 | Band shape | `loopGeometry()`: oval `a=200,b=135`, cross-section 124×19, `NF=64`, 10 vertices per cell. Vertex colours hold the contact shadow near the case and the darker inside of the loop |
@@ -38,8 +37,8 @@ Single file `index.html` plus vendored `three.module.min.js` (three.js, loaded t
 ## Quick render check
 Serve with `python3 -m http.server 8765` from the repo root. Screenshot with Playwright + `/usr/bin/google-chrome`
 (`--use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader`), viewport 390×844 at 2×, after waiting about 3.5 s.
-To view feature k: `scrollTo(0, story.offsetTop + ((1.6 + k + .55)/10.6) * (story.offsetHeight - innerHeight))`.
-Google Fonts are not reachable from the sandbox: route `fonts.googleapis.com` to local `@fontsource/unbounded` + `@fontsource/inter` woff2 files in Playwright, or the render falls back to system fonts.
+To view feature k: `scrollTo(0, story.offsetTop + ((1.6 + k + .55)/9.6) * (story.offsetHeight - innerHeight))`.
+Google Fonts are not reachable from the sandbox: route `fonts.googleapis.com` to local `@fontsource/anton` + `unbounded` + `inter` woff2 files in Playwright, or the render falls back to system fonts.
 
 ## Not done yet (ideas, roughly by impact)
 1. Band attachment: the loop passes through the middle of the case; there are no slots or connectors.

@@ -6,7 +6,7 @@
 <title>Tribu — festival band</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@500;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=Unbounded:wght@500;600;800&display=swap" rel="stylesheet">
 <style>
 /* VOICE: a product launch on a festival night — confident, warm, few words.
    IDEA: the band itself is the presenter: it stands three-quarter, turns to you, then its screen walks through each feature.
@@ -22,14 +22,14 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-
 
 .top{position:fixed;inset:0 0 auto;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:6px max(4vw,14px);background:linear-gradient(rgba(11,8,9,.92),rgba(11,8,9,0))}
 .logo{display:flex;align-items:center;gap:10px;font:600 18px/1 Unbounded,Inter,sans-serif;color:var(--ink);text-decoration:none}
-.logo i{width:18px;height:18px;border-radius:50%;border:3px solid var(--acc,var(--coral));box-shadow:0 0 12px var(--acc,var(--coral));transition:border-color .4s,box-shadow .4s}
+.logo i{width:18px;height:18px;border-radius:50%;border:3px solid var(--coral);box-shadow:0 0 12px rgba(255,90,60,.8)}
 .lang{display:flex;gap:2px;padding:2px;border-radius:999px;background:rgba(255,255,255,.08)}
 .lang button{appearance:none;border:0;background:none;color:var(--ink);font:600 13px/1 Inter,sans-serif;min-width:44px;height:44px;border-radius:999px;cursor:pointer}
 .lang button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
 .lang button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
-.prog{position:fixed;left:0;top:0;width:100%;height:2px;z-index:31;background:var(--acc,var(--coral));transform-origin:0 0;transform:scaleX(0)}
+.prog{position:fixed;left:0;top:0;width:100%;height:2px;z-index:31;background:var(--coral);transform-origin:0 0;transform:scaleX(0)}
 
-#story{position:relative;height:1912vh}
+#story{position:relative;height:1732vh}
 .stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
 .beams{position:absolute;inset:0;z-index:0;pointer-events:none}
 .beams i{position:absolute;top:-12vh;width:40vw;height:130vh;transform-origin:50% 0;clip-path:polygon(47% 0,53% 0,100% 100%,0 100%);background:linear-gradient(rgba(255,90,60,.26),rgba(255,90,60,0) 72%);animation:sway 9s ease-in-out infinite alternate}
@@ -37,11 +37,10 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-
 .horizon{position:absolute;inset:auto 0 0;height:50vh;z-index:0;background:radial-gradient(70% 75% at 50% 100%,rgba(255,90,60,.32),rgba(255,90,60,0) 70%)}
 /* hero: the wordmark never sits under the band. Wide = text column on the left, band on the right (where the features continue);
    phone = wordmark on top, band in the middle, tagline below. --hy lifts the text as you start scrolling. */
-.hero-t{position:absolute;left:max(6vw,24px);top:50%;z-index:1;margin:0;font-weight:800;font-size:clamp(72px,10.5vw,190px);line-height:.82;letter-spacing:-.055em;
-  background:linear-gradient(172deg,#fff8f2 38%,#ffb39f 78%,#ff6a4a 118%);-webkit-background-clip:text;background-clip:text;color:transparent;
-  transform:translateY(calc(-100% - clamp(10px,1.4vw,22px) + var(--hy,0px)));pointer-events:none}
+.hero-t{position:absolute;left:max(6vw,24px);top:50%;z-index:1;margin:0;font:400 clamp(120px,16vw,300px)/.86 Anton,Impact,"Arial Narrow",sans-serif;letter-spacing:.005em;text-transform:uppercase;color:var(--ink);
+  transform:translateY(calc(-100% - clamp(12px,1.6vw,26px) + var(--hy,0px)));pointer-events:none}
 .hero-f{position:absolute;left:max(6vw,24px);top:50%;z-index:5;width:min(460px,40vw);transform:translateY(var(--hy,0px))}
-.eyebrow{display:block;margin:0 0 14px;font:600 12px/1 Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--acc,var(--coral))}
+.eyebrow{display:block;margin:0 0 14px;font:600 12px/1 Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--coral)}
 .tag{margin:0 0 10px;max-width:22ch;font:600 clamp(20px,2.1vw,30px)/1.2 Unbounded,Inter,sans-serif;text-wrap:balance}
 .sub{margin:0;max-width:34ch;color:var(--mute)}
 .hint{display:inline-flex;align-items:center;gap:10px;margin-top:22px;font-size:13px;color:var(--mute)}
@@ -52,12 +51,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-
 .caps{position:absolute;z-index:4;left:max(6vw,24px);top:50%;width:min(440px,36vw);height:0}
 .cap{position:absolute;left:0;right:0;top:0;opacity:0;pointer-events:none;transform:translateY(calc(-50% + 18px));transition:opacity .5s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
 .cap.on{opacity:1;pointer-events:auto;transform:translateY(-50%)}
-.cap .eyebrow{color:var(--a,var(--coral))}
-/* colour picker in the last chapter: tapping a swatch re-dyes the 3D strap */
-.pk{display:flex;gap:12px;margin-top:22px}
-.pk button{appearance:none;width:44px;height:44px;border-radius:50%;border:0;padding:0;cursor:pointer;background:var(--c);box-shadow:inset 0 -6px 10px rgba(0,0,0,.25),0 0 0 2px var(--bg),0 0 0 2px rgba(255,255,255,0);transition:transform .25s,box-shadow .25s}
-.pk button[aria-pressed=true]{transform:scale(1.08);box-shadow:inset 0 -6px 10px rgba(0,0,0,.25),0 0 0 3px var(--bg),0 0 0 5px var(--ink)}
-.pk button:focus-visible,.rail button:focus-visible,.cols button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+.rail button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
 /* chapter rail: where you are in the story, tap to jump */
 .rail{position:absolute;z-index:6;right:max(2.2vw,12px);top:50%;display:flex;flex-direction:column;transform:translateY(-50%);opacity:0;pointer-events:none;transition:opacity .4s}
 .rail.on{opacity:1;pointer-events:auto}
@@ -82,8 +76,6 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-
 .webgl .face{background:none}.webgl .ringl,.webgl .back,.webgl .btn{display:none}.webgl .shade{inset:calc(var(--k)*17px)}
 /* WebGL draws the black sapphire glass with real reflections, so the HTML screen only carries the UI; keep a fainter CSS sheen on top */
 .webgl .screen{background:none}.webgl .glass{opacity:calc(.4 - .4*var(--gs,0))}
-/* CSS fallback strap follows the picked colour */
-.watch.tint .sf,.watch.tint .sl,.watch.tint .sr{filter:hue-rotate(var(--hr,0deg)) saturate(var(--sa,1))}
 .st,.face,.back,.btn,.sf,.sb,.sl,.sr{position:absolute;display:block;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .st{width:calc(var(--D)*.02618 + 1px);height:var(--T);left:calc((var(--D)*.0785 + 1px)/-2);top:calc(var(--T)/-2);transform:rotateZ(var(--a)) translateY(calc(var(--R)*-1 + .5px)) rotateX(90deg)}
 .face{width:var(--D);height:var(--D);left:calc(var(--R)*-1);top:calc(var(--R)*-1);border-radius:50%;transform:translateZ(calc(var(--T)/2 + .5px));background:conic-gradient(from calc(var(--spec,0)*1deg),#35343a,#87858d 10%,#2b2a30 28%,#5d5b62 50%,#26252b 70%,#79777f 88%,#35343a)}
@@ -166,8 +158,6 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-
 .s7 .wb{position:relative;font-size:calc(var(--k)*54px)}
 .s7 .ws{position:relative;margin-top:calc(var(--k)*10px);max-width:80%}
 .s7 .dim{margin-top:calc(var(--k)*4px);font-size:calc(var(--k)*14px);color:rgba(255,255,255,.75)}
-.s8{--a:var(--acc,var(--coral))}
-.s8 .we{font-size:calc(var(--k)*13px)}
 
 .band{padding:clamp(56px,9vw,120px) max(5vw,20px)}
 .wrap{max-width:1240px;margin:0 auto}
@@ -180,10 +170,8 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-
 .end h2{margin:0 auto 14px;max-width:18ch;font-weight:800;font-size:clamp(32px,5.4vw,60px);line-height:1.05;letter-spacing:-.03em;text-wrap:balance}
 .end p{margin:0 auto;color:var(--mute);max-width:40ch}
 .cols{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(20px,4vw,48px);margin:44px 0 0;padding:0;list-style:none}
-.cols button{appearance:none;display:flex;flex-direction:column;align-items:center;gap:12px;padding:8px;border:0;border-radius:14px;background:none;color:var(--mute);font:500 14px/1 Inter,sans-serif;cursor:pointer;transition:color .3s}
-.cols button:hover,.cols button[aria-pressed=true]{color:var(--ink)}
-.mini{position:relative;width:56px;height:100px;transition:transform .35s cubic-bezier(.2,.7,.2,1)}
-.cols button:hover .mini,.cols button[aria-pressed=true] .mini{transform:translateY(-6px)}
+.cols li{display:flex;flex-direction:column;align-items:center;gap:12px;font-size:14px;color:var(--mute)}
+.mini{position:relative;width:56px;height:100px}
 .mini::before{content:"";position:absolute;left:16px;width:24px;top:0;bottom:0;border-radius:9px;background:var(--c)}
 .mini::after{content:"";position:absolute;left:4px;top:26px;width:48px;height:48px;border-radius:50%;background:radial-gradient(circle,#050505 0 60%,#3c3b41 62%);box-shadow:0 0 0 3px var(--c)}
 footer{padding:28px max(5vw,20px) 40px;border-top:1px solid rgba(255,255,255,.08);color:var(--mute);font-size:13px;text-align:center}
@@ -198,14 +186,13 @@ footer{padding:28px max(5vw,20px) 40px;border-top:1px solid rgba(255,255,255,.08
 @keyframes bz{0%,100%{transform:none}20%{transform:translateX(calc(var(--k)*-5px))}40%{transform:translateX(calc(var(--k)*5px))}60%{transform:translateX(calc(var(--k)*-4px))}80%{transform:translateX(calc(var(--k)*3px))}}
 
 @media (max-width:760px){
-  .hero-t{left:0;right:0;top:calc(62px + 2.5vh);text-align:center;font-size:min(25vw,14vh);transform:translateY(var(--hy,0px))}
+  .hero-t{left:0;right:0;top:calc(60px + 1.5vh);text-align:center;font-size:min(38vw,21vh);transform:translateY(var(--hy,0px))}
   .hero-f{left:16px;right:16px;top:auto;bottom:max(6vh,24px);width:auto;text-align:center;transform:none;text-shadow:0 2px 24px var(--bg)}
   .tag,.sub{margin-left:auto;margin-right:auto}
   .hint{margin-top:14px}
   .rail{right:auto;left:50%;top:60px;flex-direction:row;transform:translateX(-50%)}
   .rail button{width:26px;height:32px}
   .rail button[aria-current=step]::before{height:6px;width:20px}
-  .pk{justify-content:center;margin-top:16px}
   .caps{left:20px;right:20px;top:auto;bottom:max(5vh,22px);width:auto}
   .cap{top:auto;bottom:0;transform:translateY(18px);text-align:center}
   .cap.on{transform:none}
@@ -299,12 +286,6 @@ footer{padding:28px max(5vw,20px) 40px;border-top:1px solid rgba(255,255,255,.08
                   <span class="ws" id="sosA"></span>
                   <span class="ws dim" id="sosB"></span>
                 </div>
-                <div class="scr s8">
-                  <svg class="edge" viewBox="0 0 228 228" aria-hidden="true"><circle class="trk" cx="114" cy="114" r="106"/><circle class="val" cx="114" cy="114" r="106" pathLength="100" stroke-dasharray="86 100" transform="rotate(-90 114 114)" style="stroke:var(--a)"/></svg>
-                  <span class="we" id="pkN"></span>
-                  <b class="wb clock">23:41</b>
-                  <span class="row"><span class="stack"><i class="av" style="--c:var(--cyan)"></i><i class="av" style="--c:var(--lime)"></i><i class="av" style="--c:var(--sun)"></i></span><span class="ws" data-i="w_near"></span></span>
-                </div>
                 <i class="glass"></i>
               </div>
               <i class="shade"></i>
@@ -323,17 +304,14 @@ footer{padding:28px max(5vw,20px) 40px;border-top:1px solid rgba(255,255,255,.08
     </div>
     <nav class="rail" id="rail"></nav>
     <div class="caps">
-      <article class="cap" style="--a:var(--coral)"><span class="eyebrow" data-e="0"></span><h2 data-i="f0t"></h2><p data-i="f0b"></p></article>
-      <article class="cap" style="--a:var(--cyan)"><span class="eyebrow" data-e="1"></span><h2 data-i="f1t"></h2><p data-i="f1b"></p></article>
-      <article class="cap" style="--a:var(--cyan)"><span class="eyebrow" data-e="2"></span><h2 data-i="f2t"></h2><p data-i="f2b"></p></article>
-      <article class="cap" style="--a:var(--lime)"><span class="eyebrow" data-e="3"></span><h2 data-i="f3t"></h2><p data-i="f3b"></p></article>
-      <article class="cap" style="--a:var(--sun)"><span class="eyebrow" data-e="4"></span><h2 data-i="f4t"></h2><p data-i="f4b"></p></article>
-      <article class="cap" style="--a:var(--sun)"><span class="eyebrow" data-e="5"></span><h2 data-i="f5t"></h2><p data-i="f5b"></p></article>
-      <article class="cap" style="--a:#ff7ab6"><span class="eyebrow" data-e="6"></span><h2 data-i="f6t"></h2><p data-i="f6b"></p></article>
-      <article class="cap" style="--a:var(--coral)"><span class="eyebrow" data-e="7"></span><h2 data-i="f7t"></h2><p data-i="f7b"></p></article>
-      <article class="cap" style="--a:var(--acc,var(--coral))"><span class="eyebrow" data-e="8"></span><h2 data-i="f8t"></h2><p data-i="f8b"></p>
-        <div class="pk" role="group" data-al="pick_al"><button type="button" data-k="0" style="--c:#ff5a3c"></button><button type="button" data-k="1" style="--c:#43d9ff"></button><button type="button" data-k="2" style="--c:#c6f24e"></button><button type="button" data-k="3" style="--c:#ffc23d"></button></div>
-      </article>
+      <article class="cap"><span class="eyebrow" data-e="0"></span><h2 data-i="f0t"></h2><p data-i="f0b"></p></article>
+      <article class="cap"><span class="eyebrow" data-e="1"></span><h2 data-i="f1t"></h2><p data-i="f1b"></p></article>
+      <article class="cap"><span class="eyebrow" data-e="2"></span><h2 data-i="f2t"></h2><p data-i="f2b"></p></article>
+      <article class="cap"><span class="eyebrow" data-e="3"></span><h2 data-i="f3t"></h2><p data-i="f3b"></p></article>
+      <article class="cap"><span class="eyebrow" data-e="4"></span><h2 data-i="f4t"></h2><p data-i="f4b"></p></article>
+      <article class="cap"><span class="eyebrow" data-e="5"></span><h2 data-i="f5t"></h2><p data-i="f5b"></p></article>
+      <article class="cap"><span class="eyebrow" data-e="6"></span><h2 data-i="f6t"></h2><p data-i="f6b"></p></article>
+      <article class="cap"><span class="eyebrow" data-e="7"></span><h2 data-i="f7t"></h2><p data-i="f7b"></p></article>
     </div>
   </div>
 </section>
@@ -353,10 +331,10 @@ footer{padding:28px max(5vw,20px) 40px;border-top:1px solid rgba(255,255,255,.08
   <h2 data-i="end_t"></h2>
   <p data-i="end_b"></p>
   <ul class="cols">
-    <li><button type="button" data-g="0"><i class="mini" style="--c:#ff5a3c"></i><span data-c="0"></span></button></li>
-    <li><button type="button" data-g="1"><i class="mini" style="--c:#43d9ff"></i><span data-c="1"></span></button></li>
-    <li><button type="button" data-g="2"><i class="mini" style="--c:#c6f24e"></i><span data-c="2"></span></button></li>
-    <li><button type="button" data-g="3"><i class="mini" style="--c:#ffc23d"></i><span data-c="3"></span></button></li>
+    <li><i class="mini" style="--c:#ff5a3c"></i><span data-c="0"></span></li>
+    <li><i class="mini" style="--c:#43d9ff"></i><span data-c="1"></span></li>
+    <li><i class="mini" style="--c:#c6f24e"></i><span data-c="2"></span></li>
+    <li><i class="mini" style="--c:#ffc23d"></i><span data-c="3"></span></li>
   </ul>
 </section>
 <footer data-i="note"></footer>
@@ -373,13 +351,13 @@ f4t:"Бар, вода, туалет — что ближе.",f4b:"Браслет 
 f5t:"Не пропусти свой сет.",f5b:"Отметь артистов заранее — за 10 минут до начала браслет напомнит и покажет дорогу к сцене.",
 f6t:"Светится цветом вашей компании.",f6b:"Ночью ободок горит вашим общим цветом — своих видно издалека.",
 f7t:"Потерялся? Одна кнопка.",f7b:"Удержи боковую кнопку — друзья получат твою точку и место сбора. Работает даже без мобильной сети.",
-f8t:"Выбери свой цвет.",f8b:"Четыре цвета ремешка — по одному на каждую компанию. Нажми, чтобы примерить.",pick_al:"Цвет ремешка",ch:"Главы",
-e:["Главный экран","Радар","Навигация","Знакомство","Места","Лайнап","Подсветка","SOS","Твой цвет"],
+ch:"Главы",
+e:["Главный экран","Радар","Навигация","Знакомство","Места","Лайнап","Подсветка","SOS"],
 how_t:"Работает там, где телефон сдаётся",
 h1t:"Mesh-сеть из браслетов",h1b:"Браслеты передают сигнал друг другу по Bluetooth, поэтому всё работает, даже когда мобильный интернет лёг из-за толпы.",
 h2t:"5 дней без зарядки",h2b:"Хватает на весь фестиваль: экран загорается, только когда ты на него смотришь.",
 h3t:"Дождь и пыль — не проблема",h3b:"Корпус с защитой IP67 и тканевый ремешок, который не жалко испачкать.",
-end_t:"Tribu. Своих не теряют.",end_b:"Нажми на цвет — и браслет примерит его.",
+end_t:"Tribu. Своих не теряют.",end_b:"Четыре цвета ремешка — по одному на каждую компанию.",
 cols:["Коралл","Лагуна","Лайм","Солнце"],note:"Tribu — концепт продукта · учебный проект · 2026",
 w_day:"Сб · день 2",you:"Ты",w_near:"3 рядом",names:["Маша","Лукас","Ана","Пабло"],unit:"м",nav_sub:"у главной сцены",nav_near:"Ты рядом!",
 bump_pre:"Поднеси браслеты",bump_ok:"теперь в компании",spots:[["Бар","очередь ~4 мин"],["Вода","бесплатно"],["Туалет","без очереди"]],
@@ -393,13 +371,13 @@ f4t:"Bar, water, toilets — closest first.",f4b:"The band knows the festival ma
 f5t:"Never miss your set.",f5b:"Star artists in advance — ten minutes before they start, the band reminds you and points the way to the stage.",
 f6t:"Glows in your crew's colour.",f6b:"At night the ring lights up in your shared colour, so your people can spot you from afar.",
 f7t:"Lost? One button.",f7b:"Hold the side button — your friends get your location and a meeting point. Works even with no mobile signal.",
-f8t:"Make it yours.",f8b:"Four strap colours, one for every crew. Tap one to try it on.",pick_al:"Strap colour",ch:"Chapters",
-e:["Home screen","Radar","Find","Bump","Places","Lineup","Glow","SOS","Your colour"],
+ch:"Chapters",
+e:["Home screen","Radar","Find","Bump","Places","Lineup","Glow","SOS"],
 how_t:"Works where your phone gives up",
 h1t:"A mesh between bands",h1b:"Bands relay the signal to each other over Bluetooth, so everything keeps working when the crowd knocks out mobile data.",
 h2t:"5 days per charge",h2b:"Enough for the whole festival: the screen only wakes when you look at it.",
 h3t:"Rain and dust? Fine.",h3b:"An IP67 case and a fabric strap you won't mind getting dirty.",
-end_t:"Tribu. Nobody gets left behind.",end_b:"Tap a colour to see it on the band.",
+end_t:"Tribu. Nobody gets left behind.",end_b:"Four strap colours — one for every crew.",
 cols:["Coral","Lagoon","Lime","Sun"],note:"Tribu — product concept · university project · 2026",
 w_day:"Sat · Day 2",you:"You",w_near:"3 nearby",names:["Masha","Lucas","Ana","Pablo"],unit:"m",nav_sub:"by the Main Stage",nav_near:"You're close!",
 bump_pre:"Bring bands together",bump_ok:"joined your crew",spots:[["Bar","~4 min queue"],["Water","free"],["Toilets","no queue"]],
@@ -413,13 +391,13 @@ f4t:"Barra, agua, baños: lo más cerca.",f4b:"La pulsera conoce el mapa del fes
 f5t:"No te pierdas tu concierto.",f5b:"Marca a tus artistas y, diez minutos antes, la pulsera te avisa y te indica el camino al escenario.",
 f6t:"Brilla con el color de tu grupo.",f6b:"De noche, el aro se ilumina con vuestro color para que los tuyos te vean desde lejos.",
 f7t:"¿Perdido? Un solo botón.",f7b:"Mantén pulsado el botón lateral: tus amigos reciben tu ubicación y un punto de encuentro. Funciona incluso sin cobertura.",
-f8t:"Hazla tuya.",f8b:"Cuatro colores de correa, uno para cada grupo. Toca uno para probarlo.",pick_al:"Color de la correa",ch:"Capítulos",
-e:["Inicio","Radar","Guía","Choque","Lugares","Cartel","Luz","SOS","Tu color"],
+ch:"Capítulos",
+e:["Inicio","Radar","Guía","Choque","Lugares","Cartel","Luz","SOS"],
 how_t:"Funciona donde el móvil se rinde",
 h1t:"Red mesh entre pulseras",h1b:"Las pulseras se pasan la señal por Bluetooth, así que todo sigue funcionando aunque la multitud sature la red móvil.",
 h2t:"5 días de batería",h2b:"Suficiente para todo el festival: la pantalla solo se enciende cuando la miras.",
 h3t:"¿Lluvia y polvo? Sin problema.",h3b:"Caja con protección IP67 y correa de tela que no da pena ensuciar.",
-end_t:"Tribu. Aquí no se pierde nadie.",end_b:"Toca un color para verlo en la pulsera.",
+end_t:"Tribu. Aquí no se pierde nadie.",end_b:"Cuatro colores de correa, uno para cada grupo.",
 cols:["Coral","Laguna","Lima","Sol"],note:"Tribu — concepto de producto · proyecto universitario · 2026",
 w_day:"Sáb · Día 2",you:"Tú",w_near:"3 cerca",names:["Masha","Lucas","Ana","Pablo"],unit:"m",nav_sub:"junto al Main Stage",nav_near:"¡Ya llegas!",
 bump_pre:"Acerca las pulseras",bump_ok:"ya está en tu grupo",spots:[["Barra","cola ~4 min"],["Agua","gratis"],["Baños","sin cola"]],
@@ -431,15 +409,9 @@ const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const story=$('#story'),stage=$('#stage'),watch=$('#watch'),pos=$('#pos'),bz=$('#bz'),prog=$('#prog');
 const heroT=$('#heroT'),heroF=$('#heroF'),crowd=$('#crowd'),horizon=$('#horizon'),beams=$('#beams'),dimB=$('#dimB');
 const scr=$$('.scr'),caps=$$('.cap'),chips=$$('.chip'),sws=$$('.sw'),frs=$$('.fr');
-const N=9,INTRO=1.6,U=INTRO+N;
-const P=[[-10,4,0],[12,6,-2],[-8,-5,0],[16,3,2],[-14,6,0],[10,-4,-2],[-26,12,0],[-46,6,0],[-30,10,-3]];
+const N=8,INTRO=1.6,U=INTRO+N;
+const P=[[-10,4,0],[12,6,-2],[-8,-5,0],[16,3,2],[-14,6,0],[10,-4,-2],[-26,12,0],[-46,6,0]];
 const RING=['#ff5a3c','#43d9ff','#c6f24e','#ffc23d'],SPD=[80,60,140],SPA=[-30,50,140];
-/* CSS-fallback strap tint per colour (hue-rotate from coral, saturation) */
-const HR=[[0,1],[178,1.1],[70,1],[30,1.15]];
-/* picked strap colour: remembered, shown on the band, the logo, the progress bar and the last screen */
-let col=0;try{col=+(localStorage.getItem('tribu-col')||0)}catch(e){}
-if(!(col>=0&&col<4))col=0;
-window.tribuCol=()=>col;
 
 /* CSS 3D fallback, used only when WebGL is not available */
 function buildCSS(){
@@ -493,8 +465,6 @@ function setLang(l){
   $$('.lang button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.l===l)));
   frs.forEach((e,i)=>txt(e,d.names[i][0]));
   $$('[data-e]').forEach(e=>txt(e,`${String(+e.dataset.e+1).padStart(2,'0')} · ${d.e[+e.dataset.e]}`));
-  $$('[data-al]').forEach(e=>e.setAttribute('aria-label',d[e.dataset.al]));
-  $$('[data-k]').forEach(b=>b.setAttribute('aria-label',d.cols[+b.dataset.k]));
   rail.setAttribute('aria-label',d.ch);rails.forEach((b,i)=>b.setAttribute('aria-label',`${i+1}. ${d.e[i]}`));
   try{localStorage.setItem('tribu-lang',l)}catch(e){}
   draw();
@@ -520,7 +490,6 @@ function draw(){
   sws.forEach((e,i)=>e.classList.toggle('on',i===S.gi));txt($('#glN'),d.cols[S.gi]);
   $('#holdArc').setAttribute('stroke-dasharray',`${(S.hold*100).toFixed(1)} 100`);
   s7.classList.toggle('sent',S.sent);txt($('#sosA'),S.sent?d.sos_sent:d.sos_hold);txt($('#sosB'),S.sent?d.sos_meet:'');
-  txt($('#pkN'),d.cols[col]);
 }
 let bzT=-1e9;
 function buzz(){if(reduce)return;bzT=performance.now();kick()}
@@ -569,7 +538,7 @@ function update(){
   if(si===5)S.set=lt;
   if(si===6)S.gi=Math.min(3,Math.floor(lt*4));
   if(si===7){S.hold=clamp(lt/.4,0,1);S.sent=lt>=.4}
-  const ring=si===6?RING[S.gi]:RING[col];
+  const ring=si===6?RING[S.gi]:RING[0];
   const ri=q<-.3||p>=.999?-1:clamp(Math.round(q-.55),0,N-1);
   if(ri!==st.ri){rail.classList.toggle('on',ri>=0);rails.forEach((b,i)=>i===ri?b.setAttribute('aria-current','step'):b.removeAttribute('aria-current'));st.ri=ri}
   if(ring!==st.ring){stage.style.setProperty('--ring',ring);st.ring=ring}
@@ -611,21 +580,9 @@ addEventListener('keydown',e=>{
   if(n>=N)return;e.preventDefault();if(n<0)scrollTo({top:story.offsetTop,behavior:reduce?'auto':'smooth'});else go(n);
 });
 
-/* strap colour */
-function setCol(i,anim){
-  col=i;document.documentElement.style.setProperty('--acc',RING[i]);
-  $$('[data-k],[data-g]').forEach(b=>b.setAttribute('aria-pressed',String(+(b.dataset.k??b.dataset.g)===i)));
-  watch.classList.toggle('tint',i>0);watch.style.setProperty('--hr',HR[i][0]+'deg');watch.style.setProperty('--sa',HR[i][1]);
-  if(window.tribuGL)window.tribuGL.strap(i,anim);
-  try{localStorage.setItem('tribu-col',String(i))}catch(e){}
-  draw();update();
-}
-$$('[data-k]').forEach(b=>b.addEventListener('click',()=>setCol(+b.dataset.k,true)));
-$$('[data-g]').forEach(b=>b.addEventListener('click',()=>{setCol(+b.dataset.g,false);go(N-1)}));
-
 addEventListener('scroll',update,{passive:true});
 addEventListener('resize',()=>{size();update()});
-size();setLang(L);setCol(col,false);clock();setInterval(clock,15000);update();
+size();setLang(L);clock();setInterval(clock,15000);update();
 }
 </script>
 <script type="importmap">{"imports":{"three":"./three.module.min.js"}}</script>
@@ -635,8 +592,6 @@ import * as THREE from 'three';
 /* braid, in band units: how far the strands stand proud of the tube (amp), the width of one texture tile (tile, 4 x 4 cells),
    and how much longer a tile is along the band than across it (aspect: steeper strands). loopGeometry fits whole tiles. */
 const BRAID={amp:5.4,tile:66,cells:4,aspect:1.2};
-/* strap dye per colour: [base colour, fibre sheen]; order matches RING in the page script (coral, lagoon, lime, sun) */
-const STRAP=[[0xf26a3c,0xffa77f],[0x22a6d6,0x9fe6ff],[0xa6d63a,0xe6ff9c],[0xf2a72a,0xffd98a]];
 function braidTextures(maxAniso){
   /* a 2/2 diagonal braid, like a braided solo loop: two families of strands cross at an angle, each strand passing over two
      and under two of the other family, so the surface is a herringbone of puffy segments with rounded ends. Every strand is a
@@ -792,22 +747,14 @@ function init(){
   const tx=braidTextures(r.capabilities.getMaxAnisotropy());
   /* woven fabric like a braided solo loop: no metal, matte, a soft fibre sheen that lights up at grazing angles,
      only a faint highlight stretched along each strand */
-  const c0=STRAP[window.tribuCol?window.tribuCol():0]||STRAP[0];
-  const strapMat=new THREE.MeshPhysicalMaterial({color:c0[0],map:tx.map,normalMap:tx.normal,normalScale:new THREE.Vector2(1.15,1.15),
+  const strapMat=new THREE.MeshPhysicalMaterial({color:0xf26a3c,map:tx.map,normalMap:tx.normal,normalScale:new THREE.Vector2(1.15,1.15),
     displacementMap:tx.disp,displacementScale:BRAID.amp,displacementBias:-BRAID.amp*.5,
     metalness:0,roughness:1,roughnessMap:tx.disp,specularIntensity:.5,envMapIntensity:.45,anisotropy:.35,anisotropyMap:tx.aniso,
-    sheen:.5,sheenRoughness:.5,sheenColor:new THREE.Color(c0[1]),vertexColors:true,side:THREE.DoubleSide});
+    sheen:.5,sheenRoughness:.5,sheenColor:new THREE.Color(0xffa77f),vertexColors:true,side:THREE.DoubleSide});
   g.add(new THREE.Mesh(loopGeometry(),strapMat));
   host.appendChild(r.domElement);
-  const D=Math.PI/180,col=new THREE.Color();let lw=0,lh=0,lk=0,shown=false,lastV=null,dyeRaf=0;
-  const fromC=new THREE.Color(),fromS=new THREE.Color(),toC=new THREE.Color(),toS=new THREE.Color();
-  const GL=window.tribuGL={
-  /* re-dye the strap; animated cross-fade when picked, instant on load */
-  strap(i,anim){const p=STRAP[i]||STRAP[0];fromC.copy(strapMat.color);fromS.copy(strapMat.sheenColor);toC.set(p[0]);toS.set(p[1]);
-    cancelAnimationFrame(dyeRaf);const t0=performance.now(),dur=anim?520:0;
-    const step=()=>{const t=dur?Math.min(1,(performance.now()-t0)/dur):1,e=t*t*(3-2*t);
-      strapMat.color.copy(fromC).lerp(toC,e);strapMat.sheenColor.copy(fromS).lerp(toS,e);if(lastV)GL.draw(lastV);if(t<1)dyeRaf=requestAnimationFrame(step)};step()},
-  draw(v){lastV=v;
+  const D=Math.PI/180,col=new THREE.Color();let lw=0,lh=0,lk=0,shown=false;
+  window.tribuGL={draw(v){
     if(v.w!==lw||v.h!==lh||v.k!==lk){lw=v.w;lh=v.h;lk=v.k;r.setSize(v.w,v.h,false);const d=1800*v.k;
       cam.aspect=v.w/v.h;cam.fov=2*Math.atan(v.h/2/d)/D;cam.position.set(0,0,d);cam.near=d*.3;cam.far=d*3;cam.updateProjectionMatrix();}
     g.position.set(v.x,-v.y,0);g.scale.setScalar(v.s*v.k);g.rotation.set(-v.rx*D,v.ry*D,-v.rz*D,'ZXY');
