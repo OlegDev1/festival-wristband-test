@@ -62,6 +62,8 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-
 .bz.go{animation:bz .45s linear}
 .watch{position:absolute;left:0;top:0;transform-style:preserve-3d;will-change:transform;--D:calc(var(--k)*260px);--R:calc(var(--k)*130px);--T:calc(var(--k)*46px);--W:calc(var(--k)*128px);--ts:calc(var(--k)*14px)}
 .webgl .face{background:none}.webgl .ringl,.webgl .back,.webgl .btn{display:none}.webgl .shade{inset:calc(var(--k)*17px)}
+/* WebGL draws the black sapphire glass with real reflections, so the HTML screen only carries the UI; keep a fainter CSS sheen on top */
+.webgl .screen{background:none}.webgl .glass{opacity:.4}
 .st,.face,.back,.btn,.sf,.sb,.sl,.sr{position:absolute;display:block;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .st{width:calc(var(--D)*.02618 + 1px);height:var(--T);left:calc((var(--D)*.0785 + 1px)/-2);top:calc(var(--T)/-2);transform:rotateZ(var(--a)) translateY(calc(var(--R)*-1 + .5px)) rotateX(90deg)}
 .face{width:var(--D);height:var(--D);left:calc(var(--R)*-1);top:calc(var(--R)*-1);border-radius:50%;transform:translateZ(calc(var(--T)/2 + .5px));background:conic-gradient(from calc(var(--spec,0)*1deg),#35343a,#87858d 10%,#2b2a30 28%,#5d5b62 50%,#26252b 70%,#79777f 88%,#35343a)}
@@ -592,6 +594,10 @@ function envScene(){
   const s=new THREE.Scene();s.background=new THREE.Color(0x060407);
   const add=(w,h,col,i,p)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:new THREE.Color(col).multiplyScalar(i),side:THREE.DoubleSide}));m.position.set(...p);m.lookAt(0,0,0);s.add(m)};
   add(9,3,'#ffffff',5,[0,6,3]);add(2,9,'#ffffff',2.6,[6.5,1,4]);add(3,3,'#ffffff',2,[-3,3,6]);
+  /* studio strips for polished steel and the glass: two long thin softboxes give crisp streak highlights, a dim panel behind the camera keeps camera-facing metal from going black */
+  add(16,.45,'#ffffff',8,[0,4,6.5]);add(.45,14,'#ffffff',5,[-7.5,0,5]);add(14,9,'#fff4ec',.22,[0,0,10]);
+  /* big soft panel back-left: what the glass mirrors in the hero 3/4 pose, so it reads as a sheen sweeping across the black */
+  add(9,12,'#ffffff',1.1,[-7,2,-5]);
   add(1.6,9,'#ff5a3c',3.4,[-6,0,2]);add(1.6,7,'#43d9ff',2.2,[5,0,-5]);add(11,2,'#ffb48a',.9,[0,-6,2]);
   return s;
 }
@@ -651,11 +657,17 @@ function init(){
   const rim=new THREE.DirectionalLight(0x43d9ff,1.1);rim.position.set(-500,120,-400);scene.add(rim);
   const warm=new THREE.DirectionalLight(0xff5a3c,.7);warm.position.set(-400,-300,300);scene.add(warm);
   const g=new THREE.Group();scene.add(g);
-  const silver=new THREE.MeshPhysicalMaterial({color:0xe9e9ee,metalness:1,roughness:.13,clearcoat:.4,clearcoatRoughness:.08,side:THREE.DoubleSide});
+  /* polished steel: pure metal, no clearcoat (a second lobe on metal only blurs the streaks and costs a pass on phones) */
+  const silver=new THREE.MeshStandardMaterial({color:0xe4e4e8,metalness:1,roughness:.17,envMapIntensity:1.25,side:THREE.DoubleSide});
   g.add(new THREE.Mesh(caseGeometry(),silver));
   const back=new THREE.Mesh(new THREE.CircleGeometry(87,128),new THREE.MeshPhysicalMaterial({color:0x17161b,roughness:.3,clearcoat:1,clearcoatRoughness:.1}));
   back.geometry.rotateY(Math.PI);back.position.z=-23.05;g.add(back);
-  const glass=new THREE.Mesh(new THREE.CircleGeometry(114.2,128),new THREE.MeshBasicMaterial({color:0}));glass.position.z=22.7;g.add(glass);
+  /* black sapphire over an off OLED: flat disc (so the HTML screen still lines up) with normals bent like a dome that rolls off at
+     the rim, so reflections slide across it and the edge catches a highlight. Black base + Fresnel reflection, thin AR-coating tint. */
+  const gg=new THREE.RingGeometry(0,114.2,128,24),gp=gg.attributes.position,gn=gg.attributes.normal,nv=new THREE.Vector3();
+  for(let i=0;i<gp.count;i++){const x=gp.getX(i)/114.2,y=gp.getY(i)/114.2,k=.22+1.1*Math.hypot(x,y)**7;nv.set(x*k,y*k,1).normalize();gn.setXYZ(i,nv.x,nv.y,nv.z)}
+  const glass=new THREE.Mesh(gg,new THREE.MeshPhysicalMaterial({color:0,metalness:0,roughness:.04,ior:1.77,clearcoat:1,clearcoatRoughness:.02,
+    iridescence:.3,iridescenceIOR:1.35,iridescenceThicknessRange:[260,420],envMapIntensity:1.5}));glass.position.z=22.7;g.add(glass);
   const ringMat=new THREE.MeshBasicMaterial({color:0xff5a3c,transparent:true,opacity:.6,toneMapped:false});
   const ring=new THREE.Mesh(new THREE.RingGeometry(114.7,117.7,200),ringMat);ring.position.z=23.26;g.add(ring);
   const glowMat=new THREE.MeshBasicMaterial({map:glowTexture(),color:0xff5a3c,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
@@ -664,11 +676,12 @@ function init(){
   const btn=new THREE.Mesh(new THREE.CapsuleGeometry(6,32,10,32),btnMat);btn.position.x=131.5;g.add(btn);
   const collar=new THREE.Mesh(new THREE.CapsuleGeometry(8,34,10,32),silver);collar.scale.set(.45,1,1);collar.position.x=129.8;g.add(collar);
   const tx=braidTextures(r.capabilities.getMaxAnisotropy());
-  /* glossy yarn with a metallic sheen: part metal, fairly smooth, highlight stretched along each strand */
-  const strapMat=new THREE.MeshPhysicalMaterial({color:0xf26a3c,map:tx.map,normalMap:tx.normal,normalScale:new THREE.Vector2(1,1),
+  /* woven fabric like a braided solo loop: no metal, matte, a soft fibre sheen that lights up at grazing angles,
+     only a faint highlight stretched along each strand */
+  const strapMat=new THREE.MeshPhysicalMaterial({color:0xf26a3c,map:tx.map,normalMap:tx.normal,normalScale:new THREE.Vector2(1.15,1.15),
     displacementMap:tx.disp,displacementScale:BRAID.amp,displacementBias:-BRAID.amp*.5,
-    metalness:.65,roughness:.38,anisotropy:.75,anisotropyMap:tx.aniso,
-    sheen:.5,sheenRoughness:.35,sheenColor:new THREE.Color(0xffb08f),vertexColors:true,side:THREE.DoubleSide});
+    metalness:0,roughness:.74,specularIntensity:.45,anisotropy:.35,anisotropyMap:tx.aniso,
+    sheen:1,sheenRoughness:.5,sheenColor:new THREE.Color(0xffc4a3),vertexColors:true,side:THREE.DoubleSide});
   g.add(new THREE.Mesh(loopGeometry(),strapMat));
   host.appendChild(r.domElement);
   const D=Math.PI/180,col=new THREE.Color();let lw=0,lh=0,lk=0,shown=false;
