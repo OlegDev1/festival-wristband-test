@@ -539,7 +539,7 @@ import * as THREE from 'three';
 /* WebGL band: lathe-turned silver case, braided loop strap with real relief, light ring. Units match the CSS model (k = 1), so the HTML screen sits exactly on the glass. */
 /* braid, in band units: how far the strands stand proud of the tube (amp), the width of one texture tile (tile, 4 x 4 cells),
    and how much longer a tile is along the band than across it (aspect: steeper strands). loopGeometry fits whole tiles. */
-const BRAID={amp:4.4,tile:66,cells:4,aspect:1.2};
+const BRAID={amp:5.4,tile:66,cells:4,aspect:1.2};
 function braidTextures(maxAniso){
   /* a 2/2 diagonal braid, like a braided solo loop: two families of strands cross at an angle, each strand passing over two
      and under two of the other family, so the surface is a herringbone of puffy segments with rounded ends. Every strand is a
@@ -575,12 +575,12 @@ function braidTextures(maxAniso){
     /* yarn: ~7 rounded cords run along each strand with a slight twist, dark seams between them, every cord split into filaments */
     const on=Math.min(1,best*2.2),tw=bp*3.5+bs*.7,cf=tw-Math.floor(tw),cord=Math.sqrt(Math.max(0,1-(2*cf-1)**2)),fl=tw*4,fi=Math.floor(fl);
     const fh=Math.abs(Math.sin(fi*12.9898+st*78.233+bf*37.719)*43758.5453)%1;
-    H[i]=best+on*(.07*(cord-.75)+.008*(fh-.5))+(fib[i]-.5)*.006;
-    C[i]=tone[bf*N+mN(st)]*(.24+.76*Math.min(1,best*1.15))*(1-on*.2*(1-cord))*(.94+.1*fh*on);
+    H[i]=best+on*(.085*(cord-.75)+.008*(fh-.5))+(fib[i]-.5)*.006;
+    C[i]=tone[bf*N+mN(st)]*(.17+.83*Math.min(1,best*1.15))*(1-on*.2*(1-cord))*(.94+.1*fh*on);
     R[i]=.95-.3*bd*cord-.05*fh*on;
   }
   const n=new ImageData(S,S),c=new ImageData(S,S),d=new ImageData(S,S),an=new ImageData(S,S),at=(x,y)=>H[((y+S)%S)*S+(x+S)%S];
-  const gx=BRAID.amp*S/(2*TU)*.85,gy=BRAID.amp*S/(2*TV)*.85;
+  const gx=BRAID.amp*S/(2*TU)*1.05,gy=BRAID.amp*S/(2*TV)*1.05;
   /* strand directions in the tangent frame (u right, v up; canvas y runs down): family 0 = (+u,-v), family 1 = (+u,+v) */
   const dl=Math.hypot(TU*TU,TV*TV),d0=[TU*TU/dl,-TV*TV/dl],d1=[TU*TU/dl,TV*TV/dl];
   for(let y=0;y<S;y++)for(let x=0;x<S;x++){
@@ -601,7 +601,7 @@ function envScene(){
   /* studio strips for polished steel and the glass: two long thin softboxes give crisp streak highlights, a dim panel behind the camera keeps camera-facing metal from going black */
   add(16,.45,'#ffffff',8,[0,4,6.5]);add(.45,14,'#ffffff',5,[-7.5,0,5]);add(14,9,'#fff4ec',.22,[0,0,10]);
   /* big soft panel back-left: what the glass mirrors in the hero 3/4 pose, so it reads as a sheen sweeping across the black */
-  add(9,12,'#ffffff',1.9,[-7,2,-5]);
+  add(9,12,'#ffffff',1.5,[-7,2,-5]);
   add(1.6,9,'#ff5a3c',3.4,[-6,0,2]);add(1.6,7,'#43d9ff',2.2,[5,0,-5]);add(11,2,'#ffb48a',.9,[0,-6,2]);
   return s;
 }
@@ -620,7 +620,7 @@ function loopGeometry(){
     raw.push(new THREE.Vector2(a*Math.sign(s)*Math.abs(s)**e,-b+b*Math.sign(c)*Math.abs(c)**e));}
   const cum=[0];for(let i=1;i<raw.length;i++)cum.push(cum[i-1]+raw[i].distanceTo(raw[i-1]));
   /* cross-section: a thick, flattened braided tube with fully rounded edges, sampled finely so the braid can be displaced */
-  const w2=62,h2=9.5,cr=9,NF=44,sec=[];
+  const w2=62,h2=9.5,cr=9,NF=64,sec=[];
   const corner=(cx,cy,a0)=>{for(let k=0;k<=10;k++){const a1=a0+k/10*Math.PI/2;sec.push([cx+Math.cos(a1)*cr,cy+Math.sin(a1)*cr,Math.cos(a1),Math.sin(a1),.9])}};
   const face=(x0,y0,x1,y1,nx,ny)=>{for(let k=1;k<NF;k++){const f=k/NF;sec.push([x0+(x1-x0)*f,y0+(y1-y0)*f,nx,ny,1])}};
   corner(w2-cr,h2-cr,0);face(w2-cr,h2,-w2+cr,h2,0,1);corner(-w2+cr,h2-cr,Math.PI/2);
@@ -628,7 +628,7 @@ function loopGeometry(){
   sec.push(sec[0]);
   const per=[0];for(let i=1;i<sec.length;i++)per.push(per[i-1]+Math.hypot(sec[i][0]-sec[i-1][0],sec[i][1]-sec[i-1][1]));
   /* whole braid tiles around the tube and along the loop, so there is no seam; 8 vertices per cell along the band for the displacement */
-  const L=cum[cum.length-1],P=per[per.length-1],nU=Math.max(1,Math.round(P/BRAID.tile)),TU=P/nU,nV=Math.round(L/(TU*BRAID.aspect)),NS=nV*BRAID.cells*8,pts=[];let j=0;
+  const L=cum[cum.length-1],P=per[per.length-1],nU=Math.max(1,Math.round(P/BRAID.tile)),TU=P/nU,nV=Math.round(L/(TU*BRAID.aspect)),NS=nV*BRAID.cells*10,pts=[];let j=0;
   for(let i=0;i<NS;i++){const d=i/NS*L;while(cum[j+1]<d)j++;const f=(d-cum[j])/(cum[j+1]-cum[j]);pts.push(raw[j].clone().lerp(raw[j+1],f))}
   const M=sec.length,pos=[],nor=[],uv=[],col=[],idx=[];
   for(let i=0;i<=NS;i++){
@@ -667,9 +667,9 @@ function init(){
   const warm=new THREE.DirectionalLight(0xff5a3c,.45);warm.position.set(-400,-300,300);scene.add(warm);
   const g=new THREE.Group();scene.add(g);
   /* polished steel: pure metal, no clearcoat (a second lobe on metal only blurs the streaks and costs a pass on phones) */
-  const silver=new THREE.MeshStandardMaterial({color:0xe4e4e8,metalness:1,roughness:.17,envMapIntensity:1.25,side:THREE.DoubleSide});
+  const silver=new THREE.MeshStandardMaterial({color:0xd6d7db,metalness:1,roughness:.3,envMapIntensity:1,side:THREE.DoubleSide});
   /* satin flank and back edge: circular-brushed metal (highlight smeared around the case), polished top edge and lip */
-  const satin=new THREE.MeshPhysicalMaterial({color:0xb4b5ba,metalness:1,roughness:.26,anisotropy:.6,envMapIntensity:1,side:THREE.DoubleSide});
+  const satin=new THREE.MeshPhysicalMaterial({color:0xc4c5ca,metalness:1,roughness:.42,anisotropy:.45,envMapIntensity:.95,side:THREE.DoubleSide});
   const [cb,ct]=caseGeometry();g.add(new THREE.Mesh(cb,satin));g.add(new THREE.Mesh(ct,silver));
   const back=new THREE.Mesh(new THREE.CircleGeometry(87,128),new THREE.MeshPhysicalMaterial({color:0x17161b,roughness:.3,clearcoat:1,clearcoatRoughness:.1}));
   back.geometry.rotateY(Math.PI);back.position.z=-23.05;g.add(back);
@@ -677,15 +677,17 @@ function init(){
      the rim, so reflections slide across it and the edge catches a highlight. Black base + Fresnel reflection, thin AR-coating tint. */
   const gg=new THREE.RingGeometry(0,114.2,128,24),gp=gg.attributes.position,gn=gg.attributes.normal,nv=new THREE.Vector3();
   for(let i=0;i<gp.count;i++){const x=gp.getX(i)/114.2,y=gp.getY(i)/114.2,k=.22+1.1*Math.hypot(x,y)**7;nv.set(x*k,y*k,1).normalize();gn.setXYZ(i,nv.x,nv.y,nv.z)}
-  const glass=new THREE.Mesh(gg,new THREE.MeshPhysicalMaterial({color:0,metalness:0,roughness:.04,ior:1.77,clearcoat:1,clearcoatRoughness:.02,
-    iridescence:.3,iridescenceIOR:1.35,iridescenceThicknessRange:[260,420],envMapIntensity:1.5}));glass.position.z=22.7;g.add(glass);
+  const glass=new THREE.Mesh(gg,new THREE.MeshPhysicalMaterial({color:0,metalness:0,roughness:.04,ior:1.77,
+    iridescence:.15,iridescenceIOR:1.35,iridescenceThicknessRange:[260,420],envMapIntensity:.6}));glass.position.z=22.7;g.add(glass);
   const ringMat=new THREE.MeshBasicMaterial({color:0xff5a3c,transparent:true,opacity:.6,toneMapped:false});
   const ring=new THREE.Mesh(new THREE.RingGeometry(114.7,117.7,200),ringMat);ring.position.z=23.26;g.add(ring);
   const glowMat=new THREE.MeshBasicMaterial({map:glowTexture(),color:0xff5a3c,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
   const glow=new THREE.Mesh(new THREE.PlaneGeometry(260,260),glowMat);glow.position.z=23.4;g.add(glow);
-  const btnMat=new THREE.MeshPhysicalMaterial({color:0xe2553a,roughness:.42,clearcoat:.6,emissive:0xff5a3c,emissiveIntensity:0});
-  const btn=new THREE.Mesh(new THREE.CapsuleGeometry(6,32,10,32),btnMat);btn.position.x=131.5;g.add(btn);
-  const collar=new THREE.Mesh(new THREE.CapsuleGeometry(8,34,10,32),silver);collar.scale.set(.45,1,1);collar.position.x=129.8;g.add(collar);
+  const btnMat=new THREE.MeshPhysicalMaterial({color:0xb63c24,metalness:.35,roughness:.38,clearcoat:.4,clearcoatRoughness:.2,emissive:0xff5a3c,emissiveIntensity:0});
+  /* side button a touch above 3 o'clock: a flatter anodised pill set into a dark slot that reads as the shadow gap around it */
+  const bg=new THREE.Group();bg.rotation.z=14*Math.PI/180;g.add(bg);
+  const slot=new THREE.Mesh(new THREE.CapsuleGeometry(8,32,8,32),new THREE.MeshStandardMaterial({color:0x0b0a0c,roughness:.7}));slot.scale.set(.35,1,1);slot.position.x=129.6;bg.add(slot);
+  const btn=new THREE.Mesh(new THREE.CapsuleGeometry(6,30,10,32),btnMat);btn.scale.set(.62,1,1);btn.position.x=131.6;bg.add(btn);
   const tx=braidTextures(r.capabilities.getMaxAnisotropy());
   /* woven fabric like a braided solo loop: no metal, matte, a soft fibre sheen that lights up at grazing angles,
      only a faint highlight stretched along each strand */
