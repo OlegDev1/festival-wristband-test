@@ -466,7 +466,7 @@ function size(){
 
 /* opening pose: three-quarter, not a flat profile, so the loop reads as a ring with depth and a sliver of glass shows.
    cx/cy: centre of case + loop on screen for this pose, in band units (recompute if the pose or the loop size changes) */
-const R0={ry:-62,rx:14,rz:0,s:.86,cx:112,cy:17};
+const R0={ry:-62,rx:0,rz:0,s:.86,cx:114,cy:0};
 /* scroll → targets; a light spring follows them */
 const tgt={x:0,y:0,s:R0.s,ry:R0.ry,rx:R0.rx,rz:R0.rz};let cur=null,raf=0;
 const st={si:-2,ci:-2,ring:'#ff5a3c',glow:false,sos:false};
@@ -535,47 +535,58 @@ size();setLang(L);clock();setInterval(clock,15000);update();
 <script type="module">
 import * as THREE from 'three';
 /* WebGL band: lathe-turned silver case, braided loop strap with real relief, light ring. Units match the CSS model (k = 1), so the HTML screen sits exactly on the glass. */
-/* braid relief, in band units: how far the strands stand proud of the tube, and how big one texture tile is (set by loopGeometry) */
-const BRAID={amp:3,tile:88,cols:4,rows:4};
+/* braid, in band units: how far the strands stand proud of the tube (amp), the width of one texture tile (tile, 4 x 4 cells),
+   and how much longer a tile is along the band than across it (aspect: steeper strands). loopGeometry fits whole tiles. */
+const BRAID={amp:3.6,tile:66,cells:4,aspect:1.2};
 function braidTextures(maxAniso){
-  /* chunky braided yarn, like a braided solo loop: columns of V stitches along the band; every leg of a V is a fat, rounded
-     bundle of fine filaments. One seamless tile = BRAID.cols x BRAID.rows stitches; the geometry wraps a whole number of tiles both ways.
-     Out: colour (deep grooves baked in), normal map (strands + filaments), displacement (strands only, so the outline is bumpy too). */
-  const S=512,COLS=BRAID.cols,ROWS=BRAID.rows,cw=S/COLS,rh=S/ROWS;
-  const H=new Float32Array(S*S),D=new Float32Array(S*S),C=new Float32Array(S*S);
+  /* a 2/2 diagonal braid, like a braided solo loop: two families of strands cross at an angle, each strand passing over two
+     and under two of the other family, so the surface is a herringbone of puffy segments with rounded ends. Every strand is a
+     twisted bundle of filaments (fine slanted ticks) and keeps its own slight tone. One seamless tile = 4 x 4 cells.
+     Out: colour (grooves baked in), normal map, displacement (segments only, so the outline is bumpy too), and an anisotropy
+     map that stretches the highlight along each strand, for a glossy yarn with a metallic sheen. */
+  const S=512,N=BRAID.cells,cs=S/N,TU=BRAID.tile,TV=BRAID.tile*BRAID.aspect;
+  const H=new Float32Array(S*S),D=new Float32Array(S*S),C=new Float32Array(S*S),FA=new Uint8Array(S*S);
   let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
-  const legT=[],legH=[];for(let i=0;i<COLS*ROWS*2;i++){legT.push(.9+rnd()*.12);legH.push(.9+rnd()*.1)}
+  const tone=[],lift=[];for(let i=0;i<2*N;i++){tone.push(.9+rnd()*.12);lift.push(.9+rnd()*.1)}
   const fib=new Float32Array(S*S);for(let i=0;i<S*S;i++)fib[i]=rnd();
-  const len=Math.hypot(cw/2,rh),HL=len*.5,HW=rh*(cw/2)/len*.47;
+  const m4=v=>((v%4)+4)%4,mN=v=>((v%N)+N)%N;
   for(let y=0;y<S;y++)for(let x=0;x<S;x++){
-    const c0=Math.floor(x/cw),r0=Math.floor(y/rh),near=x<(c0+.5)*cw?-1:1;let best=0,bk=0,bp=0;
-    /* only legs that can reach this pixel: both legs of this column, and the nearer leg of the neighbouring column */
-    for(let t=0;t<3;t++){
-      const c=t<2?c0:c0+near,side=t<2?t:(near<0?1:0);
-      const sg=side?-1:1,ux=sg*(cw/2)/len,uy=rh/len,lx=x-(c+.5)*cw+sg*cw/4;
-      for(let r=r0-1;r<=r0+1;r++){
-        const dy=y-(r+.5)*rh,p=(lx*uy-dy*ux)/HW;if(p<=-1||p>=1)continue;
-        const q=(lx*ux+dy*uy)/HL,aq=q<0?-q:q,e=1-p*p-aq*aq*aq;if(e<=0)continue;
-        const k=((((r%ROWS)+ROWS)%ROWS)*COLS+((c%COLS)+COLS)%COLS)*2+side;
-        const h=Math.sqrt(e)*legH[k]*(.86+.14*q);
-        if(h>best){best=h;bk=k;bp=p}
+    const X=(x+.5)/cs,Y=(y+.5)/cs,a=X-Y,b=X+Y,ia=Math.floor(a),ib=Math.floor(b),sum=ia+ib;
+    let best=-1,bf=0,bp=0,bs=0,bd=0;
+    for(let f=0;f<2;f++){
+      /* family 0 runs along b (across a), family 1 runs along a (across b); they are over in opposite halves of the cycle */
+      const ac=f?b:a,al=f?a:b,st=f?ib:ia,p=(2*(ac-Math.floor(ac))-1)/.95,body=.4*Math.sqrt(Math.max(0,1-p*p));
+      const ph=m4(sum+(f?2:0))+(al-Math.floor(al)),over=ph<2,sg=over?ph-1:ph-3;
+      let h=body,dh=0;
+      if(over){
+        const ap=p<0?-p:p,q=(sg<0?-sg:sg)/1.1,e=1-p*p*(.55+.45*ap)-q*q*q;
+        if(e>0){
+          const pill=Math.sin(Math.PI/2*Math.min(1,e/.75));
+          dh=pill*lift[f*N+mN(st)]*(.88+.12*sg);h=body+(1-body)*dh;
+        }
       }
+      if(h>best){best=h;bf=f;bp=p;bs=sg;bd=over?dh:0}
     }
-    const i=y*S+x;D[i]=best;
-    H[i]=best>0?best+.045*Math.cos(bp*Math.PI*5.5)*Math.min(1,best*3)+(fib[i]-.5)*.03:0;
-    C[i]=legT[bk]*(.26+.74*Math.min(1,best*1.25)**.8)*(1+.06*Math.cos(bp*Math.PI*5.5));
+    const i=y*S+x,st=bf?ib:ia;
+    D[i]=best;FA[i]=bf;
+    const tick=Math.cos(2*Math.PI*(bp*1.2+bs*6))*Math.min(1,best*2);
+    H[i]=best+.028*tick+(fib[i]-.5)*.02;
+    C[i]=tone[bf*N+mN(st)]*(.34+.66*Math.min(1,best*1.15))*(1+.05*tick);
   }
-  const n=new ImageData(S,S),c=new ImageData(S,S),d=new ImageData(S,S),at=(x,y)=>H[((y+S)%S)*S+(x+S)%S];
-  const g=BRAID.amp/(2*BRAID.tile/S)*.6;
+  const n=new ImageData(S,S),c=new ImageData(S,S),d=new ImageData(S,S),an=new ImageData(S,S),at=(x,y)=>H[((y+S)%S)*S+(x+S)%S];
+  const gx=BRAID.amp*S/(2*TU)*.7,gy=BRAID.amp*S/(2*TV)*.7;
+  /* strand directions in the tangent frame (u right, v up; canvas y runs down): family 0 = (+u,-v), family 1 = (+u,+v) */
+  const dl=Math.hypot(TU*TU,TV*TV),d0=[TU*TU/dl,-TV*TV/dl],d1=[TU*TU/dl,TV*TV/dl];
   for(let y=0;y<S;y++)for(let x=0;x<S;x++){
-    const dx=(at(x+1,y)-at(x-1,y))*g,dy=(at(x,y+1)-at(x,y-1))*g,l=Math.hypot(dx,dy,1),i=(y*S+x)*4,k=y*S+x;
+    const dx=(at(x+1,y)-at(x-1,y))*gx,dy=(at(x,y+1)-at(x,y-1))*gy,l=Math.hypot(dx,dy,1),i=(y*S+x)*4,k=y*S+x;
     n.data[i]=(-dx/l*.5+.5)*255;n.data[i+1]=(dy/l*.5+.5)*255;n.data[i+2]=(1/l*.5+.5)*255;n.data[i+3]=255;
     const v=Math.min(255,C[k]*255);c.data[i]=c.data[i+1]=c.data[i+2]=v;c.data[i+3]=255;
     d.data[i]=d.data[i+1]=d.data[i+2]=Math.min(255,D[k]*255);d.data[i+3]=255;
+    const dd=FA[k]?d1:d0;an.data[i]=(dd[0]*.5+.5)*255;an.data[i+1]=(dd[1]*.5+.5)*255;an.data[i+2]=Math.min(255,(.35+.65*Math.min(1,D[k]*1.4))*255);an.data[i+3]=255;
   }
   const tex=(img,srgb)=>{const cv=document.createElement('canvas');cv.width=cv.height=S;cv.getContext('2d').putImageData(img,0,0);
     const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=Math.min(8,maxAniso);if(srgb)t.colorSpace=THREE.SRGBColorSpace;return t};
-  return {map:tex(c,true),normal:tex(n,false),disp:tex(d,false)};
+  return {map:tex(c,true),normal:tex(n,false),disp:tex(d,false),aniso:tex(an,false)};
 }
 function envScene(){
   const s=new THREE.Scene();s.background=new THREE.Color(0x060407);
@@ -595,16 +606,16 @@ function loopGeometry(){
   for(let i=0;i<=4000;i++){const t=i/4000*Math.PI*2,c=Math.cos(t),s=Math.sin(t),e=2/(c>=0?nf:nb);
     raw.push(new THREE.Vector2(a*Math.sign(s)*Math.abs(s)**e,-b+b*Math.sign(c)*Math.abs(c)**e));}
   const cum=[0];for(let i=1;i<raw.length;i++)cum.push(cum[i-1]+raw[i].distanceTo(raw[i-1]));
-  /* cross-section: a flattened braided tube with fully rounded edges, sampled finely so the braid can be displaced */
-  const w2=62,h2=7,cr=6.5,NF=44,sec=[];
+  /* cross-section: a thick, flattened braided tube with fully rounded edges, sampled finely so the braid can be displaced */
+  const w2=62,h2=9.5,cr=9,NF=44,sec=[];
   const corner=(cx,cy,a0)=>{for(let k=0;k<=10;k++){const a1=a0+k/10*Math.PI/2;sec.push([cx+Math.cos(a1)*cr,cy+Math.sin(a1)*cr,Math.cos(a1),Math.sin(a1),.9])}};
   const face=(x0,y0,x1,y1,nx,ny)=>{for(let k=1;k<NF;k++){const f=k/NF;sec.push([x0+(x1-x0)*f,y0+(y1-y0)*f,nx,ny,1])}};
   corner(w2-cr,h2-cr,0);face(w2-cr,h2,-w2+cr,h2,0,1);corner(-w2+cr,h2-cr,Math.PI/2);
   corner(-w2+cr,-h2+cr,Math.PI);face(-w2+cr,-h2,w2-cr,-h2,0,-1);corner(w2-cr,-h2+cr,Math.PI*1.5);
   sec.push(sec[0]);
   const per=[0];for(let i=1;i<sec.length;i++)per.push(per[i-1]+Math.hypot(sec[i][0]-sec[i-1][0],sec[i][1]-sec[i-1][1]));
-  /* whole braid tiles around the tube and along the loop, so there is no seam; 8 vertices per stitch row for the displacement */
-  const L=cum[cum.length-1],P=per[per.length-1],nU=Math.max(1,Math.round(P/BRAID.tile)),TU=P/nU,nV=Math.round(L/TU),NS=nV*BRAID.rows*8,pts=[];let j=0;
+  /* whole braid tiles around the tube and along the loop, so there is no seam; 8 vertices per cell along the band for the displacement */
+  const L=cum[cum.length-1],P=per[per.length-1],nU=Math.max(1,Math.round(P/BRAID.tile)),TU=P/nU,nV=Math.round(L/(TU*BRAID.aspect)),NS=nV*BRAID.cells*8,pts=[];let j=0;
   for(let i=0;i<NS;i++){const d=i/NS*L;while(cum[j+1]<d)j++;const f=(d-cum[j])/(cum[j+1]-cum[j]);pts.push(raw[j].clone().lerp(raw[j+1],f))}
   const M=sec.length,pos=[],nor=[],uv=[],col=[],idx=[];
   for(let i=0;i<=NS;i++){
@@ -653,9 +664,11 @@ function init(){
   const btn=new THREE.Mesh(new THREE.CapsuleGeometry(6,32,10,32),btnMat);btn.position.x=131.5;g.add(btn);
   const collar=new THREE.Mesh(new THREE.CapsuleGeometry(8,34,10,32),silver);collar.scale.set(.45,1,1);collar.position.x=129.8;g.add(collar);
   const tx=braidTextures(r.capabilities.getMaxAnisotropy());
-  const strapMat=new THREE.MeshPhysicalMaterial({color:0xe2643f,map:tx.map,normalMap:tx.normal,normalScale:new THREE.Vector2(1,1),
-    displacementMap:tx.disp,displacementScale:BRAID.amp,displacementBias:-BRAID.amp*.55,
-    roughness:.88,sheen:1,sheenRoughness:.5,sheenColor:new THREE.Color(0xff9c82),vertexColors:true,side:THREE.DoubleSide});
+  /* glossy yarn with a metallic sheen: part metal, fairly smooth, highlight stretched along each strand */
+  const strapMat=new THREE.MeshPhysicalMaterial({color:0xf26a3c,map:tx.map,normalMap:tx.normal,normalScale:new THREE.Vector2(1,1),
+    displacementMap:tx.disp,displacementScale:BRAID.amp,displacementBias:-BRAID.amp*.5,
+    metalness:.65,roughness:.38,anisotropy:.75,anisotropyMap:tx.aniso,
+    sheen:.5,sheenRoughness:.35,sheenColor:new THREE.Color(0xffb08f),vertexColors:true,side:THREE.DoubleSide});
   g.add(new THREE.Mesh(loopGeometry(),strapMat));
   host.appendChild(r.domElement);
   const D=Math.PI/180,col=new THREE.Color();let lw=0,lh=0,lk=0,shown=false;
