@@ -6,7 +6,7 @@
 <title>Tribu — festival band</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=Unbounded:wght@500;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Six+Caps&family=Inter:wght@400;500;600;700&family=Unbounded:wght@500;600;800&display=swap" rel="stylesheet">
 <style>
 /* VOICE: a product launch on a festival night — confident, warm, few words.
    IDEA: the band itself is the presenter: it stands three-quarter, turns to you, then its screen walks through each feature.
@@ -35,15 +35,15 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-
 .beams i{position:absolute;top:-12vh;width:40vw;height:130vh;transform-origin:50% 0;clip-path:polygon(47% 0,53% 0,100% 100%,0 100%);background:linear-gradient(rgba(255,90,60,.26),rgba(255,90,60,0) 72%);animation:sway 9s ease-in-out infinite alternate}
 .beams i.c{background:linear-gradient(rgba(67,217,255,.17),rgba(67,217,255,0) 70%);animation-duration:11s}
 .horizon{position:absolute;inset:auto 0 0;height:50vh;z-index:0;background:radial-gradient(70% 75% at 50% 100%,rgba(255,90,60,.32),rgba(255,90,60,0) 70%)}
-/* hero: the wordmark never sits under the band. Wide = text column on the left, band on the right (where the features continue);
-   phone = wordmark on top, band in the middle, tagline below. --hy lifts the text as you start scrolling. */
-.hero-t{position:absolute;left:max(6vw,24px);top:50%;z-index:1;margin:0;font:400 clamp(120px,16vw,300px)/.86 Anton,Impact,"Arial Narrow",sans-serif;letter-spacing:.005em;text-transform:uppercase;color:var(--ink);
-  transform:translateY(calc(-100% - clamp(12px,1.6vw,26px) + var(--hy,0px)));pointer-events:none}
-.hero-f{position:absolute;left:max(6vw,24px);top:50%;z-index:5;width:min(460px,40vw);transform:translateY(var(--hy,0px))}
+/* hero: tall, light wordmark high up behind the band (the band covers its lower part and the letters show through the loop);
+   tagline at the bottom. --hy lifts the title as you start scrolling. */
+.hero-t{position:absolute;left:0;right:0;top:calc(52px + 2vh);z-index:1;margin:0;text-align:center;font:400 min(64vh,70vw)/.78 "Six Caps","Antonio","Arial Narrow",sans-serif;letter-spacing:.04em;text-transform:uppercase;color:var(--ink);
+  transform-origin:50% 0;transform:translateY(var(--hy,0px)) scaleY(var(--sy,1));pointer-events:none}
+.hero-f{position:absolute;left:16px;right:16px;bottom:max(7vh,26px);z-index:5;text-align:center;text-shadow:0 2px 24px var(--bg)}
 .eyebrow{display:block;margin:0 0 14px;font:600 12px/1 Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--coral)}
-.tag{margin:0 0 10px;max-width:22ch;font:600 clamp(20px,2.1vw,30px)/1.2 Unbounded,Inter,sans-serif;text-wrap:balance}
-.sub{margin:0;max-width:34ch;color:var(--mute)}
-.hint{display:inline-flex;align-items:center;gap:10px;margin-top:22px;font-size:13px;color:var(--mute)}
+.tag{margin:0 auto 10px;max-width:22ch;font:600 clamp(20px,2.1vw,30px)/1.2 Unbounded,Inter,sans-serif;text-wrap:balance}
+.sub{margin:0 auto;max-width:36ch;color:var(--mute)}
+.hint{display:inline-flex;align-items:center;gap:10px;margin-top:16px;font-size:13px;color:var(--mute)}
 .hint::before{content:"";width:1px;height:28px;background:linear-gradient(var(--mute),transparent);animation:drip 1.8s ease-in-out infinite}
 .crowd{position:absolute;left:0;bottom:0;width:100%;height:24vh;z-index:3;fill:#040203;stroke:#040203;pointer-events:none}
 .dimB{position:absolute;inset:auto 0 0;height:46%;z-index:3;opacity:0;pointer-events:none;background:linear-gradient(rgba(11,8,9,0),var(--bg) 62%)}
@@ -186,10 +186,7 @@ footer{padding:28px max(5vw,20px) 40px;border-top:1px solid rgba(255,255,255,.08
 @keyframes bz{0%,100%{transform:none}20%{transform:translateX(calc(var(--k)*-5px))}40%{transform:translateX(calc(var(--k)*5px))}60%{transform:translateX(calc(var(--k)*-4px))}80%{transform:translateX(calc(var(--k)*3px))}}
 
 @media (max-width:760px){
-  .hero-t{left:0;right:0;top:calc(60px + 1.5vh);text-align:center;font-size:min(38vw,21vh);transform:translateY(var(--hy,0px))}
-  .hero-f{left:16px;right:16px;top:auto;bottom:max(6vh,24px);width:auto;text-align:center;transform:none;text-shadow:0 2px 24px var(--bg)}
-  .tag,.sub{margin-left:auto;margin-right:auto}
-  .hint{margin-top:14px}
+  .hero-f{bottom:max(6vh,24px)}
   .rail{right:auto;left:50%;top:60px;flex-direction:row;transform:translateX(-50%)}
   .rail button{width:26px;height:32px}
   .rail button[aria-current=step]::before{height:6px;width:20px}
@@ -516,14 +513,14 @@ function update(){
   const ho=1-clamp((u-.04)/.5,0,1);
   const hy=`${(-u*60).toFixed(1)}px`;
   heroT.style.opacity=ho;heroT.style.setProperty('--hy',hy);heroT.style.visibility=ho>0?'visible':'hidden';
-  heroF.style.opacity=ho;heroF.style.setProperty('--hy',hy);heroF.style.visibility=ho>0?'visible':'hidden';
+  heroF.style.opacity=ho;heroF.style.visibility=ho>0?'visible':'hidden';
   crowd.style.opacity=ho;horizon.style.opacity=.35+.65*ho;
   const r=sm(clamp((u-.1)/1.15,0,1)),q=u-INTRO;
   st.scr=clamp((r-.45)/.3,0,1);watch.style.setProperty('--gs',st.scr.toFixed(3));
   let fi=0,fr=0;if(q>=0){fi=Math.min(N-1,Math.floor(q));fr=q-fi}
   let A=P[0],B=P[0],m=0;if(q>=0){A=P[fi];B=P[Math.min(N-1,fi+1)];m=sm(clamp((fr-.5)/.5,0,1))}
   const m2=sm(clamp((u-.9)/.8,0,1));
-  tgt.x=(wide?vw*.17:0)-R0.cx*kk*R0.s*(1-r);tgt.y=(wide?0:-vh*.13*m2+vh*.015*(1-m2))-R0.cy*kk*R0.s*(1-r);tgt.s=lerp(R0.s,1,r);
+  tgt.x=(wide?vw*.17*m2:0)-R0.cx*kk*R0.s*(1-r);tgt.y=(wide?0:-vh*.13*m2+vh*.015*(1-m2))-R0.cy*kk*R0.s*(1-r);tgt.s=lerp(R0.s,1,r);
   tgt.ry=lerp(R0.ry,lerp(A[0],B[0],m),r);tgt.rx=lerp(R0.rx,lerp(A[1],B[1],m),r);tgt.rz=lerp(R0.rz,lerp(A[2],B[2],m),r);
   dimB.style.opacity=wide?0:m2;beams.style.opacity=1-.55*m2;
   const si=r<.72?-1:(q<0?0:Math.min(N-1,Math.floor(q+.25)));

@@ -5,7 +5,9 @@ Read this first; it saves you from re-reading the 700-line `index.html`.
 ## Owner's working rules
 - Spend few tokens. Do only the high-impact items asked for; no polish such as fingerprints, micro-bevels or brushing lines.
   Final assets will be modelled and baked in Blender later, so the web version only needs to look good, not perfect.
-- One sanity render per change, not exhaustive testing.
+- If the owner asks what you would change, or for ideas, reply with a short numbered list and wait for them to pick. Build nothing until they choose.
+- Never add features the owner did not name (no colour pickers, navigation widgets, keyboard shortcuts, copy rewrites). If a request is vague, ask one question instead of guessing.
+- One render for the whole change, at phone size. No extra passes for desktop, other languages or interaction tests unless asked.
 - Workflow: branch → PR via `gh api` REST (GraphQL is blocked in Claude sessions) → merge only when the owner says so.
   Pushing to `main` deploys to GitHub Pages (`.github/workflows/deploy.yml`).
 
@@ -22,7 +24,7 @@ Single file `index.html` plus vendored `three.module.min.js` (three.js, loaded t
 |---|---|
 | Scroll length | `#story{…height:1732vh}` (≈180vh per unit); units in `const N=8,INTRO=1.6,U=INTRO+N`. Adding a chapter = +1 to N, a pose in `P`, a `.scr`, a `.cap`, labels in `e:[…]`, +180vh |
 | Turn between features | `m=sm(clamp((fr-.5)/.5…` (second half of each feature); screen switch `floor(q+.25)`; feature animation progress `lt=fr*1.17` |
-| Hero text | Title is tall, solid white Anton (uppercase). `.hero-t` / `.hero-f`: wide = text column left, band right (`tgt.x=vw*.17` from the start); phone = wordmark top, tagline bottom. `--hy` lifts them on scroll |
+| Hero text | Title `.hero-t`: tall, light Six Caps, uppercase, white, high up *behind* the band (the band covers its lower part); size `min(64vh,70vw)`. Tagline `.hero-f` bottom centre. `--hy` lifts the title on scroll |
 | Screen UI | one system: `.we` coloured label, `.wb` (clock 51) / `.wm` (24) / `.nd b` (48) value, `.ws` (16) line; arcs stroke 3.5. Design size 228, scaled by `--k`. Phone band size: `size()` `w*.63/260` |
 | Chapters | `.cap` has a coral `.eyebrow` (`data-e`); `#rail` dots (`go(i)`), arrow/page keys step chapters |
 | Opening pose | `R0={ry:-62,…cx:97}`. Recompute `cx` if the loop size changes: x-extent midpoint after a −62° Y rotation ≈ (0.469·62 + 0.883·(2b+9.5) − 81.3)/2 |
@@ -38,7 +40,7 @@ Single file `index.html` plus vendored `three.module.min.js` (three.js, loaded t
 Serve with `python3 -m http.server 8765` from the repo root. Screenshot with Playwright + `/usr/bin/google-chrome`
 (`--use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader`), viewport 390×844 at 2×, after waiting about 3.5 s.
 To view feature k: `scrollTo(0, story.offsetTop + ((1.6 + k + .55)/9.6) * (story.offsetHeight - innerHeight))`.
-Google Fonts are not reachable from the sandbox: route `fonts.googleapis.com` to local `@fontsource/anton` + `unbounded` + `inter` woff2 files in Playwright, or the render falls back to system fonts.
+Google Fonts are not reachable from the sandbox: route `fonts.googleapis.com` to local `@fontsource/six-caps` + `unbounded` + `inter` woff2 files in Playwright, or the render falls back to system fonts.
 
 ## Not done yet (ideas, roughly by impact)
 1. Band attachment: the loop passes through the middle of the case; there are no slots or connectors.
