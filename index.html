@@ -29,7 +29,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-
 .lang button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 .prog{position:fixed;left:0;top:0;width:100%;height:2px;z-index:31;background:var(--coral);transform-origin:0 0;transform:scaleX(0)}
 
-#story{position:relative;height:2548vh}
+#story{position:relative;height:1732vh}
 .stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
 .beams{position:absolute;inset:0;z-index:0;pointer-events:none}
 .beams i{position:absolute;top:-12vh;width:40vw;height:130vh;transform-origin:50% 0;clip-path:polygon(47% 0,53% 0,100% 100%,0 100%);background:linear-gradient(rgba(255,90,60,.26),rgba(255,90,60,0) 72%);animation:sway 9s ease-in-out infinite alternate}
@@ -63,7 +63,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-
 .watch{position:absolute;left:0;top:0;transform-style:preserve-3d;will-change:transform;--D:calc(var(--k)*260px);--R:calc(var(--k)*130px);--T:calc(var(--k)*46px);--W:calc(var(--k)*128px);--ts:calc(var(--k)*14px)}
 .webgl .face{background:none}.webgl .ringl,.webgl .back,.webgl .btn{display:none}.webgl .shade{inset:calc(var(--k)*17px)}
 /* WebGL draws the black sapphire glass with real reflections, so the HTML screen only carries the UI; keep a fainter CSS sheen on top */
-.webgl .screen{background:none}.webgl .glass{opacity:.4}
+.webgl .screen{background:none}.webgl .glass{opacity:calc(.4 - .4*var(--gs,0))}
 .st,.face,.back,.btn,.sf,.sb,.sl,.sr{position:absolute;display:block;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .st{width:calc(var(--D)*.02618 + 1px);height:var(--T);left:calc((var(--D)*.0785 + 1px)/-2);top:calc(var(--T)/-2);transform:rotateZ(var(--a)) translateY(calc(var(--R)*-1 + .5px)) rotateX(90deg)}
 .face{width:var(--D);height:var(--D);left:calc(var(--R)*-1);top:calc(var(--R)*-1);border-radius:50%;transform:translateZ(calc(var(--T)/2 + .5px));background:conic-gradient(from calc(var(--spec,0)*1deg),#35343a,#87858d 10%,#2b2a30 28%,#5d5b62 50%,#26252b 70%,#79777f 88%,#35343a)}
@@ -468,10 +468,10 @@ function size(){
 
 /* opening pose: three-quarter, not a flat profile, so the loop reads as a ring with depth and a sliver of glass shows.
    cx/cy: centre of case + loop on screen for this pose, in band units (recompute if the pose or the loop size changes) */
-const R0={ry:-62,rx:0,rz:0,s:.86,cx:82,cy:0};
+const R0={ry:-62,rx:0,rz:0,s:.86,cx:97,cy:0};
 /* scroll → targets; a light spring follows them */
 const tgt={x:0,y:0,s:R0.s,ry:R0.ry,rx:R0.rx,rz:R0.rz};let cur=null,raf=0;
-const st={si:-2,ci:-2,ring:'#ff5a3c',glow:false,sos:false};
+const st={si:-2,ci:-2,ring:'#ff5a3c',glow:false,sos:false,scr:0};
 const haloL=$('#haloL');
 function update(){
   const vh=stage.clientHeight,vw=innerWidth,len=Math.max(1,story.offsetHeight-vh);
@@ -482,15 +482,16 @@ function update(){
   heroF.style.opacity=ho;heroF.style.visibility=ho>0?'visible':'hidden';
   crowd.style.opacity=ho;horizon.style.opacity=.35+.65*ho;
   const r=sm(clamp((u-.1)/1.15,0,1)),q=u-INTRO;
+  st.scr=clamp((r-.45)/.3,0,1);watch.style.setProperty('--gs',st.scr.toFixed(3));
   let fi=0,fr=0;if(q>=0){fi=Math.min(N-1,Math.floor(q));fr=q-fi}
-  let A=P[0],B=P[0],m=0;if(q>=0){A=P[fi];B=P[Math.min(N-1,fi+1)];m=sm(clamp((fr-.72)/.28,0,1))}
+  let A=P[0],B=P[0],m=0;if(q>=0){A=P[fi];B=P[Math.min(N-1,fi+1)];m=sm(clamp((fr-.5)/.5,0,1))}
   const m2=sm(clamp((u-.9)/.8,0,1));
   tgt.x=(wide?vw*.17*m2:0)-R0.cx*kk*R0.s*(1-r);tgt.y=(wide?0:-vh*.14*m2)-R0.cy*kk*R0.s*(1-r);tgt.s=lerp(R0.s,1,r);
   tgt.ry=lerp(R0.ry,lerp(A[0],B[0],m),r);tgt.rx=lerp(R0.rx,lerp(A[1],B[1],m),r);tgt.rz=lerp(R0.rz,lerp(A[2],B[2],m),r);
   dimB.style.opacity=wide?0:m2;beams.style.opacity=1-.55*m2;
-  const si=r<.72?-1:(q<0?0:Math.min(N-1,Math.floor(q+.12)));
-  const lt=(q>=0&&si===fi)?fr:0;
-  const qq=q+.12,cx=Math.min(N-1,Math.floor(qq)),w=qq-cx;
+  const si=r<.72?-1:(q<0?0:Math.min(N-1,Math.floor(q+.25)));
+  const lt=(q>=0&&si===fi)?fr*1.17:0;
+  const qq=q+.25,cx=Math.min(N-1,Math.floor(qq)),w=qq-cx;
   const ci=(q>=0&&w>.05&&(w<.93||cx===N-1))?cx:-1;
   if(si!==st.si){scr.forEach((e,i)=>e.classList.toggle('on',i===si));st.si=si}
   if(ci!==st.ci){caps.forEach((e,i)=>e.classList.toggle('on',i===ci));st.ci=ci}
@@ -518,7 +519,7 @@ function apply(){
   const cf=Math.cos(cur.ry*Math.PI/180)*Math.cos(cur.rx*Math.PI/180);
   watch.style.setProperty('--fs',((1-cf)*(window.tribuGL?.1:.55)).toFixed(3));
   watch.style.setProperty('--spec',(cur.ry*1.6+cur.rx).toFixed(1));
-  if(window.tribuGL)window.tribuGL.draw({x:cur.x+bx,y:cur.y,s:cur.s,ry:cur.ry,rx:cur.rx,rz:cur.rz,k:kk,w:stage.clientWidth,h:stage.clientHeight,ring:st.ring,glow:st.glow,sos:st.sos});
+  if(window.tribuGL)window.tribuGL.draw({x:cur.x+bx,y:cur.y,s:cur.s,ry:cur.ry,rx:cur.rx,rz:cur.rz,k:kk,w:stage.clientWidth,h:stage.clientHeight,ring:st.ring,glow:st.glow,sos:st.sos,scr:st.scr});
 }
 function tick(){
   let moving=false;const f=reduce?1:.14;
@@ -615,7 +616,7 @@ function caseGeometry(){
 }
 function loopGeometry(){
   /* a round loop in the Y-Z plane, like a band around a wrist: a touch flatter where it runs under the case, round everywhere else */
-  const a=176,b=118,nf=2.4,nb=2,raw=[];
+  const a=200,b=135,nf=2.4,nb=2,raw=[];
   for(let i=0;i<=4000;i++){const t=i/4000*Math.PI*2,c=Math.cos(t),s=Math.sin(t),e=2/(c>=0?nf:nb);
     raw.push(new THREE.Vector2(a*Math.sign(s)*Math.abs(s)**e,-b+b*Math.sign(c)*Math.abs(c)**e));}
   const cum=[0];for(let i=1;i<raw.length;i++)cum.push(cum[i-1]+raw[i].distanceTo(raw[i-1]));
@@ -677,13 +678,14 @@ function init(){
      the rim, so reflections slide across it and the edge catches a highlight. Black base + Fresnel reflection, thin AR-coating tint. */
   const gg=new THREE.RingGeometry(0,114.2,128,24),gp=gg.attributes.position,gn=gg.attributes.normal,nv=new THREE.Vector3();
   for(let i=0;i<gp.count;i++){const x=gp.getX(i)/114.2,y=gp.getY(i)/114.2,k=.22+1.1*Math.hypot(x,y)**7;nv.set(x*k,y*k,1).normalize();gn.setXYZ(i,nv.x,nv.y,nv.z)}
-  const glass=new THREE.Mesh(gg,new THREE.MeshPhysicalMaterial({color:0,metalness:0,roughness:.04,ior:1.77,
-    iridescence:.15,iridescenceIOR:1.35,iridescenceThicknessRange:[260,420],envMapIntensity:.6}));glass.position.z=22.7;g.add(glass);
+  const glassMat=new THREE.MeshPhysicalMaterial({color:0,metalness:0,roughness:.04,ior:1.77,
+    iridescence:.15,iridescenceIOR:1.35,iridescenceThicknessRange:[260,420],envMapIntensity:.5});
+  const glass=new THREE.Mesh(gg,glassMat);glass.position.z=22.7;g.add(glass);
   const ringMat=new THREE.MeshBasicMaterial({color:0xff5a3c,transparent:true,opacity:.6,toneMapped:false});
   const ring=new THREE.Mesh(new THREE.RingGeometry(114.7,117.7,200),ringMat);ring.position.z=23.26;g.add(ring);
   const glowMat=new THREE.MeshBasicMaterial({map:glowTexture(),color:0xff5a3c,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
   const glow=new THREE.Mesh(new THREE.PlaneGeometry(260,260),glowMat);glow.position.z=23.4;g.add(glow);
-  const btnMat=new THREE.MeshPhysicalMaterial({color:0xb63c24,metalness:.35,roughness:.38,clearcoat:.4,clearcoatRoughness:.2,emissive:0xff5a3c,emissiveIntensity:0});
+  const btnMat=new THREE.MeshPhysicalMaterial({color:0x86878c,metalness:1,roughness:.32,emissive:0xff5a3c,emissiveIntensity:0});
   /* side button a touch above 3 o'clock: a flatter anodised pill set into a dark slot that reads as the shadow gap around it */
   const bg=new THREE.Group();bg.rotation.z=14*Math.PI/180;g.add(bg);
   const slot=new THREE.Mesh(new THREE.CapsuleGeometry(8,32,8,32),new THREE.MeshStandardMaterial({color:0x0b0a0c,roughness:.7}));slot.scale.set(.35,1,1);slot.position.x=129.6;bg.add(slot);
@@ -704,6 +706,8 @@ function init(){
     g.position.set(v.x,-v.y,0);g.scale.setScalar(v.s*v.k);g.rotation.set(-v.rx*D,v.ry*D,-v.rz*D,'ZXY');
     col.set(v.ring);ringMat.color.copy(col);glowMat.color.copy(col);ringMat.opacity=v.glow?1:.6;glowMat.opacity=v.glow?.9:0;
     btnMat.emissiveIntensity=v.sos?2.2:0;
+    /* no reflections on the glass while the screen shows a feature (uniforms only, no shader recompile) */
+    glassMat.envMapIntensity=.5*(1-v.scr);glassMat.specularIntensity=1-v.scr;
     r.render(scene,cam);
     if(!shown){shown=true;host.classList.add('on')}
   }};
