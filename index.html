@@ -585,6 +585,7 @@ size();setLang(L);clock();setInterval(clock,15000);update();
 <script type="importmap">{"imports":{"three":"./three.module.min.js"}}</script>
 <script type="module">
 import * as THREE from 'three';
+import {RGBELoader} from './RGBELoader.js';
 /* WebGL band: lathe-turned silver case, braided loop strap with real relief, light ring. Units match the CSS model (k = 1), so the HTML screen sits exactly on the glass. */
 /* braid, in band units: how far the strands stand proud of the tube (amp), the width of one texture tile (tile, 4 x 4 cells),
    and how much longer a tile is along the band than across it (aspect: steeper strands). loopGeometry fits whole tiles. */
@@ -709,7 +710,12 @@ function init(){
   r.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
   r.toneMapping=THREE.ACESFilmicToneMapping;r.toneMappingExposure=1.08;r.outputColorSpace=THREE.SRGBColorSpace;
   const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(30,1,100,10000);
-  const pm=new THREE.PMREMGenerator(r);scene.environment=pm.fromScene(envScene(),.03).texture;pm.dispose();
+  /* reflections: custom studio HDRI (tools/make_hdr.py, 1024x512, ~300 KB): black studio, softboxes and strip lights placed for
+     the opening pose, faint coral and cyan accents. PMREM-prefiltered once. The synthetic panels stand in only until it has
+     loaded (or if it fails), so the metal is never black on a slow connection. */
+  const pm=new THREE.PMREMGenerator(r);scene.environment=pm.fromScene(envScene(),.03).texture;let lastV=null;
+  new RGBELoader().load('./hdr/tribu_studio.hdr',t=>{const old=scene.environment;scene.environment=pm.fromEquirectangular(t).texture;
+    t.dispose();old.dispose();pm.dispose();lastV&&window.tribuGL.draw(lastV)},undefined,()=>pm.dispose());
   scene.add(new THREE.HemisphereLight(0xffffff,0x2a1210,.08));
   const key=new THREE.DirectionalLight(0xfff1e6,2.9);key.position.set(300,500,600);scene.add(key);
   const rim=new THREE.DirectionalLight(0x43d9ff,.7);rim.position.set(-500,120,-400);scene.add(rim);
@@ -752,6 +758,7 @@ function init(){
   host.appendChild(r.domElement);
   const D=Math.PI/180,col=new THREE.Color();let lw=0,lh=0,lk=0,shown=false;
   window.tribuGL={draw(v){
+    lastV=v;
     if(v.w!==lw||v.h!==lh||v.k!==lk){lw=v.w;lh=v.h;lk=v.k;r.setSize(v.w,v.h,false);const d=1800*v.k;
       cam.aspect=v.w/v.h;cam.fov=2*Math.atan(v.h/2/d)/D;cam.position.set(0,0,d);cam.near=d*.3;cam.far=d*3;cam.updateProjectionMatrix();}
     g.position.set(v.x,-v.y,0);g.scale.setScalar(v.s*v.k);g.rotation.set(-v.rx*D,v.ry*D,-v.rz*D,'ZXY');
