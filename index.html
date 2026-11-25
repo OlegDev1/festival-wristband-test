@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tribu — festival band</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@500;600;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: a product launch on a festival night — confident, warm, few words.
+   IDEA: the band itself is the presenter: it stands edge-on, turns to you, then its screen walks through each feature.
+   PICTURE: a 3D CSS wristband (graphite case, coral woven strap, light ring) over stage beams and a crowd silhouette.
+   COLOUR and TYPE: warm black night, coral strap as the dominant colour, lagoon cyan for friends, sun yellow for places; Unbounded + Inter.
+   LAYOUT: one sticky stage; phone = band on top, caption below; wide = caption left, band right; then how-it-works and the colour range. */
+:root{color-scheme:dark;--bg:#0b0809;--ink:#f7efe8;--mute:#b5a79f;--coral:#ff5a3c;--cyan:#43d9ff;--lime:#c6f24e;--sun:#ffc23d;--ring:#ff5a3c;--k:1}
+:root[data-theme=light],:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:clip;-webkit-font-smoothing:antialiased}
+.U,h1,h2,h3{font-family:Unbounded,Inter,system-ui,sans-serif}
+
+.top{position:fixed;inset:0 0 auto;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:6px max(4vw,14px);background:linear-gradient(rgba(11,8,9,.92),rgba(11,8,9,0))}
+.logo{display:flex;align-items:center;gap:10px;font:600 18px/1 Unbounded,Inter,sans-serif;color:var(--ink);text-decoration:none}
+.logo i{width:18px;height:18px;border-radius:50%;border:3px solid var(--coral);box-shadow:0 0 12px rgba(255,90,60,.8)}
+.lang{display:flex;gap:2px;padding:2px;border-radius:999px;background:rgba(255,255,255,.08)}
+.lang button{appearance:none;border:0;background:none;color:var(--ink);font:600 13px/1 Inter,sans-serif;min-width:44px;height:44px;border-radius:999px;cursor:pointer}
+.lang button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.lang button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.prog{position:fixed;left:0;top:0;width:100%;height:2px;z-index:31;background:var(--coral);transform-origin:0 0;transform:scaleX(0)}
+
+#story{position:relative;height:916vh}
+.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.beams{position:absolute;inset:0;z-index:0;pointer-events:none}
+.beams i{position:absolute;top:-12vh;width:40vw;height:130vh;transform-origin:50% 0;clip-path:polygon(47% 0,53% 0,100% 100%,0 100%);background:linear-gradient(rgba(255,90,60,.26),rgba(255,90,60,0) 72%);animation:sway 9s ease-in-out infinite alternate}
+.beams i.c{background:linear-gradient(rgba(67,217,255,.17),rgba(67,217,255,0) 70%);animation-duration:11s}
+.horizon{position:absolute;inset:auto 0 0;height:50vh;z-index:0;background:radial-gradient(70% 75% at 50% 100%,rgba(255,90,60,.32),rgba(255,90,60,0) 70%)}
+.hero-t{position:absolute;left:0;right:0;top:50%;z-index:1;margin:0;transform:translateY(-50%);text-align:center;font-weight:800;font-size:clamp(64px,22vw,340px);line-height:.9;letter-spacing:-.04em;pointer-events:none}
+.hero-f{position:absolute;left:16px;right:16px;bottom:max(7vh,26px);z-index:5;text-align:center;text-shadow:0 2px 24px var(--bg)}
+.tag{margin:0 auto 8px;max-width:22ch;font:600 clamp(20px,2.3vw,30px)/1.2 Unbounded,Inter,sans-serif;text-wrap:balance}
+.sub{margin:0 auto;max-width:36ch;color:var(--mute)}
+.hint{display:inline-flex;flex-direction:column;align-items:center;gap:8px;margin-top:16px;font-size:13px;color:var(--mute)}
+.hint::after{content:"";width:1px;height:28px;background:linear-gradient(var(--mute),transparent);animation:drip 1.8s ease-in-out infinite}
+.crowd{position:absolute;left:0;bottom:0;width:100%;height:24vh;z-index:3;fill:#040203;stroke:#040203;pointer-events:none}
+.dimB{position:absolute;inset:auto 0 0;height:46%;z-index:3;opacity:0;pointer-events:none;background:linear-gradient(rgba(11,8,9,0),var(--bg) 62%)}
+
+.caps{position:absolute;z-index:4;left:max(6vw,24px);top:50%;width:min(440px,36vw);height:0}
+.cap{position:absolute;left:0;right:0;top:0;opacity:0;transform:translateY(calc(-50% + 18px));transition:opacity .5s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
+.cap.on{opacity:1;transform:translateY(-50%)}
+.cap h2{margin:0 0 14px;font-weight:600;font-size:clamp(30px,3.3vw,48px);line-height:1.05;letter-spacing:-.02em;text-wrap:balance}
+.cap p{margin:0;max-width:36ch;font-size:17px;color:var(--mute)}
+
+.view{position:absolute;inset:0;z-index:2;pointer-events:none;perspective:calc(var(--k)*1800px)}
+.pos{position:absolute;left:50%;top:50%;transform-style:preserve-3d;will-change:transform}
+.halo{position:absolute;left:calc(var(--k)*-400px);top:calc(var(--k)*-400px);width:calc(var(--k)*800px);height:calc(var(--k)*800px);border-radius:50%;transform:translateZ(calc(var(--k)*-300px));background:radial-gradient(closest-side,color-mix(in srgb,var(--ring) 60%,transparent),transparent);opacity:.2;transition:opacity .6s}
+.glowing .halo{opacity:.75}
+.bz{position:absolute;transform-style:preserve-3d}
+.bz.go{animation:bz .45s linear}
+.watch{position:absolute;left:0;top:0;transform-style:preserve-3d;will-change:transform;--D:calc(var(--k)*260px);--R:calc(var(--k)*130px);--T:calc(var(--k)*58px);--W:calc(var(--k)*128px);--ts:calc(var(--k)*13px)}
+.st,.face,.back,.btn,.sf,.sb,.sl,.sr{position:absolute;display:block;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.st{width:calc(var(--D)*.02618 + 1px);height:var(--T);left:calc((var(--D)*.0785 + 1px)/-2);top:calc(var(--T)/-2);transform:rotateZ(var(--a)) translateY(calc(var(--R)*-1 + .5px)) rotateX(90deg)}
+.face{width:var(--D);height:var(--D);left:calc(var(--R)*-1);top:calc(var(--R)*-1);border-radius:50%;transform:translateZ(calc(var(--T)/2 + .5px));background:conic-gradient(from calc(var(--spec,0)*1deg),#35343a,#87858d 10%,#2b2a30 28%,#5d5b62 50%,#26252b 70%,#79777f 88%,#35343a)}
+.ringl{position:absolute;inset:calc(var(--k)*7px);border-radius:50%;border:calc(var(--k)*3.5px) solid var(--ring);opacity:.55;transition:opacity .5s,box-shadow .5s,border-color .5s}
+.glow .ringl{opacity:1;box-shadow:0 0 calc(var(--k)*10px) var(--ring),0 0 calc(var(--k)*22px) var(--ring),inset 0 0 calc(var(--k)*10px) var(--ring)}
+.screen{position:absolute;inset:calc(var(--k)*17px);border-radius:50%;background:#000;overflow:hidden;box-shadow:0 0 0 calc(var(--k)*2px) #09090b}
+.glass{position:absolute;inset:0;z-index:5;border-radius:50%;pointer-events:none;background:linear-gradient(140deg,rgba(255,255,255,.15),rgba(255,255,255,0) 38%),radial-gradient(120% 80% at 100% 120%,rgba(255,255,255,.06),transparent 60%)}
+.shade{position:absolute;inset:0;z-index:6;border-radius:50%;background:#000;opacity:var(--fs,0)}
+.back{width:var(--D);height:var(--D);left:calc(var(--R)*-1);top:calc(var(--R)*-1);border-radius:50%;transform:rotateY(180deg) translateZ(calc(var(--T)/2 + .5px));background:radial-gradient(circle,#2b2b30 0 22%,#0f0f12 23% 26%,#1c1c21 27% 60%,#121215 61%)}
+.btn{width:calc(var(--k)*24px);height:calc(var(--k)*60px);left:calc(var(--k)*-12px);top:calc(var(--k)*-30px);border-radius:calc(var(--k)*12px);transform:translateX(calc(var(--R) + var(--k)*2.5px)) rotateY(90deg);background:linear-gradient(90deg,#b8341d,#ff6a4a 50%,#b8341d);transition:box-shadow .4s,background .4s}
+.sos .btn{background:#ff8a6c;box-shadow:0 0 calc(var(--k)*14px) #ff5a3c,0 0 calc(var(--k)*40px) #ff5a3c}
+.seg{position:absolute;left:calc(var(--W)/-2);top:0;width:var(--W);transform-style:preserve-3d}
+.sf{left:0;right:0;top:0;bottom:0;transform:translateZ(calc(var(--ts)/2));background:linear-gradient(90deg,#a12c18,#e44e2e 8%,#ff6446 28%,#ff7656 50%,#ff6446 72%,#e44e2e 92%,#a12c18)}
+.sl,.sr{top:0;bottom:0;width:var(--ts);background:linear-gradient(90deg,#6a1c0e,#b33722 50%,#6a1c0e)}
+.sl{left:calc(var(--ts)/-2);transform:rotateY(-90deg)}
+.sr{left:calc(var(--W) - var(--ts)/2);transform:rotateY(90deg)}
+.sf::after,.sl::after,.sr::after{content:"";position:absolute;inset:0;background:#0b0809;opacity:var(--o,0)}
+
+/* screens: drawn at 228px design size, scaled by --k */
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;opacity:0;transform:scale(.94);transition:opacity .45s ease,transform .5s cubic-bezier(.2,.7,.2,1)}
+.scr.on{opacity:1;transform:none}
+.wb{font:600 calc(var(--k)*50px)/1 Unbounded,Inter,sans-serif;letter-spacing:-.03em}
+.wm{font:600 calc(var(--k)*20px)/1.15 Unbounded,Inter,sans-serif;min-height:1.15em}
+.ws{font:500 calc(var(--k)*14px)/1.25 Inter,sans-serif;color:rgba(255,255,255,.74)}
+.dim{color:rgba(255,255,255,.46)}
+.edge{position:absolute;inset:0;width:100%;height:100%}
+.edge circle{fill:none;stroke-width:6}
+.trk{stroke:rgba(255,255,255,.1)}
+.val{stroke-linecap:round;transition:stroke-dasharray .3s}
+.av{display:inline-grid;place-items:center;width:calc(var(--k)*24px);height:calc(var(--k)*24px);border-radius:50%;background:var(--c);color:#14100e;font:700 calc(var(--k)*12px)/1 Inter,sans-serif;font-style:normal}
+.row{display:flex;align-items:center;gap:calc(var(--k)*8px);margin-top:calc(var(--k)*12px)}
+.stack .av{box-shadow:0 0 0 calc(var(--k)*2px) #000}.stack .av+.av{margin-left:calc(var(--k)*-9px)}
+.radar{position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 calc(var(--k)*37px),rgba(255,255,255,.12) calc(var(--k)*37px) calc(var(--k)*38px)),radial-gradient(circle,rgba(67,217,255,.13),transparent 70%)}
+.radar::before,.radar::after{content:"";position:absolute;background:rgba(255,255,255,.08)}
+.radar::before{left:50%;top:0;bottom:0;width:1px}.radar::after{top:50%;left:0;right:0;height:1px}
+.sweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 280deg,rgba(67,217,255,.4) 360deg);animation:spin 3.2s linear infinite}
+.me{position:absolute;left:50%;top:50%;width:calc(var(--k)*12px);height:calc(var(--k)*12px);margin:calc(var(--k)*-6px);border-radius:50%;background:#fff;box-shadow:0 0 0 calc(var(--k)*5px) rgba(255,255,255,.16)}
+.fr{position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-50%)}
+.fr::after{content:"";position:absolute;inset:calc(var(--k)*-6px);border-radius:50%;border:calc(var(--k)*2px) solid var(--c);opacity:0;animation:pulse 2.4s ease-out infinite;animation-delay:var(--dl)}
+.fr.hi{width:calc(var(--k)*30px);height:calc(var(--k)*30px);font-size:calc(var(--k)*14px)}
+.rl{position:absolute;left:0;right:0;bottom:calc(var(--k)*26px)}
+.rl b{color:#fff}
+.ntop{position:absolute;top:calc(var(--k)*24px);left:0;right:0;display:flex;justify-content:center;align-items:center;gap:calc(var(--k)*7px);font:600 calc(var(--k)*14px)/1 Inter,sans-serif}
+.ar{position:absolute;left:calc(50% - var(--k)*38px);top:calc(var(--k)*54px);width:calc(var(--k)*76px);height:calc(var(--k)*76px)}
+.ar svg{width:100%;height:100%;fill:var(--cyan);transition:transform .3s,opacity .3s}
+.ping{position:absolute;inset:calc(var(--k)*8px);border-radius:50%;background:var(--cyan);opacity:0}
+.near .ar svg{opacity:0;transform:scale(.4)}
+.near .ping{animation:ping 1.1s ease-out infinite}
+.nd{display:flex;align-items:baseline;justify-content:center;gap:calc(var(--k)*4px)}
+.nd b{font:600 calc(var(--k)*40px)/1 Unbounded,Inter,sans-serif}
+.nd span{font:500 calc(var(--k)*16px)/1 Inter,sans-serif;color:rgba(255,255,255,.6)}
+.s2 .nd{position:absolute;left:0;right:0;top:calc(var(--k)*136px)}
+.s2 .ws{position:absolute;left:0;right:0;bottom:calc(var(--k)*26px)}
+.bump{position:relative;width:calc(var(--k)*150px);height:calc(var(--k)*72px);margin-bottom:calc(var(--k)*10px);--g:0px}
+.bb{position:absolute;top:calc(var(--k)*6px);width:calc(var(--k)*60px);height:calc(var(--k)*60px);border-radius:50%;display:grid;place-items:center;font:700 calc(var(--k)*15px)/1 Inter,sans-serif;font-style:normal;color:#14100e;transition:transform .3s}
+.bb.a{left:0;background:var(--coral);transform:translateX(var(--g))}
+.bb.b{right:0;background:var(--lime);transform:translateX(calc(var(--g)*-1))}
+.burst{position:absolute;left:calc(50% - var(--k)*40px);top:calc(var(--k)*-4px);width:calc(var(--k)*80px);height:calc(var(--k)*80px);border-radius:50%;border:calc(var(--k)*3px) solid #fff;opacity:0}
+.ok .burst{animation:ring 1s ease-out infinite}
+.chips{position:absolute;top:calc(var(--k)*24px);left:0;right:0;display:flex;justify-content:center;gap:calc(var(--k)*8px)}
+.chip{display:grid;place-items:center;width:calc(var(--k)*36px);height:calc(var(--k)*36px);border-radius:50%;background:rgba(255,255,255,.1);font:700 calc(var(--k)*11px)/1 Inter,sans-serif;font-style:normal;transition:background .3s,color .3s}
+.chip svg{width:calc(var(--k)*19px);height:calc(var(--k)*19px);fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.chip.on{background:var(--sun);color:#14100e}
+.s4 .wm{margin-top:calc(var(--k)*40px)}
+.s4 .nd svg{width:calc(var(--k)*20px);height:calc(var(--k)*20px);fill:var(--sun);align-self:center;transition:transform .4s}
+.eq{display:flex;align-items:flex-end;gap:calc(var(--k)*4px);height:calc(var(--k)*20px);margin:calc(var(--k)*8px) 0 calc(var(--k)*10px)}
+.eq i{width:calc(var(--k)*5px);height:100%;border-radius:calc(var(--k)*2px);background:var(--sun);transform-origin:50% 100%;animation:eq .8s ease-in-out infinite alternate;animation-delay:calc(var(--i)*-.19s)}
+.sw{position:absolute;left:50%;top:50%;width:calc(var(--k)*20px);height:calc(var(--k)*20px);margin:calc(var(--k)*-10px);border-radius:50%;background:var(--c);transform:rotate(var(--a)) translateY(calc(var(--k)*-82px));transition:transform .35s,box-shadow .35s}
+.sw.on{transform:rotate(var(--a)) translateY(calc(var(--k)*-82px)) scale(1.5);box-shadow:0 0 0 calc(var(--k)*3px) #000,0 0 0 calc(var(--k)*5px) var(--c)}
+.s6::before{content:"";position:absolute;inset:22%;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--ring) 45%,transparent),transparent)}
+.s6 .wm{color:var(--ring);position:relative}.s6 .ws{position:relative}
+.s7{background:radial-gradient(circle,#3a0f07,#000 72%);transition:opacity .45s,transform .5s,background .5s}
+.s7.sent{background:radial-gradient(circle,#ff6a4a 0,#a3240f 58%,#2a0703 100%)}
+.sr2{position:absolute;inset:18%;border-radius:50%;border:calc(var(--k)*2px) solid rgba(255,120,90,.8);animation:ring 2s ease-out infinite}
+.sr2+.sr2{animation-delay:-1s}
+.s7 .wb{position:relative;font-size:calc(var(--k)*44px)}
+.s7 .ws{position:relative;margin-top:calc(var(--k)*8px);max-width:80%}
+.s7 .dim{margin-top:calc(var(--k)*3px);color:rgba(255,255,255,.7)}
+
+.band{padding:clamp(56px,9vw,120px) max(5vw,20px)}
+.wrap{max-width:1240px;margin:0 auto}
+.sec{margin:0 0 clamp(32px,5vw,56px);max-width:20ch;font-weight:600;font-size:clamp(30px,4vw,52px);line-height:1.05;letter-spacing:-.02em;text-wrap:balance}
+.hw{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(28px,4vw,56px)}
+.hw svg{width:44px;height:44px;fill:none;stroke:var(--coral);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.hw h3{margin:18px 0 8px;font-weight:600;font-size:20px;line-height:1.2}
+.hw p{margin:0;color:var(--mute);max-width:38ch}
+.end{text-align:center;background:radial-gradient(60% 80% at 50% 100%,rgba(255,90,60,.2),transparent 70%)}
+.end h2{margin:0 auto 14px;max-width:18ch;font-weight:800;font-size:clamp(32px,5.4vw,60px);line-height:1.05;letter-spacing:-.03em;text-wrap:balance}
+.end p{margin:0 auto;color:var(--mute);max-width:40ch}
+.cols{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(20px,4vw,48px);margin:44px 0 0;padding:0;list-style:none}
+.cols li{display:flex;flex-direction:column;align-items:center;gap:12px;font-size:14px;color:var(--mute)}
+.mini{position:relative;width:56px;height:100px}
+.mini::before{content:"";position:absolute;left:16px;width:24px;top:0;bottom:0;border-radius:9px;background:var(--c)}
+.mini::after{content:"";position:absolute;left:4px;top:26px;width:48px;height:48px;border-radius:50%;background:radial-gradient(circle,#050505 0 60%,#3c3b41 62%);box-shadow:0 0 0 3px var(--c)}
+footer{padding:28px max(5vw,20px) 40px;border-top:1px solid rgba(255,255,255,.08);color:var(--mute);font-size:13px;text-align:center}
+
+@keyframes spin{to{transform:rotate(1turn)}}
+@keyframes pulse{0%{transform:scale(.7);opacity:.9}100%{transform:scale(1.9);opacity:0}}
+@keyframes ping{0%{transform:scale(.4);opacity:.9}100%{transform:scale(1.25);opacity:0}}
+@keyframes ring{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.3);opacity:0}}
+@keyframes eq{from{transform:scaleY(.25)}to{transform:scaleY(1)}}
+@keyframes sway{from{transform:rotate(var(--r0))}to{transform:rotate(var(--r1))}}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:50% 0}50%{transform:scaleY(1);transform-origin:50% 0}51%{transform-origin:50% 100%}100%{transform:scaleY(0);transform-origin:50% 100%}}
+@keyframes bz{0%,100%{transform:none}20%{transform:translateX(calc(var(--k)*-5px))}40%{transform:translateX(calc(var(--k)*5px))}60%{transform:translateX(calc(var(--k)*-4px))}80%{transform:translateX(calc(var(--k)*3px))}}
+
+@media (max-width:760px){
+  .caps{left:20px;right:20px;top:auto;bottom:max(5vh,22px);width:auto}
+  .cap{top:auto;bottom:0;transform:translateY(18px);text-align:center}
+  .cap.on{transform:none}
+  .cap h2{font-size:clamp(23px,6.6vw,30px);margin-bottom:10px}
+  .cap p{font-size:16px;margin:0 auto}
+  .hw{grid-template-columns:minmax(0,1fr)}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="logo" href="#story"><i></i>Tribu</a>
+  <div class="lang" role="group" aria-label="Language">
+    <button type="button" data-l="ru" aria-pressed="false">RU</button>
+    <button type="button" data-l="en" aria-pressed="false">EN</button>
+    <button type="button" data-l="es" aria-pressed="false">ES</button>
+  </div>
+</header>
+<div class="prog" id="prog"></div>
+
+<section id="story">
+  <div class="stage" id="stage">
+    <div class="beams" id="beams"><i style="left:2%;--r0:10deg;--r1:22deg"></i><i class="c" style="right:2%;--r0:-10deg;--r1:-22deg"></i></div>
+    <div class="horizon" id="horizon"></div>
+    <h1 class="hero-t" id="heroT">Tribu</h1>
+
+    <div class="view">
+      <div class="pos" id="pos">
+        <div class="halo"></div>
+        <div class="bz" id="bz">
+          <div class="watch" id="watch">
+            <i class="back"></i>
+            <i class="btn"></i>
+            <div class="face">
+              <div class="ringl"></div>
+              <div class="screen">
+                <div class="scr s0">
+                  <svg class="edge" viewBox="0 0 228 228" aria-hidden="true"><circle class="trk" cx="114" cy="114" r="106"/><circle class="val" cx="114" cy="114" r="106" pathLength="100" stroke-dasharray="86 100" transform="rotate(-90 114 114)" style="stroke:var(--lime)"/></svg>
+                  <span class="ws" data-i="w_day"></span>
+                  <b class="wb" id="clock">23:41</b>
+                  <span class="row"><span class="stack"><i class="av" style="--c:var(--cyan)"></i><i class="av" style="--c:var(--lime)"></i><i class="av" style="--c:var(--sun)"></i></span><span class="ws" data-i="w_near"></span></span>
+                </div>
+                <div class="scr s1">
+                  <div class="radar"><i class="sweep"></i></div>
+                  <i class="me"></i>
+                  <i class="av fr hi" style="--x:70%;--y:30%;--c:var(--cyan);--dl:0s"></i>
+                  <i class="av fr" style="--x:27%;--y:38%;--c:var(--lime);--dl:-.8s"></i>
+                  <i class="av fr" style="--x:62%;--y:70%;--c:var(--sun);--dl:-1.6s"></i>
+                  <i class="av fr" style="--x:33%;--y:66%;--c:#ff7ab6;--dl:-1.2s"></i>
+                  <span class="ws rl"><b id="rlN"></b> <span id="rlU"></span></span>
+                </div>
+                <div class="scr s2" id="s2">
+                  <span class="ntop"><i class="av" id="navAv" style="--c:var(--cyan)"></i><span id="navN"></span></span>
+                  <div class="ar"><i class="ping"></i><svg viewBox="0 0 100 100" id="arrow" aria-hidden="true"><path d="M50 6 86 84 50 66 14 84Z"/></svg></div>
+                  <div class="nd"><b id="navD">120</b><span id="navU"></span></div>
+                  <span class="ws" id="navS"></span>
+                </div>
+                <div class="scr s3" id="s3">
+                  <div class="bump" id="bump"><i class="burst"></i><i class="bb a" id="bA"></i><i class="bb b" id="bB"></i></div>
+                  <span class="wm" id="bumpT"></span>
+                  <span class="ws" id="bumpS"></span>
+                </div>
+                <div class="scr s4">
+                  <div class="chips">
+                    <i class="chip"><svg viewBox="0 0 24 24"><path d="M5 4h14l-7 8zM12 12v7M8 20h8"/></svg></i>
+                    <i class="chip"><svg viewBox="0 0 24 24"><path d="M12 3c3.5 4.5 6 7.6 6 10.5a6 6 0 0 1-12 0C6 10.6 8.5 7.5 12 3z"/></svg></i>
+                    <i class="chip">WC</i>
+                  </div>
+                  <b class="wm" id="spN"></b>
+                  <div class="nd"><svg viewBox="0 0 100 100" id="spA" aria-hidden="true"><path d="M50 6 86 84 50 66 14 84Z"/></svg><b id="spD"></b><span id="spU"></span></div>
+                  <span class="ws" id="spM"></span>
+                </div>
+                <div class="scr s5">
+                  <svg class="edge" viewBox="0 0 228 228" aria-hidden="true"><circle class="trk" cx="114" cy="114" r="106"/><circle class="val" id="setArc" cx="114" cy="114" r="106" pathLength="100" stroke-dasharray="30 100" transform="rotate(-90 114 114)" style="stroke:var(--sun)"/></svg>
+                  <span class="ws" data-i="w_now"></span>
+                  <b class="wm" style="margin-top:calc(var(--k)*6px)">Kora Lumen</b>
+                  <span class="eq"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i></span>
+                  <span class="ws dim" data-i="w_next"></span>
+                </div>
+                <div class="scr s6">
+                  <i class="sw" style="--a:0deg;--c:#ff5a3c"></i><i class="sw" style="--a:60deg;--c:#43d9ff"></i><i class="sw" style="--a:120deg;--c:#c6f24e"></i><i class="sw" style="--a:180deg;--c:#ffc23d"></i><i class="sw" style="--a:240deg;--c:#ff7ab6"></i><i class="sw" style="--a:300deg;--c:#f4f1ec"></i>
+                  <span class="ws" data-i="w_crew"></span>
+                  <b class="wm" id="glN"></b>
+                </div>
+                <div class="scr s7" id="s7">
+                  <i class="sr2"></i><i class="sr2"></i>
+                  <svg class="edge" viewBox="0 0 228 228" aria-hidden="true"><circle class="val" id="holdArc" cx="114" cy="114" r="106" pathLength="100" stroke-dasharray="0 100" transform="rotate(-90 114 114)" style="stroke:#fff"/></svg>
+                  <b class="wb">SOS</b>
+                  <span class="ws" id="sosA"></span>
+                  <span class="ws dim" id="sosB"></span>
+                </div>
+                <i class="glass"></i>
+              </div>
+              <i class="shade"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <svg class="crowd" id="crowd" viewBox="0 0 1000 160" preserveAspectRatio="xMidYMax slice" aria-hidden="true"></svg>
+    <div class="dimB" id="dimB"></div>
+    <div class="hero-f" id="heroF">
+      <p class="tag" data-i="tag"></p>
+      <p class="sub" data-i="sub"></p>
+      <span class="hint" data-i="scroll"></span>
+    </div>
+    <div class="caps">
+      <article class="cap"><h2 data-i="f0t"></h2><p data-i="f0b"></p></article>
+      <article class="cap"><h2 data-i="f1t"></h2><p data-i="f1b"></p></article>
+      <article class="cap"><h2 data-i="f2t"></h2><p data-i="f2b"></p></article>
+      <article class="cap"><h2 data-i="f3t"></h2><p data-i="f3b"></p></article>
+      <article class="cap"><h2 data-i="f4t"></h2><p data-i="f4b"></p></article>
+      <article class="cap"><h2 data-i="f5t"></h2><p data-i="f5b"></p></article>
+      <article class="cap"><h2 data-i="f6t"></h2><p data-i="f6b"></p></article>
+      <article class="cap"><h2 data-i="f7t"></h2><p data-i="f7b"></p></article>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <h2 class="sec" data-i="how_t"></h2>
+    <div class="hw">
+      <div><svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="9" cy="33" r="5"/><circle cx="35" cy="33" r="5"/><circle cx="22" cy="10" r="5"/><path d="M12 28.5 19.5 14.5M24.5 14.5 32 28.5M14 33h16"/></svg><h3 data-i="h1t"></h3><p data-i="h1b"></p></div>
+      <div><svg viewBox="0 0 44 44" aria-hidden="true"><rect x="4" y="13" width="31" height="18" rx="5"/><path d="M39 19v6"/><rect x="9" y="18" width="14" height="8" rx="2" fill="#ff5a3c" stroke="none"/></svg><h3 data-i="h2t"></h3><p data-i="h2b"></p></div>
+      <div><svg viewBox="0 0 44 44" aria-hidden="true"><path d="M22 5c6.5 8.5 11 14 11 19.5a11 11 0 0 1-22 0C11 19 15.5 13.5 22 5z"/><path d="M17 26a5 5 0 0 0 5 5"/></svg><h3 data-i="h3t"></h3><p data-i="h3b"></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band end">
+  <h2 data-i="end_t"></h2>
+  <p data-i="end_b"></p>
+  <ul class="cols">
+    <li><i class="mini" style="--c:#ff5a3c"></i><span data-c="0"></span></li>
+    <li><i class="mini" style="--c:#43d9ff"></i><span data-c="1"></span></li>
+    <li><i class="mini" style="--c:#c6f24e"></i><span data-c="2"></span></li>
+    <li><i class="mini" style="--c:#ffc23d"></i><span data-c="3"></span></li>
+  </ul>
+</section>
+<footer data-i="note"></footer>
+
+<script>
+{
+const T={
+ru:{tag:"Найди своих в любой толпе.",sub:"Браслет для фестивалей, который знает, где твои друзья.",scroll:"Листай вниз",
+f0t:"Один взгляд — и ты в курсе.",f0b:"Время, сколько друзей рядом и заряд. Без телефона в руке, без разблокировки, без поиска сети.",
+f1t:"Видишь всю компанию.",f1b:"Радар показывает, где каждый из твоих друзей — даже в толпе на 50 000 человек.",
+f2t:"Просто иди по стрелке.",f2b:"Выбери друга — браслет поведёт тебя к нему и мягко завибрирует, когда вы будете рядом.",
+f3t:"Стукнитесь браслетами.",f3b:"Познакомился с кем-то у сцены? Одно касание — и новый друг уже в твоей компании.",
+f4t:"Бар, вода, туалет — что ближе.",f4b:"Браслет знает карту фестиваля и показывает, что ближе всего и где короче очередь.",
+f5t:"Не пропусти свой сет.",f5b:"Отметь артистов заранее — за 10 минут до начала браслет напомнит и покажет дорогу к сцене.",
+f6t:"Светится цветом вашей компании.",f6b:"Ночью ободок горит вашим общим цветом — своих видно издалека.",
+f7t:"Потерялся? Одна кнопка.",f7b:"Удержи боковую кнопку — друзья получат твою точку и место сбора. Работает даже без мобильной сети.",
+how_t:"Работает там, где телефон сдаётся",
+h1t:"Mesh-сеть из браслетов",h1b:"Браслеты передают сигнал друг другу по Bluetooth, поэтому всё работает, даже когда мобильный интернет лёг из-за толпы.",
+h2t:"5 дней без зарядки",h2b:"Хватает на весь фестиваль: экран загорается, только когда ты на него смотришь.",
+h3t:"Дождь и пыль — не проблема",h3b:"Корпус с защитой IP67 и тканевый ремешок, который не жалко испачкать.",
+end_t:"Tribu. Своих не теряют.",end_b:"Четыре цвета ремешка — по одному на каждую компанию.",
+cols:["Коралл","Лагуна","Лайм","Солнце"],note:"Tribu — концепт продукта · учебный проект · 2026",
+w_day:"Сб · день 2",you:"Ты",w_near:"3 рядом",names:["Маша","Лукас","Ана","Пабло"],unit:"м",nav_sub:"у главной сцены",nav_near:"Ты рядом!",
+bump_pre:"Поднеси браслеты",bump_ok:"теперь в компании",spots:[["Бар","очередь ~4 мин"],["Вода","бесплатно"],["Туалет","без очереди"]],
+w_now:"Сейчас · Main Stage",w_next:"Далее 00:30 · Duo Brisa",w_crew:"Цвет компании",sos_hold:"Удерживай кнопку",sos_sent:"Отправлено 4 друзьям",sos_meet:"Сбор: колесо обозрения"},
+en:{tag:"Never lose your people in the crowd.",sub:"A festival wristband that knows where your friends are.",scroll:"Scroll down",
+f0t:"One glance and you know.",f0b:"The time, how many friends are nearby, battery. No phone in hand, no unlocking, no hunting for signal.",
+f1t:"See your whole crew.",f1b:"The radar shows where each of your friends is — even in a crowd of 50,000.",
+f2t:"Just follow the arrow.",f2b:"Pick a friend and the band guides you there, with a gentle buzz when you're close.",
+f3t:"Bump bands.",f3b:"Met someone by the stage? One tap and they're in your crew.",
+f4t:"Bar, water, toilets — closest first.",f4b:"The band knows the festival map and shows what's nearest and where the queue is shortest.",
+f5t:"Never miss your set.",f5b:"Star artists in advance — ten minutes before they start, the band reminds you and points the way to the stage.",
+f6t:"Glows in your crew's colour.",f6b:"At night the ring lights up in your shared colour, so your people can spot you from afar.",
+f7t:"Lost? One button.",f7b:"Hold the side button — your friends get your location and a meeting point. Works even with no mobile signal.",
+how_t:"Works where your phone gives up",
+h1t:"A mesh between bands",h1b:"Bands relay the signal to each other over Bluetooth, so everything keeps working when the crowd knocks out mobile data.",
+h2t:"5 days per charge",h2b:"Enough for the whole festival: the screen only wakes when you look at it.",
+h3t:"Rain and dust? Fine.",h3b:"An IP67 case and a fabric strap you won't mind getting dirty.",
+end_t:"Tribu. Nobody gets left behind.",end_b:"Four strap colours — one for every crew.",
+cols:["Coral","Lagoon","Lime","Sun"],note:"Tribu — product concept · university project · 2026",
+w_day:"Sat · Day 2",you:"You",w_near:"3 nearby",names:["Masha","Lucas","Ana","Pablo"],unit:"m",nav_sub:"by the Main Stage",nav_near:"You're close!",
+bump_pre:"Bring bands together",bump_ok:"joined your crew",spots:[["Bar","~4 min queue"],["Water","free"],["Toilets","no queue"]],
+w_now:"Now · Main Stage",w_next:"Next 00:30 · Duo Brisa",w_crew:"Crew colour",sos_hold:"Hold the button",sos_sent:"Sent to 4 friends",sos_meet:"Meet: Ferris wheel"},
+es:{tag:"No vuelvas a perder a los tuyos.",sub:"Una pulsera para festivales que sabe dónde están tus amigos.",scroll:"Desliza hacia abajo",
+f0t:"Un vistazo y lo sabes.",f0b:"La hora, cuántos amigos tienes cerca y la batería. Sin sacar el móvil, sin desbloquear, sin buscar cobertura.",
+f1t:"Ve a todo tu grupo.",f1b:"El radar muestra dónde está cada uno de tus amigos, incluso entre 50.000 personas.",
+f2t:"Solo sigue la flecha.",f2b:"Elige a un amigo y la pulsera te guía hasta él, con una vibración suave cuando estéis cerca.",
+f3t:"Choca las pulseras.",f3b:"¿Has conocido a alguien junto al escenario? Un toque y ya está en tu grupo.",
+f4t:"Barra, agua, baños: lo más cerca.",f4b:"La pulsera conoce el mapa del festival y te indica qué está más cerca y dónde hay menos cola.",
+f5t:"No te pierdas tu concierto.",f5b:"Marca a tus artistas y, diez minutos antes, la pulsera te avisa y te indica el camino al escenario.",
+f6t:"Brilla con el color de tu grupo.",f6b:"De noche, el aro se ilumina con vuestro color para que los tuyos te vean desde lejos.",
+f7t:"¿Perdido? Un solo botón.",f7b:"Mantén pulsado el botón lateral: tus amigos reciben tu ubicación y un punto de encuentro. Funciona incluso sin cobertura.",
+how_t:"Funciona donde el móvil se rinde",
+h1t:"Red mesh entre pulseras",h1b:"Las pulseras se pasan la señal por Bluetooth, así que todo sigue funcionando aunque la multitud sature la red móvil.",
+h2t:"5 días de batería",h2b:"Suficiente para todo el festival: la pantalla solo se enciende cuando la miras.",
+h3t:"¿Lluvia y polvo? Sin problema.",h3b:"Caja con protección IP67 y correa de tela que no da pena ensuciar.",
+end_t:"Tribu. Aquí no se pierde nadie.",end_b:"Cuatro colores de correa, uno para cada grupo.",
+cols:["Coral","Laguna","Lima","Sol"],note:"Tribu — concepto de producto · proyecto universitario · 2026",
+w_day:"Sáb · Día 2",you:"Tú",w_near:"3 cerca",names:["Masha","Lucas","Ana","Pablo"],unit:"m",nav_sub:"junto al Main Stage",nav_near:"¡Ya llegas!",
+bump_pre:"Acerca las pulseras",bump_ok:"ya está en tu grupo",spots:[["Barra","cola ~4 min"],["Agua","gratis"],["Baños","sin cola"]],
+w_now:"Ahora · Main Stage",w_next:"Luego 00:30 · Duo Brisa",w_crew:"Color del grupo",sos_hold:"Mantén el botón",sos_sent:"Enviado a 4 amigos",sos_meet:"Punto: la noria"}
+};
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v)),lerp=(a,b,t)=>a+(b-a)*t,sm=t=>t*t*(3-2*t);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const story=$('#story'),stage=$('#stage'),watch=$('#watch'),pos=$('#pos'),bz=$('#bz'),prog=$('#prog');
+const heroT=$('#heroT'),heroF=$('#heroF'),crowd=$('#crowd'),horizon=$('#horizon'),beams=$('#beams'),dimB=$('#dimB');
+const scr=$$('.scr'),caps=$$('.cap'),chips=$$('.chip'),sws=$$('.sw'),frs=$$('.fr');
+const N=8,INTRO=1.6,U=INTRO+N;
+const P=[[-10,4,0],[12,6,-2],[-8,-5,0],[16,3,2],[-14,6,0],[10,-4,-2],[-26,12,0],[-46,6,0]];
+const RING=['#ff5a3c','#43d9ff','#c6f24e','#ffc23d'],SPD=[80,60,140],SPA=[-30,50,140];
+
+/* case: 120 thin facets around the rim, lit from the upper right */
+let h='';
+for(let i=0;i<120;i++){
+  const a=i*3,c1=Math.max(0,Math.cos((a-50)*Math.PI/180)),c2=Math.max(0,Math.cos((a-235)*Math.PI/180));
+  const l=Math.min(1,.12+.88*c1**1.6+.18*c2),L=12+l*44,f=n=>n.toFixed(1);
+  h+=`<i class="st" style="--a:${a}deg;background:linear-gradient(hsl(250 5% ${f(L*.55)}%),hsl(250 5% ${f(L)}%) 30%,hsl(250 5% ${f(L)}%) 44%,hsl(9 88% ${f(30+l*28)}%) 45.5%,hsl(9 92% ${f(36+l*30)}%) 54.5%,hsl(250 5% ${f(L)}%) 56%,hsl(250 5% ${f(L*1.06)}%) 86%,hsl(250 6% ${f(Math.min(92,L+30))}%) 93%,hsl(250 5% ${f(L*.8)}%))"></i>`;
+}
+watch.insertAdjacentHTML('afterbegin',h);
+
+/* straps: many short slices along a smooth curve that bends back, lit from above, fading out */
+function strap(dir){
+  const n=34,ds=8,len=n*ds,H=ds+1.6;let y=104,z=0,h='';
+  for(let i=0;i<n;i++){
+    const sm2=(i+.5)*ds,th=sm2<36?0:82*((sm2-36)/(len-36))**1.5,t=th*Math.PI/180;
+    const dot=(dir<0?.55:-.55)*Math.sin(t)+.83*Math.cos(t);
+    const dark=clamp(.83-dot,0,1)*.9,fade=clamp((i-n*.5)/(n*.5),0,1)**1.3,o=1-(1-dark)*(1-fade);
+    const ty=dir<0?-y-H:y;
+    h+=`<div class="seg" style="height:calc(var(--k)*${H}px);transform-origin:50% ${dir<0?'100%':'0'};transform:translate3d(0,calc(var(--k)*${ty.toFixed(2)}px),calc(var(--k)*${z.toFixed(2)}px)) rotateX(${(dir<0?th:-th).toFixed(2)}deg);--o:${o.toFixed(3)}"><i class="sf"></i><i class="sl"></i><i class="sr"></i></div>`;
+    y+=ds*Math.cos(t);z-=ds*Math.sin(t);
+  }
+  watch.insertAdjacentHTML('beforeend',h);
+}
+strap(-1);strap(1);
+
+/* crowd silhouette */
+{let s='',x=-12,seed=11;const r=()=>(seed=(seed*9301+49297)%233280)/233280;
+ while(x<1012){const hr=9+r()*4,y=72+r()*30;
+  s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${hr.toFixed(1)}"/><rect x="${(x-hr*1.6).toFixed(1)}" y="${(y+hr*.9).toFixed(1)}" width="${(hr*3.2).toFixed(1)}" height="${(170-y).toFixed(1)}" rx="${hr.toFixed(1)}"/>`;
+  if(r()<.3){const ax=x+(r()<.5?-1:1)*hr*1.3,tx=ax+(r()-.5)*22;s+=`<path d="M${ax.toFixed(1)} ${(y+hr*1.6).toFixed(1)}L${tx.toFixed(1)} ${(y-38-r()*30).toFixed(1)}" stroke-width="${(hr*.85).toFixed(1)}" stroke-linecap="round"/>`}
+  x+=hr*2.3+r()*10;}
+ crowd.innerHTML=s;}
+
+/* language */
+let L='';try{L=localStorage.getItem('tribu-lang')||''}catch(e){}
+if(!T[L]){const n=(navigator.language||'en').toLowerCase();L=/^(ru|uk|be|kk)/.test(n)?'ru':/^(es|ca|gl|eu)/.test(n)?'es':'en'}
+const txt=(el,s)=>{if(el&&el.textContent!==s)el.textContent=s};
+function setLang(l){
+  L=l;document.documentElement.lang=l;const d=T[l];
+  $$('[data-i]').forEach(e=>{const v=d[e.dataset.i];if(typeof v==='string')txt(e,v)});
+  $$('[data-c]').forEach(e=>txt(e,d.cols[+e.dataset.c]));
+  $$('.lang button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.l===l)));
+  frs.forEach((e,i)=>txt(e,d.names[i][0]));
+  try{localStorage.setItem('tribu-lang',l)}catch(e){}
+  draw();
+}
+$$('.lang button').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.l)));
+
+/* per-screen state, written by scroll, drawn in the current language */
+const S={dist:120,near:false,ang:34,g:0,ok:false,spot:0,set:.3,gi:0,hold:0,sent:false};
+const s2=$('#s2'),s3=$('#s3'),s7=$('#s7'),bump=$('#bump'),arrow=$('#arrow'),spA=$('#spA');
+function draw(){
+  const d=T[L];
+  txt($('#rlN'),d.names[0]);txt($('#rlU'),`· 120 ${d.unit}`);
+  txt($('#navAv'),d.names[0][0]);txt($('#navN'),d.names[0]);txt($('#navD'),String(S.dist));txt($('#navU'),d.unit);
+  txt($('#navS'),S.near?d.nav_near:d.nav_sub);s2.classList.toggle('near',S.near);
+  arrow.style.transform=`rotate(${S.ang.toFixed(1)}deg)`;
+  txt($('#bA'),d.you);txt($('#bB'),d.names[1][0]);
+  bump.style.setProperty('--g',`calc(var(--k)*${(S.ok?24:S.g*15).toFixed(1)}px)`);
+  s3.classList.toggle('ok',S.ok);txt($('#bumpT'),S.ok?`+ ${d.names[1]}`:'');txt($('#bumpS'),S.ok?d.bump_ok:d.bump_pre);
+  chips.forEach((c,i)=>c.classList.toggle('on',i===S.spot));
+  txt($('#spN'),d.spots[S.spot][0]);txt($('#spD'),String(SPD[S.spot]));txt($('#spU'),d.unit);txt($('#spM'),d.spots[S.spot][1]);
+  spA.style.transform=`rotate(${SPA[S.spot]}deg)`;
+  $('#setArc').setAttribute('stroke-dasharray',`${(28+64*S.set).toFixed(1)} 100`);
+  sws.forEach((e,i)=>e.classList.toggle('on',i===S.gi));txt($('#glN'),d.cols[S.gi]);
+  $('#holdArc').setAttribute('stroke-dasharray',`${(S.hold*100).toFixed(1)} 100`);
+  s7.classList.toggle('sent',S.sent);txt($('#sosA'),S.sent?d.sos_sent:d.sos_hold);txt($('#sosB'),S.sent?d.sos_meet:'');
+}
+function buzz(){if(reduce)return;bz.classList.remove('go');void bz.offsetWidth;bz.classList.add('go')}
+
+/* size: the band is drawn at real pixels through --k, so text stays sharp */
+let wide=true;
+function size(){
+  const w=innerWidth,hh=stage.clientHeight;wide=w>760;
+  const k=wide?Math.min(hh*.44/260,w*.3/260):Math.min(w*.56/260,hh*.32/260);
+  stage.style.setProperty('--k',clamp(k,.5,1.8).toFixed(3));
+}
+
+/* scroll → targets; a light spring follows them */
+const tgt={x:0,y:0,s:.86,ry:-84,rx:-10,rz:-8};let cur=null,raf=0;
+const st={si:-2,ci:-2,ring:''};
+function update(){
+  const vh=stage.clientHeight,vw=innerWidth,len=Math.max(1,story.offsetHeight-vh);
+  const p=clamp(-story.getBoundingClientRect().top/len,0,1),u=p*U;
+  prog.style.transform=`scaleX(${p.toFixed(4)})`;
+  const ho=1-clamp((u-.04)/.5,0,1);
+  heroT.style.opacity=ho;heroT.style.transform=`translateY(calc(-50% - ${(u*50).toFixed(1)}px))`;
+  heroF.style.opacity=ho;heroF.style.visibility=ho>0?'visible':'hidden';
+  crowd.style.opacity=ho;horizon.style.opacity=.35+.65*ho;
+  const r=sm(clamp((u-.1)/1.15,0,1)),q=u-INTRO;
+  let fi=0,fr=0;if(q>=0){fi=Math.min(N-1,Math.floor(q));fr=q-fi}
+  let A=P[0],B=P[0],m=0;if(q>=0){A=P[fi];B=P[Math.min(N-1,fi+1)];m=sm(clamp((fr-.72)/.28,0,1))}
+  const m2=sm(clamp((u-.9)/.8,0,1));
+  tgt.x=wide?vw*.17*m2:0;tgt.y=wide?0:-vh*.14*m2;tgt.s=lerp(.86,1,r);
+  tgt.ry=lerp(-84,lerp(A[0],B[0],m),r);tgt.rx=lerp(-10,lerp(A[1],B[1],m),r);tgt.rz=lerp(-8,lerp(A[2],B[2],m),r);
+  dimB.style.opacity=wide?0:m2;beams.style.opacity=1-.55*m2;
+  const si=r<.72?-1:(q<0?0:Math.min(N-1,Math.floor(q+.12)));
+  const lt=(q>=0&&si===fi)?fr:0;
+  const qq=q+.12,cx=Math.min(N-1,Math.floor(qq)),w=qq-cx;
+  const ci=(q>=0&&w>.05&&(w<.93||cx===N-1))?cx:-1;
+  if(si!==st.si){scr.forEach((e,i)=>e.classList.toggle('on',i===si));st.si=si}
+  if(ci!==st.ci){caps.forEach((e,i)=>e.classList.toggle('on',i===ci));st.ci=ci}
+  if(si===2){const k2=clamp(lt/.82,0,1),near=lt>.82;S.dist=Math.max(12,Math.round(120-108*k2));S.ang=34-28*k2+Math.sin(k2*14)*5;if(near&&!S.near)buzz();S.near=near}
+  if(si===3){S.g=clamp(lt/.5,0,1);const ok=lt>.5;if(ok&&!S.ok)buzz();S.ok=ok}
+  if(si===4)S.spot=Math.min(2,Math.floor(lt*3));
+  if(si===5)S.set=lt;
+  if(si===6)S.gi=Math.min(3,Math.floor(lt*4));
+  if(si===7){S.hold=clamp(lt/.4,0,1);S.sent=lt>=.4}
+  const ring=si===6?RING[S.gi]:RING[0];
+  if(ring!==st.ring){stage.style.setProperty('--ring',ring);st.ring=ring}
+  watch.classList.toggle('glow',si===6);stage.classList.toggle('glowing',si===6);watch.classList.toggle('sos',si===7);
+  draw();
+  if(!cur){cur={...tgt};apply()}
+  if(!raf)raf=requestAnimationFrame(tick);
+}
+function apply(){
+  pos.style.transform=`translate3d(${cur.x.toFixed(1)}px,${cur.y.toFixed(1)}px,0)`;
+  watch.style.transform=`scale(${cur.s.toFixed(4)}) rotateZ(${cur.rz.toFixed(2)}deg) rotateX(${cur.rx.toFixed(2)}deg) rotateY(${cur.ry.toFixed(2)}deg)`;
+  const cf=Math.cos(cur.ry*Math.PI/180)*Math.cos(cur.rx*Math.PI/180);
+  watch.style.setProperty('--fs',((1-cf)*.55).toFixed(3));
+  watch.style.setProperty('--spec',(cur.ry*1.6+cur.rx).toFixed(1));
+}
+function tick(){
+  let moving=false;const f=reduce?1:.14;
+  for(const k in tgt){const d=tgt[k]-cur[k];if(Math.abs(d)>.02){cur[k]+=d*f;moving=true}else cur[k]=tgt[k]}
+  apply();raf=moving?requestAnimationFrame(tick):0;
+}
+function clock(){const t=new Date();txt($('#clock'),String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0'))}
+
+addEventListener('scroll',update,{passive:true});
+addEventListener('resize',()=>{size();update()});
+size();setLang(L);clock();setInterval(clock,15000);update();
+}
+</script>
+</body>
+</html>
