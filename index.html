@@ -29,7 +29,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-
 .lang button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 .prog{position:fixed;left:0;top:0;width:100%;height:2px;z-index:31;background:var(--coral);transform-origin:0 0;transform:scaleX(0)}
 
-#story{position:relative;height:916vh}
+#story{position:relative;height:2548vh}
 .stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
 .beams{position:absolute;inset:0;z-index:0;pointer-events:none}
 .beams i{position:absolute;top:-12vh;width:40vw;height:130vh;transform-origin:50% 0;clip-path:polygon(47% 0,53% 0,100% 100%,0 100%);background:linear-gradient(rgba(255,90,60,.26),rgba(255,90,60,0) 72%);animation:sway 9s ease-in-out infinite alternate}
@@ -516,7 +516,7 @@ function apply(){
   pos.style.transform=tr;haloL.style.transform=tr;
   watch.style.transform=`scale(${cur.s.toFixed(4)}) rotateZ(${cur.rz.toFixed(2)}deg) rotateX(${cur.rx.toFixed(2)}deg) rotateY(${cur.ry.toFixed(2)}deg)`;
   const cf=Math.cos(cur.ry*Math.PI/180)*Math.cos(cur.rx*Math.PI/180);
-  watch.style.setProperty('--fs',((1-cf)*(window.tribuGL?.35:.55)).toFixed(3));
+  watch.style.setProperty('--fs',((1-cf)*(window.tribuGL?.1:.55)).toFixed(3));
   watch.style.setProperty('--spec',(cur.ry*1.6+cur.rx).toFixed(1));
   if(window.tribuGL)window.tribuGL.draw({x:cur.x+bx,y:cur.y,s:cur.s,ry:cur.ry,rx:cur.rx,rz:cur.rz,k:kk,w:stage.clientWidth,h:stage.clientHeight,ring:st.ring,glow:st.glow,sos:st.sos});
 }
@@ -546,8 +546,8 @@ function braidTextures(maxAniso){
      twisted bundle of filaments (fine slanted ticks) and keeps its own slight tone. One seamless tile = 4 x 4 cells.
      Out: colour (grooves baked in), normal map, displacement (segments only, so the outline is bumpy too), and an anisotropy
      map that stretches the highlight along each strand, for a glossy yarn with a metallic sheen. */
-  const S=512,N=BRAID.cells,cs=S/N,TU=BRAID.tile,TV=BRAID.tile*BRAID.aspect;
-  const H=new Float32Array(S*S),D=new Float32Array(S*S),C=new Float32Array(S*S),FA=new Uint8Array(S*S);
+  const S=1024,N=BRAID.cells,cs=S/N,TU=BRAID.tile,TV=BRAID.tile*BRAID.aspect;
+  const H=new Float32Array(S*S),R=new Float32Array(S*S),D=new Float32Array(S*S),C=new Float32Array(S*S),FA=new Uint8Array(S*S);
   let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
   const tone=[],lift=[];for(let i=0;i<2*N;i++){tone.push(.9+rnd()*.12);lift.push(.9+rnd()*.1)}
   const fib=new Float32Array(S*S);for(let i=0;i<S*S;i++)fib[i]=rnd();
@@ -571,9 +571,12 @@ function braidTextures(maxAniso){
     }
     const i=y*S+x,st=bf?ib:ia;
     D[i]=best;FA[i]=bf;
-    const tick=Math.cos(2*Math.PI*(bp*1.2+bs*6))*Math.min(1,best*2);
-    H[i]=best+.028*tick+(fib[i]-.5)*.02;
-    C[i]=tone[bf*N+mN(st)]*(.34+.66*Math.min(1,best*1.15))*(1+.05*tick);
+    /* twisted yarn: slanted ply ridges, each split into fine filaments with their own tone */
+    const on=Math.min(1,best*2),tw=bp*1.4+bs*7,tick=Math.cos(2*Math.PI*tw),fl=tw*7,fi=Math.floor(fl),ff=fl-fi;
+    const fh=Math.abs(Math.sin(fi*12.9898+st*78.233+bf*37.719)*43758.5453)%1,fp=1-Math.abs(2*ff-1);
+    H[i]=best+on*(.03*tick+.014*(fp-.5)+.01*(fh-.5))+(fib[i]-.5)*.008;
+    C[i]=tone[bf*N+mN(st)]*(.3+.7*Math.min(1,best*1.15))*(1+.06*tick)*(.92+.12*fh*on);
+    R[i]=.95-.3*bd-.06*fh*on;
   }
   const n=new ImageData(S,S),c=new ImageData(S,S),d=new ImageData(S,S),an=new ImageData(S,S),at=(x,y)=>H[((y+S)%S)*S+(x+S)%S];
   const gx=BRAID.amp*S/(2*TU)*.7,gy=BRAID.amp*S/(2*TV)*.7;
@@ -583,7 +586,7 @@ function braidTextures(maxAniso){
     const dx=(at(x+1,y)-at(x-1,y))*gx,dy=(at(x,y+1)-at(x,y-1))*gy,l=Math.hypot(dx,dy,1),i=(y*S+x)*4,k=y*S+x;
     n.data[i]=(-dx/l*.5+.5)*255;n.data[i+1]=(dy/l*.5+.5)*255;n.data[i+2]=(1/l*.5+.5)*255;n.data[i+3]=255;
     const v=Math.min(255,C[k]*255);c.data[i]=c.data[i+1]=c.data[i+2]=v;c.data[i+3]=255;
-    d.data[i]=d.data[i+1]=d.data[i+2]=Math.min(255,D[k]*255);d.data[i+3]=255;
+    d.data[i]=d.data[i+2]=Math.min(255,D[k]*255);d.data[i+1]=R[k]*255;d.data[i+3]=255;
     const dd=FA[k]?d1:d0;an.data[i]=(dd[0]*.5+.5)*255;an.data[i+1]=(dd[1]*.5+.5)*255;an.data[i+2]=Math.min(255,(.35+.65*Math.min(1,D[k]*1.4))*255);an.data[i+3]=255;
   }
   const tex=(img,srgb)=>{const cv=document.createElement('canvas');cv.width=cv.height=S;cv.getContext('2d').putImageData(img,0,0);
@@ -597,7 +600,7 @@ function envScene(){
   /* studio strips for polished steel and the glass: two long thin softboxes give crisp streak highlights, a dim panel behind the camera keeps camera-facing metal from going black */
   add(16,.45,'#ffffff',8,[0,4,6.5]);add(.45,14,'#ffffff',5,[-7.5,0,5]);add(14,9,'#fff4ec',.22,[0,0,10]);
   /* big soft panel back-left: what the glass mirrors in the hero 3/4 pose, so it reads as a sheen sweeping across the black */
-  add(9,12,'#ffffff',1.1,[-7,2,-5]);
+  add(9,12,'#ffffff',1.9,[-7,2,-5]);
   add(1.6,9,'#ff5a3c',3.4,[-6,0,2]);add(1.6,7,'#43d9ff',2.2,[5,0,-5]);add(11,2,'#ffb48a',.9,[0,-6,2]);
   return s;
 }
@@ -629,7 +632,9 @@ function loopGeometry(){
     const ty=q1.x-q0.x,tz=q1.y-q0.y,tl=Math.hypot(ty,tz);let ny=tz/tl,nz=-ty/tl;
     if(ny*q.x+nz*(q.y+b)<0){ny=-ny;nz=-nz}
     for(let m=0;m<M;m++){const [sx,sn,ax,an,sh]=sec[m];
-      pos.push(sx,q.x+ny*sn,q.y+nz*sn);nor.push(ax,ny*an,nz*an);uv.push(per[m]/P*nU,i/NS*nV);col.push(sh,sh,sh);}
+      const X=sx,Y=q.x+ny*sn,Z=q.y+nz*sn,cd=Math.hypot(Math.max(0,Math.hypot(X,Y)-130),Math.max(0,Math.abs(Z)-23)),
+        il=Math.hypot(Y,Z+b)||1,inw=Math.max(0,-(ny*an*Y+nz*an*(Z+b))/il),o=sh*(1-.6*Math.exp(-cd/24))*(1-.32*inw);
+      pos.push(X,Y,Z);nor.push(ax,ny*an,nz*an);uv.push(per[m]/P*nU,i/NS*nV);col.push(o,o,o);}
   }
   for(let i=0;i<NS;i++)for(let m=0;m<M-1;m++){const A=i*M+m,B=(i+1)*M+m;idx.push(A,B,A+1,B,B+1,A+1)}
   const g=new THREE.BufferGeometry();
@@ -652,10 +657,10 @@ function init(){
   r.toneMapping=THREE.ACESFilmicToneMapping;r.toneMappingExposure=1.08;r.outputColorSpace=THREE.SRGBColorSpace;
   const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(30,1,100,10000);
   const pm=new THREE.PMREMGenerator(r);scene.environment=pm.fromScene(envScene(),.03).texture;pm.dispose();
-  scene.add(new THREE.HemisphereLight(0xffffff,0x2a1210,.35));
-  const key=new THREE.DirectionalLight(0xfff1e6,2.1);key.position.set(300,500,600);scene.add(key);
-  const rim=new THREE.DirectionalLight(0x43d9ff,1.1);rim.position.set(-500,120,-400);scene.add(rim);
-  const warm=new THREE.DirectionalLight(0xff5a3c,.7);warm.position.set(-400,-300,300);scene.add(warm);
+  scene.add(new THREE.HemisphereLight(0xffffff,0x2a1210,.16));
+  const key=new THREE.DirectionalLight(0xfff1e6,1.8);key.position.set(300,500,600);scene.add(key);
+  const rim=new THREE.DirectionalLight(0x43d9ff,.7);rim.position.set(-500,120,-400);scene.add(rim);
+  const warm=new THREE.DirectionalLight(0xff5a3c,.45);warm.position.set(-400,-300,300);scene.add(warm);
   const g=new THREE.Group();scene.add(g);
   /* polished steel: pure metal, no clearcoat (a second lobe on metal only blurs the streaks and costs a pass on phones) */
   const silver=new THREE.MeshStandardMaterial({color:0xe4e4e8,metalness:1,roughness:.17,envMapIntensity:1.25,side:THREE.DoubleSide});
@@ -680,7 +685,7 @@ function init(){
      only a faint highlight stretched along each strand */
   const strapMat=new THREE.MeshPhysicalMaterial({color:0xf26a3c,map:tx.map,normalMap:tx.normal,normalScale:new THREE.Vector2(1.15,1.15),
     displacementMap:tx.disp,displacementScale:BRAID.amp,displacementBias:-BRAID.amp*.5,
-    metalness:0,roughness:.74,specularIntensity:.45,anisotropy:.35,anisotropyMap:tx.aniso,
+    metalness:0,roughness:1,roughnessMap:tx.disp,specularIntensity:.5,envMapIntensity:1.6,anisotropy:.35,anisotropyMap:tx.aniso,
     sheen:1,sheenRoughness:.5,sheenColor:new THREE.Color(0xffc4a3),vertexColors:true,side:THREE.DoubleSide});
   g.add(new THREE.Mesh(loopGeometry(),strapMat));
   host.appendChild(r.domElement);
