@@ -9,6 +9,9 @@ Goal: high quality with minimal tokens. Cut waste, not quality.
 - Build a good product, but don't polish or be a perfectionist.
 - Verify lightly: one sanity check per change, no exhaustive testing.
 - Merge and push directly to the main branch. No feature branches or PRs.
+- After each change, show me the result right away and stop. Don't keep iterating on your own.
+- If a fix doesn't work after 2 attempts, stop and tell me what's blocking it.
+- When something is subjective (look, style, material), give me 3 quick options to choose from instead of guessing. Keep them lightweight: a screenshot of each or one simple artifact page, not three full implementations.
 
 ## Layout
 Single file `index.html` plus vendored `three.module.min.js` (three.js, loaded through an import map).
