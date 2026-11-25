@@ -56,7 +56,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-
 .glowing .halo{opacity:.75}
 .bz{position:absolute;transform-style:preserve-3d}
 .bz.go{animation:bz .45s linear}
-.watch{position:absolute;left:0;top:0;transform-style:preserve-3d;will-change:transform;--D:calc(var(--k)*260px);--R:calc(var(--k)*130px);--T:calc(var(--k)*58px);--W:calc(var(--k)*128px);--ts:calc(var(--k)*13px)}
+.watch{position:absolute;left:0;top:0;transform-style:preserve-3d;will-change:transform;--D:calc(var(--k)*260px);--R:calc(var(--k)*130px);--T:calc(var(--k)*58px);--W:calc(var(--k)*128px);--ts:calc(var(--k)*12px)}
 .st,.face,.back,.btn,.sf,.sb,.sl,.sr{position:absolute;display:block;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .st{width:calc(var(--D)*.02618 + 1px);height:var(--T);left:calc((var(--D)*.0785 + 1px)/-2);top:calc(var(--T)/-2);transform:rotateZ(var(--a)) translateY(calc(var(--R)*-1 + .5px)) rotateX(90deg)}
 .face{width:var(--D);height:var(--D);left:calc(var(--R)*-1);top:calc(var(--R)*-1);border-radius:50%;transform:translateZ(calc(var(--T)/2 + .5px));background:conic-gradient(from calc(var(--spec,0)*1deg),#35343a,#87858d 10%,#2b2a30 28%,#5d5b62 50%,#26252b 70%,#79777f 88%,#35343a)}
@@ -384,13 +384,13 @@ for(let i=0;i<120;i++){
 }
 watch.insertAdjacentHTML('afterbegin',h);
 
-/* straps: many short slices along a smooth curve that bends back, lit from above, fading out */
+/* straps: many short slices along a smooth arc that wraps back like a real band, lit from above, fading out */
 function strap(dir){
   const n=34,ds=8,len=n*ds,H=ds+1.6;let y=104,z=0,h='';
   for(let i=0;i<n;i++){
-    const sm2=(i+.5)*ds,th=sm2<36?0:82*((sm2-36)/(len-36))**1.5,t=th*Math.PI/180;
+    const sm2=(i+.5)*ds,th=sm2<12?0:118*((sm2-12)/(len-12))**1.15,t=th*Math.PI/180;
     const dot=(dir<0?.55:-.55)*Math.sin(t)+.83*Math.cos(t);
-    const dark=clamp(.83-dot,0,1)*.9,fade=clamp((i-n*.5)/(n*.5),0,1)**1.3,o=1-(1-dark)*(1-fade);
+    const dark=clamp(.83-dot,0,1)*.9,fade=clamp((i-n*.62)/(n*.38),0,1)**1.2,o=1-(1-dark)*(1-fade);
     const ty=dir<0?-y-H:y;
     h+=`<div class="seg" style="height:calc(var(--k)*${H}px);transform-origin:50% ${dir<0?'100%':'0'};transform:translate3d(0,calc(var(--k)*${ty.toFixed(2)}px),calc(var(--k)*${z.toFixed(2)}px)) rotateX(${(dir<0?th:-th).toFixed(2)}deg);--o:${o.toFixed(3)}"><i class="sf"></i><i class="sl"></i><i class="sr"></i></div>`;
     y+=ds*Math.cos(t);z-=ds*Math.sin(t);
@@ -453,7 +453,7 @@ function size(){
 }
 
 /* scroll → targets; a light spring follows them */
-const tgt={x:0,y:0,s:.86,ry:-84,rx:-10,rz:-8};let cur=null,raf=0;
+const tgt={x:0,y:0,s:.86,ry:-90,rx:0,rz:0};let cur=null,raf=0;
 const st={si:-2,ci:-2,ring:''};
 function update(){
   const vh=stage.clientHeight,vw=innerWidth,len=Math.max(1,story.offsetHeight-vh);
@@ -468,7 +468,7 @@ function update(){
   let A=P[0],B=P[0],m=0;if(q>=0){A=P[fi];B=P[Math.min(N-1,fi+1)];m=sm(clamp((fr-.72)/.28,0,1))}
   const m2=sm(clamp((u-.9)/.8,0,1));
   tgt.x=wide?vw*.17*m2:0;tgt.y=wide?0:-vh*.14*m2;tgt.s=lerp(.86,1,r);
-  tgt.ry=lerp(-84,lerp(A[0],B[0],m),r);tgt.rx=lerp(-10,lerp(A[1],B[1],m),r);tgt.rz=lerp(-8,lerp(A[2],B[2],m),r);
+  tgt.ry=lerp(-90,lerp(A[0],B[0],m),r);tgt.rx=lerp(0,lerp(A[1],B[1],m),r);tgt.rz=lerp(0,lerp(A[2],B[2],m),r);
   dimB.style.opacity=wide?0:m2;beams.style.opacity=1-.55*m2;
   const si=r<.72?-1:(q<0?0:Math.min(N-1,Math.floor(q+.12)));
   const lt=(q>=0&&si===fi)?fr:0;
