@@ -32,7 +32,7 @@ Testing loop (Blender runs in the sandbox via `pip install bpy --break-system-pa
 
 Safety (I render these scripts on my own Mac, as my user):
 - build.py and render.py may only build the scene and write band.blend, frames/ and frames/m/. No internet access (urllib, requests, socket), no running other programs (subprocess, os.system), no deleting files, no paths outside the repo, no enabling Blender's auto-run scripts.
-- Textures and HDRIs: image files only (PNG, JPG, EXR, HDR), from CC0 sources such as Poly Haven or ambientCG, or generated in code. Put them in blender/textures/ and pack them into band.blend. Never add .blend files, Blender add-ons or Python packages from the internet.
+- Textures and HDRIs: image files only (PNG, JPG, EXR, HDR), CC0 (Poly Haven, ambientCG) or generated in code, because the site is public. Keep them in blender/textures/ and pack them into band.blend. Never bring in .blend files (no append or link from another .blend), Blender add-ons or Python packages, because those can carry code.
 
 Known limits you may be asked about: there is no side button (the SOS chapter lights the screen edge instead). The site already cross-fades between pictures and loads them smartly (see blender/README.md), so the frame count (60) does not need to go up for smoothness.
 
