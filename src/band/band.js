@@ -15,6 +15,7 @@
       first, and all of them are kept (≈2 MB each, ≈115 MB for 60), so scrolling back never waits for a decode;
    3. draw: the closest decoded frames either side of the exact turn are cross-faded (the two neighbours once all are in),
       so the turn is continuous instead of 1° steps, and never jumps to a far frame while frames are still loading;
+      each frame is drawn where its own pose puts it (place()), so the 2D slide/zoom never drags a frame while it fades;
    4. motion: the spring is timed in ms, not per screen refresh, so it moves the same at 60 and 120 Hz and through dropped frames.
    Small screens use the smaller copy of the frames (frames.json "m", written by render.py) when it is sharp enough. */
 import {$,clamp,lerp,reduce} from '../core/dom.js';
@@ -28,7 +29,7 @@ const S0=.86;                                   /* opening scale */
 const FETCHES=6,DECODES=2;
 const EASE=.14,EASE_MS=1000/60;                 /* spring: closes 14% of the gap every 1/60 s */
 
-let poses=[[0,0,0]],kk=0,wide=true,dpr=1;
+let poses=[[0,0,0]],kk=0,wide=true,dpr=1,tilt=0;
 const tgt={x:0,y:0,s:S0,t:0,rz:0};let cur=null,raf=0,bzT=-1e9,lastT=0;
 const look={ring:'',glow:false,sos:false};
 let meta=false,dir=null,blobs=[],bmps=[],busy=new Set(),gen=0,fgen=0,want=0,lastKey='',ready=false;
@@ -95,7 +96,7 @@ export function update(f,lk){
   const [cx,cy]=F.ring0;
   tgt.x=(wide?f.vw*.17*m2:0)-cx*kk*S0*(1-r);
   tgt.y=(wide?0:-f.vh*.13*m2+f.vh*.015*(1-m2))-cy*kk*S0*(1-r);
-  tgt.s=lerp(S0,1,r);tgt.t=r;tgt.rz=lerp(0,lerp(A[2],B[2],m),r);
+  tilt=lerp(A[2],B[2],m);tgt.s=lerp(S0,1,r);tgt.t=r;tgt.rz=tilt*r;
   watch.style.setProperty('--gs',f.screen.toFixed(3));
   if(lk.ring!==look.ring){stage.style.setProperty('--ring',lk.ring);look.ring=lk.ring}
   if(lk.glow!==look.glow){look.glow=lk.glow;watch.classList.toggle('glow',look.glow);stage.classList.toggle('glowing',look.glow)}
@@ -104,8 +105,19 @@ export function update(f,lk){
   kick();
 }
 
+/* where frame i belongs, as a canvas transform. The part of the 2D move that follows the turn (sliding the ring to the
+   centre, zoom, tilt) is pinned to each frame's own pose instead of the current one, so a frame never slides while it
+   fades. Before, each frame slid ~2 px with the move and then the next one faded in ~2 px back: the strap wobbled. */
+function place(i){
+  const n=F.frames,d=(n>1?i/(n-1):1)-cur.t,c=cv.width/(F.box.w*kk),[cx,cy]=F.ring0;
+  const k=(S0+(1-S0)*(n>1?i/(n-1):1))/cur.s,dr=tilt*d*Math.PI/180,r=-cur.rz*Math.PI/180;
+  const dx=cx*kk*S0*d/cur.s,dy=cy*kk*S0*d/cur.s,ox=-F.box.x*kk*c,oy=-F.box.y*kk*c;
+  const A=k*Math.cos(dr),B=k*Math.sin(dr);
+  return [A,B,-B,A,ox+c*(dx*Math.cos(r)-dy*Math.sin(r))-(A*ox-B*oy),oy+c*(dx*Math.sin(r)+dy*Math.cos(r))-(B*ox+A*oy)];
+}
+
 /* the exact turn sits between two frames: cross-fade the closest decoded frame at or below it with the closest at or above
-   (the two neighbours once all are decoded; additive, so it is an exact mix even at soft edges).
+   (the two neighbours once all are decoded; additive, so it is an exact mix even at soft edges), each at its own place.
    The band fades in once the frame for the current scroll position is decoded. */
 function draw(t){
   const n=F.frames,f=clamp(t,0,1)*(n-1);
@@ -118,15 +130,17 @@ function draw(t){
   if(a<0)a=b;else if(b>=n)b=a;
   let w=b>a?(f-a)/(b-a):0;
   if(w<.004)b=a;else if(w>.996)a=b;
-  const key=a===b?`${a}`:`${a}|${b}|${Math.round(w*48)}`;
+  const pa=place(a),pb=a===b?pa:place(b);
+  const key=`${a}|${b}|${Math.round(w*64)}|${pa.map(v=>v.toFixed(2))}|${pb.map(v=>v.toFixed(2))}`;
   if(key===lastKey)return;lastKey=key;
-  ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;ctx.clearRect(0,0,cv.width,cv.height);
+  ctx.setTransform(1,0,0,1,0,0);ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;ctx.clearRect(0,0,cv.width,cv.height);
   if(a!==b){
     ctx.globalCompositeOperation='lighter';
-    ctx.globalAlpha=1-w;ctx.drawImage(bmps[a],0,0,cv.width,cv.height);
-    ctx.globalAlpha=w;ctx.drawImage(bmps[b],0,0,cv.width,cv.height);
+    ctx.globalAlpha=1-w;ctx.setTransform(...pa);ctx.drawImage(bmps[a],0,0,cv.width,cv.height);
+    ctx.globalAlpha=w;ctx.setTransform(...pb);ctx.drawImage(bmps[b],0,0,cv.width,cv.height);
     ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
-  }else ctx.drawImage(bmps[a],0,0,cv.width,cv.height);
+  }else{ctx.setTransform(...pa);ctx.drawImage(bmps[a],0,0,cv.width,cv.height)}
+  ctx.setTransform(1,0,0,1,0,0);
 }
 
 function apply(){

@@ -58,8 +58,9 @@ and turns it in CSS 3D exactly like the band in the picture:
 
 ## Known limits
 - How the site keeps the turn smooth (`src/band/band.js`): all pictures start downloading at page load, coarse to
-  fine; they are decoded in the background just ahead of the scroll (at most 30 kept in memory); the two pictures
-  either side of the exact turn are cross-faded; phones download the smaller `m/` copy when it is sharp enough.
+  fine; all of them are decoded in the background and kept; the two pictures either side of the exact turn are
+  cross-faded, each pinned to where its own pose puts it (so the strap doesn't wobble while the page slides and zooms
+  the band); phones download the smaller `m/` copy when it is sharp enough.
 - The screen size in `render.py` (the `screen` entry written to `frames.json`) is typed by hand. If `W`, `H`,
   `SCREEN_INSET` or `GLASS_TOP` change in `build.py`, change it there too, or the HTML screen will not line up.
 - Rebuilding needs `../hdr/tribu_studio.hdr` (a copy is packed in `band.blend`, but `build.py` loads the file).
