@@ -12,7 +12,7 @@ matches your scroll position. Then it lays the live screen (normal HTML) on top 
 |---|---|---|
 | `band.blend` | The 3D band: model, materials, lights, camera. The studio lighting image is packed inside. | Open it to look around. You can edit it in Blender, but read the warning below. |
 | `build.py` | The code that built `band.blend`. I made the model by writing code instead of clicking in Blender. Running it re-creates `band.blend` from scratch. | When you change the model by code (what an AI agent does). |
-| `render.py` | The "photographer". It turns the band in 60 small steps, renders a picture at each step in Cycles, saves them to `../frames/`, and writes `../frames/frames.json` (poses, framing, screen size) for the website. | To change the start or end pose, the number of pictures, or the quality. |
+| `render.py` | The "photographer". It turns the band in 60 small steps, renders a picture at each step in Cycles, saves them to `../frames/` plus a smaller copy for phones in `../frames/m/`, and writes `../frames/frames.json` (poses, framing, screen size) for the website. | To change the start or end pose, the number of pictures, or the quality. |
 | `render-mac.sh` | One command that runs `build.py`, then `render.py`, with the Blender installed on your Mac. | This is what you run. |
 
 **Why not just press Render → Render Animation in Blender?** The turning is not stored in `band.blend`;
@@ -30,12 +30,15 @@ Blender and want to keep that, run only the render step:
    The first line should say `device METAL` (the Mac's graphics chip). If it says `CPU`, it still works, only slower.
    It prints one line per picture.
 4. To publish: on GitHub open the `frames` folder → **Add file → Upload files** → drag in everything from your new
-   `frames` folder (60 `.webp` files + `frames.json`) → **Commit changes**. The site updates in about a minute.
+   `frames` folder (60 `.webp` files, `frames.json`, and the `m` folder with the phone copies) → **Commit changes**.
+   The site updates in about a minute.
 
 Options, set before the command, e.g. `FRAMES=90 sh blender/render-mac.sh`:
-- `FRAMES` (60): more pictures = a smoother turn and bigger download. The website reads the count from `frames.json`, so no code change is needed.
+- `FRAMES` (60): number of pictures. The site cross-fades between neighbours, so 60 already turns smoothly; more pictures
+  mainly make the first download bigger (that matters most on phones). The site reads the count from `frames.json`.
 - `PPU` (2.4): sharpness (pixels per band unit). 2.4 is sharp on retina screens.
 - `SAMPLES` (128): render quality vs time.
+- `MOBILE` (0.7): size of the phone copy in `frames/m/`; `0` turns it off.
 
 ## How the live screen lines up with the picture
 Blender renders the screen **black** (switched off). It never renders HTML. The website puts the HTML screen on top
@@ -54,9 +57,9 @@ and turns it in CSS 3D exactly like the band in the picture:
 | What the screens show | `src/chapters/` | no |
 
 ## Known limits
-- With 60 pictures the turn moves in steps of about 1°, which can look steppy when you scroll slowly, and the HTML
-  screen moves smoothly while the picture steps. Fixes: more pictures (`FRAMES=90`), or a cross-fade between the two
-  nearest pictures in `src/band/band.js`.
+- How the site keeps the turn smooth (`src/band/band.js`): all pictures start downloading at page load, coarse to
+  fine; they are decoded in the background just ahead of the scroll (at most 30 kept in memory); the two pictures
+  either side of the exact turn are cross-faded; phones download the smaller `m/` copy when it is sharp enough.
 - The screen size in `render.py` (the `screen` entry written to `frames.json`) is typed by hand. If `W`, `H`,
   `SCREEN_INSET` or `GLASS_TOP` change in `build.py`, change it there too, or the HTML screen will not line up.
 - Rebuilding needs `../hdr/tribu_studio.hdr` (a copy is packed in `band.blend`, but `build.py` loads the file).

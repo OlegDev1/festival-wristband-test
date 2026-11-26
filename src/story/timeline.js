@@ -44,7 +44,9 @@ function frame(){
 export function start(chapters,onFrame){
   N=chapters;U=INTRO+N;story.style.height=`${Math.round(U*VH_PER_UNIT+4)}vh`;
   const run=()=>onFrame(frame());
-  addEventListener('scroll',run,{passive:true});
+  /* at most one update per screen refresh, however many scroll events arrive */
+  let q=0;const queue=()=>{if(!q)q=requestAnimationFrame(()=>{q=0;run()})};
+  addEventListener('scroll',queue,{passive:true});
   addEventListener('resize',run);
   run();
 }

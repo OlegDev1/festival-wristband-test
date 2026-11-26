@@ -5,6 +5,7 @@ last frame = feature pose (screen facing you). The HTML screen is laid on top in
 
 On a Mac (Apple GPU):  sh blender/render-mac.sh   (or: Blender -b band.blend -P render.py)
 Options (env vars): FRAMES=60  PPU=2.4 (pixels per CSS px at --k=1)  SAMPLES=128  OUT=<website>/frames  ONLY=0,30,59  GPU=1
+                    MOBILE=0.7 (also writes a smaller copy of every frame to frames/m/ for phones; 0 = off)
 """
 import bpy, math, os, json, sys
 from mathutils import Vector, Matrix
@@ -25,6 +26,7 @@ SAMPLES = int(os.environ.get('SAMPLES', 128))
 OUT = os.environ.get('OUT', os.path.join(HERE, '..', 'frames') if os.path.basename(HERE) == 'blender' else os.path.join(HERE, 'frames'))
 ONLY = [int(x) for x in os.environ['ONLY'].split(',')] if os.environ.get('ONLY') else None
 MARGIN = 14                               # BU around the band in every frame
+MOBILE = float(os.environ.get('MOBILE', 0.7))
 
 
 def css_rot(rx, ry):
@@ -101,6 +103,15 @@ def setup_camera(box):
     return dict(x=round(x0, 3), y=round(y0, 3), w=round(Fw, 3), h=round(Fh, 3), px=[rx, ry])
 
 
+def small(src, dst, px, quality):
+    """scaled copy of a rendered frame (Blender scales and saves it; no extra software needed)"""
+    img = bpy.data.images.load(src)
+    img.scale(px[0], px[1])
+    img.file_format = 'WEBP'
+    img.save(filepath=dst, quality=quality)
+    bpy.data.images.remove(img)
+
+
 def use_gpu():
     if os.environ.get('GPU', '1') == '0':
         return 'CPU'
@@ -133,6 +144,9 @@ def main():
     cx, cy = ring_centre(R0['rx'], R0['ry'])
     meta = dict(frames=FRAMES, r0=R0, r1=R1, box=box, ppu=PPU, d=D, ring0=[round(cx, 2), round(cy, 2)],
                 screen=dict(w=156 - 32, h=340 - 32, z=33.05), file='f%03d.webp')
+    if MOBILE > 0:      # smaller copy for phones: the site picks it when it is sharp enough for the screen
+        meta['m'] = dict(dir='m/', px=[int(box['px'][0] * MOBILE), int(box['px'][1] * MOBILE)])
+        os.makedirs(os.path.join(OUT, 'm'), exist_ok=True)
     with open(os.path.join(OUT, 'frames.json'), 'w') as f:
         json.dump(meta, f, indent=1)
     print('device', dev, 'box', box, 'ring0', cx, cy, flush=True)
@@ -142,6 +156,8 @@ def main():
         set_pose(*pose_at(i))
         sc.render.filepath = os.path.join(OUT, 'f%03d.webp' % i)
         bpy.ops.render.render(write_still=True)
+        if MOBILE > 0:
+            small(sc.render.filepath, os.path.join(OUT, 'm', 'f%03d.webp' % i), meta['m']['px'], ims.quality)
         print('frame', i + 1, '/', FRAMES, flush=True)
     print('done ->', OUT)
 

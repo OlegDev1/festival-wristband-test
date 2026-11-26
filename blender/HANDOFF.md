@@ -11,7 +11,7 @@ Repo: OlegDev1/festival-wristband-test. Read CLAUDE.md and blender/README.md fir
 How it works now:
 - The band on the website is a flipbook of 60 pre-rendered pictures (frames/f000–f059.webp). Picture 0 is the side view, picture 59 faces the viewer. The scroll position picks the picture. A live HTML screen is laid on the black rendered glass in CSS 3D.
 - blender/build.py builds the whole band from code (pill case, glass, a separate flat "Screen" object, the woven plum strap loop, materials, the hdr/tribu_studio.hdr lighting plus 5 sun lights, the camera, Cycles + AgX, transparent background) and saves blender/band.blend.
-- blender/render.py is the "photographer". It sets 60 poses between R0 (rx 0, ry -62) and R1 (rx 4, ry -8), frames the camera with lens shift, renders each pose to WebP, and writes frames/frames.json (poses, framing box, screen size). The turn is NOT keyframed inside band.blend.
+- blender/render.py is the "photographer". It sets 60 poses between R0 (rx 0, ry -62) and R1 (rx 4, ry -8), frames the camera with lens shift, renders each pose to WebP (plus a smaller phone copy in frames/m/), and writes frames/frames.json (poses, framing box, screen size). The turn is NOT keyframed inside band.blend.
 - blender/render-mac.sh runs build.py and then render.py. I run it on my Mac for the sharp set.
 
 Rules:
@@ -30,6 +30,10 @@ Testing loop (Blender runs in the sandbox via `pip install bpy --break-system-pa
 2. Full draft set for the site: FRAMES=60 PPU=1.5 SAMPLES=20 GPU=0 OUT=<repo>/frames. On CPU this takes about 10–30 s per picture.
 3. Check alignment in the browser: serve the site (python3 -m http.server 8765), take a screenshot with `.face` filled green, and make sure the green pill sits exactly on the black glass mid-turn and at the end pose. Then screenshot a feature screen (see "Quick render check" in CLAUDE.md for fonts and scroll positions).
 
-Known limits you may be asked about: 60 pictures make the turn move in about 1° steps (fix: FRAMES=90, or cross-fade the two nearest pictures in band.js); there is no side button (the SOS chapter lights the screen edge instead).
+Safety (I render these scripts on my own Mac, as my user):
+- build.py and render.py may only build the scene and write band.blend, frames/ and frames/m/. No internet access (urllib, requests, socket), no running other programs (subprocess, os.system), no deleting files, no paths outside the repo, no enabling Blender's auto-run scripts.
+- Textures and HDRIs: image files only (PNG, JPG, EXR, HDR), from CC0 sources such as Poly Haven or ambientCG, or generated in code. Put them in blender/textures/ and pack them into band.blend. Never add .blend files, Blender add-ons or Python packages from the internet.
+
+Known limits you may be asked about: there is no side button (the SOS chapter lights the screen edge instead). The site already cross-fades between pictures and loads them smartly (see blender/README.md), so the frame count (60) does not need to go up for smoothness.
 
 When done: push to main (it deploys GitHub Pages) and tell me to re-render the sharp set on my Mac with `sh blender/render-mac.sh`.

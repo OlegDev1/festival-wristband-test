@@ -28,8 +28,8 @@ src/chapters/           one file pair per chapter: <id>.js (strings, pose, scree
                         index.js = chapter order; chapters.js = runtime (contract documented at its top); screen.css = shared screen system
 src/captions/           chapter captions (eyebrow, title, body) built from chapter strings
 src/rail/               chapter dots + arrow/page keys
-src/band/               band.js: turn, spring, buzz, look → draws the rendered frame + turns the HTML screen; band.css
-frames/                 the band rendered by Blender: f000…f059.webp (turn from side to front) + frames.json (poses, framing, screen size)
+src/band/               band.js: turn, spring, buzz, look → loads/decodes frames ahead of the scroll, cross-fades them, turns the HTML screen; band.css
+frames/                 the band rendered by Blender: f000…f059.webp (turn from side to front), m/ = smaller phone copy, frames.json (poses, framing, screen size)
 blender/                band.blend + build.py (makes the model) + render.py (renders frames/); blender/README.md explains it, blender/HANDOFF.md = prompt for model work
 src/sections/           how.* ("How it works"), end.* (slogan, colour range, footer)
 hdr/, tools/            studio HDRI (lights the Blender render) and its generator (tools/make_hdr.py)
@@ -64,4 +64,3 @@ Google Fonts are not reachable from the sandbox: route `fonts.googleapis.com` to
 ## Not done yet (ideas, roughly by impact)
 1. Per-chapter turns: render short frame runs between chapter poses (render.py) so the band moves between features again.
 2. A side button on the module for the SOS chapter.
-3. Smaller frame set for phones (PPU ~1.6) picked by screen size.
