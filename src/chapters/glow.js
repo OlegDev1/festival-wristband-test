@@ -1,4 +1,4 @@
-/* Chapter 07 · Glow: six colour swatches around the rim; as you scroll the crew colour steps through
+/* Chapter 07 · Glow: six colour swatches at the round ends of the pill; as you scroll the crew colour steps through
    coral → lagoon → lime → sun, and the band's light ring, halo and glow take that colour (look()). */
 import {txt} from '../core/dom.js';
 import {addStrings} from '../core/i18n.js';
@@ -18,7 +18,7 @@ export default {
   pose:[-26,12,0],
   screen:`
 <div class="scr scr-glow">
-  <i class="sw" style="--a:0deg;--c:#ff5a3c"></i><i class="sw" style="--a:60deg;--c:#43d9ff"></i><i class="sw" style="--a:120deg;--c:#c6f24e"></i><i class="sw" style="--a:180deg;--c:#ffc23d"></i><i class="sw" style="--a:240deg;--c:#ff7ab6"></i><i class="sw" style="--a:300deg;--c:#f4f1ec"></i>
+  <i class="sw" style="--x:30%;--y:15%;--c:#ff5a3c"></i><i class="sw" style="--x:50%;--y:11%;--c:#43d9ff"></i><i class="sw" style="--x:70%;--y:15%;--c:#c6f24e"></i><i class="sw" style="--x:70%;--y:85%;--c:#ffc23d"></i><i class="sw" style="--x:50%;--y:89%;--c:#ff7ab6"></i><i class="sw" style="--x:30%;--y:85%;--c:#f4f1ec"></i>
   <span class="we" data-i="glow.crew"></span>
   <b class="wm" data-r="name"></b>
 </div>`,

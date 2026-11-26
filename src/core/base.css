@@ -1,8 +1,8 @@
 /* Design brief (applies to every feature):
    VOICE: a product launch on a festival night — confident, warm, few words.
    IDEA: the band itself is the presenter: it stands three-quarter, turns to you, then its screen walks through each feature.
-   PICTURE: a WebGL wristband (polished silver case, round braided coral loop, light ring) with an HTML screen laid exactly on top; CSS 3D fallback.
-   COLOUR and TYPE: warm black night, coral strap as the dominant colour, lagoon cyan for friends, sun yellow for places; Unbounded + Inter.
+   PICTURE: a Blender-rendered wristband (polished silver pill module, woven plum loop), played as frames while it turns, with the HTML screen laid exactly on the glass.
+   COLOUR and TYPE: warm black night, plum strap with coral accents, lagoon cyan for friends, sun yellow for places; Unbounded + Inter.
    LAYOUT: one sticky stage; phone = band on top, caption below; wide = caption left, band right; then how-it-works and the colour range.
 
    This file: colour tokens, reset, fonts, shared section padding, reduced motion. */

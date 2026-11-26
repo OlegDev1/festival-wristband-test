@@ -17,7 +17,7 @@ export default {
   screen:`
 <div class="scr scr-sos">
   <i class="sr2"></i><i class="sr2"></i>
-  <svg class="edge" viewBox="0 0 228 228" aria-hidden="true"><circle class="val" data-r="arc" cx="114" cy="114" r="106" pathLength="100" stroke-dasharray="0 100" transform="rotate(-90 114 114)" style="stroke:#fff"/></svg>
+  <svg class="edge" viewBox="0 0 124 308" aria-hidden="true"><path class="val" data-r="arc" d="M62 3.5A58.5 58.5 0 0 1 120.5 62V246A58.5 58.5 0 0 1 3.5 246V62A58.5 58.5 0 0 1 62 3.5Z" pathLength="100" stroke-dasharray="0 100" style="stroke:#fff"/></svg>
   <b class="wb">SOS</b>
   <span class="ws" data-r="a"></span>
   <span class="ws dim" data-r="b"></span>

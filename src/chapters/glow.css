@@ -1,5 +1,5 @@
-/* Chapter 07 · Glow. --ring (the crew colour) is set on the stage by band.js from glow.js look() */
-.scr-glow .sw{position:absolute;left:50%;top:50%;width:calc(var(--k)*20px);height:calc(var(--k)*20px);margin:calc(var(--k)*-10px);border-radius:50%;background:var(--c);transform:rotate(var(--a)) translateY(calc(var(--k)*-84px));transition:transform .35s,box-shadow .35s}
-.scr-glow .sw.on{transform:rotate(var(--a)) translateY(calc(var(--k)*-84px)) scale(1.5);box-shadow:0 0 0 calc(var(--k)*3px) #000,0 0 0 calc(var(--k)*5px) var(--c)}
-.scr-glow::before{content:"";position:absolute;inset:22%;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--ring) 45%,transparent),transparent)}
-.scr-glow .wm{color:var(--ring);position:relative;font-size:calc(var(--k)*28px)}.scr-glow .we{position:relative}
+/* Chapter 07 · Glow. Swatches in two rows at the pill's round ends. --ring (the crew colour) is set on the stage by band.js from glow.js look() */
+.scr-glow .sw{position:absolute;left:var(--x);top:var(--y);width:calc(var(--k)*16px);height:calc(var(--k)*16px);margin:calc(var(--k)*-8px);border-radius:50%;background:var(--c);transition:transform .35s,box-shadow .35s}
+.scr-glow .sw.on{transform:scale(1.45);box-shadow:0 0 0 calc(var(--k)*3px) #000,0 0 0 calc(var(--k)*5px) var(--c)}
+.scr-glow::before{content:"";position:absolute;left:0;right:0;top:28%;bottom:28%;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--ring) 45%,transparent),transparent)}
+.scr-glow .wm{color:var(--ring);position:relative;font-size:calc(var(--k)*20px)}.scr-glow .we{position:relative}

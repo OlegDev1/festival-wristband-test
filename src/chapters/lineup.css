@@ -1,6 +1,5 @@
 /* Chapter 06 · Lineup */
-.scr-lineup .eq{display:flex;align-items:flex-end;gap:calc(var(--k)*5px);height:calc(var(--k)*22px);margin:calc(var(--k)*12px) 0}
+.scr-lineup .eq{display:flex;align-items:flex-end;gap:calc(var(--k)*5px);height:calc(var(--k)*24px);margin:calc(var(--k)*18px) 0}
 .scr-lineup .eq i{width:calc(var(--k)*6px);height:100%;border-radius:calc(var(--k)*3px);background:var(--sun);transform-origin:50% 100%;animation:lineup-eq .8s ease-in-out infinite alternate;animation-delay:calc(var(--i)*-.19s)}
-.scr-lineup .ws{font-size:calc(var(--k)*14px)}
 
 @keyframes lineup-eq{from{transform:scaleY(.25)}to{transform:scaleY(1)}}

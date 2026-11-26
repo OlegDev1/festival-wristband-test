@@ -3,7 +3,7 @@
      1. features register strings and build their DOM (mount)
      2. the language is applied (fills every [data-i], then redraws text built in code)
      3. the timeline starts: on every scroll frame it calls the features below, band last (it needs the active chapter's look)
-     4. the WebGL band loads on its own; if it fails or takes > 6 s the CSS model takes over. */
+     4. the band's rendered frames load on their own (src/band). */
 import './core/common-strings.js';
 import './sections/how.js';
 import {startLang} from './core/i18n.js';
@@ -37,9 +37,3 @@ timeline.start(CHAPTERS.length,f=>{
   rail.update(f);
   band.update(f,look);
 });
-
-/* WebGL band: loaded separately so a missing three.js or WebGL only costs the CSS model, never the page */
-const slow=setTimeout(band.fallback,6000);
-import('./gl/index.js')
-  .then(m=>{if(band.fellBack())return;band.useGL(m.createGL(document.getElementById('gl')));clearTimeout(slow)})
-  .catch(e=>{console.warn('WebGL unavailable, using CSS model',e);band.fallback()});

@@ -19,9 +19,8 @@
 <link rel="stylesheet" href="src/rail/rail.css">
 <link rel="stylesheet" href="src/sections/how.css">
 <link rel="stylesheet" href="src/sections/end.css">
-<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
-<link rel="modulepreload" href="vendor/three.module.min.js">
-<link rel="modulepreload" href="src/gl/index.js">
+<link rel="preload" href="frames/frames.json" as="fetch" crossorigin>
+<link rel="preload" href="frames/f000.webp" as="image">
 <script type="module" src="src/main.js"></script>
 </head>
 <body>
@@ -45,22 +44,21 @@
     <!-- src/hero: wordmark, behind the band -->
     <h1 class="hero-t" id="heroT">Tribu</h1>
 
-    <!-- src/band: the wristband. #gl = WebGL canvas (src/gl). .watch = CSS 3D model and the HTML screen on top of the glass;
-         chapter screens (src/chapters) are mounted into #screen -->
+    <!-- src/band: the wristband. #frames = the Blender render for the current turn (frames/, made by blender/render.py);
+         .face/.screen = the live HTML screen laid on the rendered glass in CSS 3D. Chapter screens (src/chapters) mount into #screen -->
     <div class="haloL" id="haloL"><div class="halo"></div></div>
-    <div class="gl" id="gl"></div>
     <div class="view">
       <div class="pos" id="pos">
         <div class="bz" id="bz">
-          <div class="watch webgl" id="watch">
-            <i class="back"></i>
-            <i class="btn"></i>
-            <div class="face">
-              <div class="ringl"></div>
-              <div class="screen" id="screen">
-                <i class="glass"></i>
+          <canvas class="frames" id="frames" aria-label="Tribu wristband"></canvas>
+          <div class="persp">
+            <div class="watch" id="watch">
+              <div class="face">
+                <div class="screen" id="screen">
+                  <i class="glass"></i>
+                </div>
+                <i class="shade"></i>
               </div>
-              <i class="shade"></i>
             </div>
           </div>
         </div>

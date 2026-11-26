@@ -1,4 +1,4 @@
-/* Chapter 01 · Home screen: day label, live clock, three friends nearby, battery arc. No scroll animation. */
+/* Chapter 01 · Home screen: day label, live clock (hours over minutes), three friends nearby, battery arc around the pill. No scroll animation. */
 import {txt} from '../core/dom.js';
 import {addStrings} from '../core/i18n.js';
 
@@ -13,13 +13,13 @@ export default {
   pose:[-10,4,0],
   screen:`
 <div class="scr scr-home">
-  <svg class="edge" viewBox="0 0 228 228" aria-hidden="true"><circle class="trk" cx="114" cy="114" r="106"/><circle class="val" cx="114" cy="114" r="106" pathLength="100" stroke-dasharray="86 100" transform="rotate(-90 114 114)" style="stroke:var(--lime)"/></svg>
+  <svg class="edge" viewBox="0 0 124 308" aria-hidden="true"><path class="trk" d="M62 3.5A58.5 58.5 0 0 1 120.5 62V246A58.5 58.5 0 0 1 3.5 246V62A58.5 58.5 0 0 1 62 3.5Z"/><path class="val" d="M62 3.5A58.5 58.5 0 0 1 120.5 62V246A58.5 58.5 0 0 1 3.5 246V62A58.5 58.5 0 0 1 62 3.5Z" pathLength="100" stroke-dasharray="86 100" style="stroke:var(--lime)"/></svg>
   <span class="we" data-i="home.day"></span>
-  <b class="wb" data-r="clock">23:41</b>
+  <b class="wb"><span data-r="hh">23</span><span data-r="mm">41</span></b>
   <span class="row"><span class="stack"><i class="av" style="--c:var(--cyan)"></i><i class="av" style="--c:var(--lime)"></i><i class="av" style="--c:var(--sun)"></i></span><span class="ws" data-i="home.near"></span></span>
 </div>`,
   mount(r){
-    const tick=()=>{const t=new Date();txt(r.clock,String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0'))};
+    const tick=()=>{const t=new Date();txt(r.hh,String(t.getHours()).padStart(2,'0'));txt(r.mm,String(t.getMinutes()).padStart(2,'0'))};
     tick();setInterval(tick,15000);
   }
 };

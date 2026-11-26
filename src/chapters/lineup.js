@@ -14,7 +14,7 @@ export default {
   pose:[10,-4,-2],
   screen:`
 <div class="scr scr-lineup">
-  <svg class="edge" viewBox="0 0 228 228" aria-hidden="true"><circle class="trk" cx="114" cy="114" r="106"/><circle class="val" data-r="arc" cx="114" cy="114" r="106" pathLength="100" stroke-dasharray="30 100" transform="rotate(-90 114 114)" style="stroke:var(--sun)"/></svg>
+  <svg class="edge" viewBox="0 0 124 308" aria-hidden="true"><path class="trk" d="M62 3.5A58.5 58.5 0 0 1 120.5 62V246A58.5 58.5 0 0 1 3.5 246V62A58.5 58.5 0 0 1 62 3.5Z"/><path class="val" data-r="arc" d="M62 3.5A58.5 58.5 0 0 1 120.5 62V246A58.5 58.5 0 0 1 3.5 246V62A58.5 58.5 0 0 1 62 3.5Z" pathLength="100" stroke-dasharray="30 100" style="stroke:var(--sun)"/></svg>
   <span class="we" data-i="lineup.now" style="--a:var(--sun)"></span>
   <b class="wm">Kora Lumen</b>
   <span class="eq"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i></span>

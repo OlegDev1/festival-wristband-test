@@ -18,7 +18,7 @@ No build step: plain ES modules and CSS files, served as-is. Pushing to `main` d
 
 ```
 index.html              shell: markup skeleton, CSS links, import map, loads src/main.js
-src/main.js             boot: mounts features, starts the timeline, loads WebGL (fallback to CSS model)
+src/main.js             boot: mounts features, starts the timeline
 src/core/               dom.js (helpers), i18n.js (languages, addStrings/strings/onLang), common-strings.js, base.css (tokens, design brief)
 src/story/              timeline.js: scroll → one frame object for everyone (documented at the top); story.css (#story, sticky .stage)
 src/header/             logo, RU/EN/ES switch, progress bar
@@ -28,15 +28,15 @@ src/chapters/           one file pair per chapter: <id>.js (strings, pose, scree
                         index.js = chapter order; chapters.js = runtime (contract documented at its top); screen.css = shared screen system
 src/captions/           chapter captions (eyebrow, title, body) built from chapter strings
 src/rail/               chapter dots + arrow/page keys
-src/band/               band.js: pose, spring, buzz, look → renderer; css-model.js: CSS 3D fallback; band.css
-src/gl/                 WebGL band: index.js (renderer, camera, draw), lighting.js, case.js, glass.js, button.js, strap.js, braid.js
+src/band/               band.js: turn, spring, buzz, look → draws the rendered frame + turns the HTML screen; band.css
+frames/                 the band rendered by Blender: f000…f059.webp (turn from side to front) + frames.json (poses, framing, screen size)
+blender/                band.blend + build.py (makes the model) + render.py (renders frames/); see blender/README.md
 src/sections/           how.* ("How it works"), end.* (slogan, colour range, footer)
-vendor/                 three.module.min.js + RGBELoader.js (three.js r170), mapped as 'three' by the import map
-hdr/, tools/            studio HDRI and its generator (tools/make_hdr.py)
+hdr/, tools/            studio HDRI (lights the Blender render) and its generator (tools/make_hdr.py)
 ```
 
 How data flows: every scroll frame, `timeline.js` builds `frame` → `main.js` passes it to header, hero, scene, chapters
-(which returns the active chapter's `look`), captions, rail, then `band.update(frame, look)` → spring → `gl.draw(v)` or CSS model.
+(which returns the active chapter's `look`), captions, rail, then `band.update(frame, look)` → spring → canvas frame for the turn + CSS 3D rotation of the HTML screen.
 Strings: each feature calls `addStrings('<ns>', {ru,en,es})` next to its code; markup uses `data-i="<ns>.<key>"`.
 Shared strings (friend names, unit, colour names) are in `src/core/common-strings.js`.
 CSS isolation: chapter CSS is scoped under `.scr-<id>` and its keyframes are prefixed `<id>-`, so a chapter edit can't leak.
@@ -46,30 +46,22 @@ CSS isolation: chapter CSS is scoped under `.scr-<id>` and its keyframes are pre
 |---|---|
 | A chapter's copy, screen, animation | `src/chapters/<id>.js` + `<id>.css` only. Ids: home, radar, find, bump, places, lineup, glow, sos |
 | Add / reorder chapters | `src/chapters/index.js`. Scroll length, rail and captions follow (≈180vh per chapter, `VH_PER_UNIT` in `timeline.js`) |
-| Shared screen look | `src/chapters/screen.css`: `.we` coloured label, `.wb` (clock 51) / `.wm` (24) / `.nd b` (48) value, `.ws` (16) line; arcs stroke 3.5. Design size 228, scaled by `--k` |
+| Shared screen look | `src/chapters/screen.css`: pill screen 124×308 design size, scaled by `--k`; `.we` label (9) / `.wb` clock, hours over minutes (50) / `.wm` (17) / `.nd b` (40) / `.ws` (12); edge arc = pill `<path>` starting top centre, stroke 3 |
 | Scroll pacing | `src/story/timeline.js` `frame()`: `INTRO=1.6`; turn between features `blend` (second half of each chapter); screen switch `floor(q+.25)`; chapter animation `lt=fr*1.17` |
-| Opening pose, band position/size | `src/band/band.js`: `R0={ry:-62,…cx:97}` (recompute `cx` if the loop size changes: x-extent midpoint after a −62° Y rotation ≈ (0.469·62 + 0.883·(2b+9.5) − 81.3)/2); `size()` (phone `w*.63/260`); `.shade` dim factor `.1` in `apply()` |
-| WebGL screen overlay | `src/band/band.css`: `.webgl .screen{background:none}`, `.glass` sheen fades with `--gs` |
+| Opening pose, band position/size | Poses live in `blender/render.py` (`R0`, `R1`) and are copied to `frames/frames.json`; change them there and re-render. `src/band/band.js`: opening scale `S0`, `size()` (divisor 290 = band units), chapter tilt = 2D `rz` from each chapter's `pose` (its ry/rx are ignored: the render has one turn) |
+| Screen on the band | `src/band/band.css`: `.persp` (1800·k perspective at the band centre = the Blender camera), `.face` pill `--sw`×`--sh` at depth `--sz` (from frames.json), `.glass` sheen, `.glow`/`.sos` edge light |
 | Hero text | `src/hero/`: title `.hero-t` tall light Six Caps, uppercase, high up *behind* the band, size `min(64vh,70vw)`; tagline `.hero-f`; `--hy` lifts the title on scroll |
 | Captions / rail | `src/captions/`, `src/rail/` (coral `.eyebrow` from each chapter's `label`) |
-| Braid texture | `src/gl/braid.js`: `BRAID` + `braidTextures()`: procedural 1024 tile, 2/2 diagonal braid; colour, normal, disp (R height, G roughness), anisotropy maps |
-| Band shape + material | `src/gl/strap.js`: `loopGeometry()` oval `a=200,b=135`, cross-section 124×19, `NF=64`; `strapMat` matte fabric (sheen .5, envMapIntensity .45, anisotropy .35) |
-| Case | `src/gl/case.js`: body `satin` (roughness .42) + top edge `silver` (.3). Keep radius 130.2, half-thickness 23 and glass r 114.2 at z 22.7, or the HTML screen misaligns |
-| Glass, light ring, glow | `src/gl/glass.js`: black dielectric, IOR 1.77, dome-bent normals; reflections fade with `v.scr` (uniforms only) |
-| Button | `src/gl/button.js`: group rotated 14°, `slot` + `btn`, emissive glow for SOS |
-| Lighting | `src/gl/lighting.js`: HDRI `hdr/tribu_studio.hdr` via `RGBELoader` → PMREM (regenerate: `python3 tools/make_hdr.py tinted hdr/tribu_studio.hdr`; equirect centre = +X, u .75 = +Z toward camera); `envScene()` is only the placeholder; lights hemi .08, key 2.9, side 1.5, cyan rim .7, coral .2 |
+| Band model, materials, light | `blender/build.py` (pill 156×340×60 BU, glass, screen, woven plum strap, studio HDRI + suns) → `band.blend`; then `blender/render.py` → `frames/` |
+| Re-render the band | `sh blender/render-mac.sh` on a Mac with Blender (GPU, ~10–25 min), or `blender -b blender/band.blend -P blender/render.py`. Env: `FRAMES`, `PPU` (px per band unit, 2.4 = sharp on retina), `SAMPLES` |
 | Translations | the feature's own file (`addStrings`); shared ones in `src/core/common-strings.js` |
 
 ## Quick render check
-Serve with `python3 -m http.server 8765` from the repo root. Screenshot with Playwright + `/usr/bin/google-chrome`
-(`--use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader`), viewport 390×844 at 2×, after waiting about 3.5 s.
+Serve with `python3 -m http.server 8765` from the repo root. Screenshot with Playwright + `/usr/bin/google-chrome`, after waiting about 2.5 s.
 To view feature k: `scrollTo(0, story.offsetTop + ((1.6 + k + .55)/9.6) * (story.offsetHeight - innerHeight))` (9.6 = 1.6 + number of chapters).
-With swiftshader a screenshot sometimes catches a stale frame (HTML screen offset from the WebGL band); re-shoot before debugging it.
 Google Fonts are not reachable from the sandbox: route `fonts.googleapis.com` to local `@fontsource/six-caps` + `unbounded` + `inter` woff2 files in Playwright, or the render falls back to system fonts.
 
 ## Not done yet (ideas, roughly by impact)
-1. Band attachment: the loop passes through the middle of the case; there are no slots or connectors.
-2. Ambient occlusion baked in Blender between case, button, glass edge and band.
-3. Button set into a real cut-out in the case.
-4. Case back details.
-5. When moving to a GLB: KTX2 textures, meshopt compression, and lowering the pixel ratio automatically when the frame rate drops.
+1. Per-chapter turns: render short frame runs between chapter poses (render.py) so the band moves between features again.
+2. A side button on the module for the SOS chapter.
+3. Smaller frame set for phones (PPU ~1.6) picked by screen size.

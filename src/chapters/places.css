@@ -1,8 +1,8 @@
 /* Chapter 05 · Places */
-.scr-places .chips{display:flex;justify-content:center;gap:calc(var(--k)*8px);margin-bottom:calc(var(--k)*14px)}
-.scr-places .chip{display:grid;place-items:center;width:calc(var(--k)*38px);height:calc(var(--k)*38px);border-radius:50%;background:rgba(255,255,255,.1);font:700 calc(var(--k)*11px)/1 Inter,sans-serif;font-style:normal;transition:background .3s,color .3s}
-.scr-places .chip svg{width:calc(var(--k)*20px);height:calc(var(--k)*20px);fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.scr-places .chips{display:flex;justify-content:center;gap:calc(var(--k)*6px);margin-bottom:calc(var(--k)*22px)}
+.scr-places .chip{display:grid;place-items:center;width:calc(var(--k)*30px);height:calc(var(--k)*30px);border-radius:50%;background:rgba(255,255,255,.1);font:700 calc(var(--k)*9px)/1 Inter,sans-serif;font-style:normal;transition:background .3s,color .3s}
+.scr-places .chip svg{width:calc(var(--k)*16px);height:calc(var(--k)*16px);fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .scr-places .chip.on{background:var(--sun);color:#14100e}
-.scr-places .nd{margin:calc(var(--k)*6px) 0 calc(var(--k)*6px)}
-.scr-places .nd svg{width:calc(var(--k)*20px);height:calc(var(--k)*20px);fill:var(--sun);align-self:center;transition:transform .4s}
-.scr-places .ws{font-size:calc(var(--k)*14px)}
+.scr-places .nd{gap:calc(var(--k)*2px);margin:calc(var(--k)*10px) 0 calc(var(--k)*8px)}
+.scr-places .nd b{font-size:calc(var(--k)*36px)}
+.scr-places .nd svg{width:calc(var(--k)*16px);height:calc(var(--k)*16px);fill:var(--sun);align-self:center;transition:transform .4s}
