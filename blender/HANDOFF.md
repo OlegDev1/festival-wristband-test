@@ -25,10 +25,10 @@ Rules:
 - The turn (R0, R1, frame count) lives in render.py and reaches the site through frames.json. The scroll playback (when the turn happens, when the screen turns on, smoothing, position) lives in src/story/timeline.js and src/band/band.js. Only touch those if I ask.
 - build.py needs hdr/tribu_studio.hdr next to blender/.
 
-Testing loop (Blender runs in the sandbox via `pip install bpy --break-system-packages`; open band.blend with bpy and run render.py with runpy):
-1. Run build.py, then render test pictures 0 and 59 only: env FRAMES=60 ONLY=0,59 PPU=1.2 SAMPLES=24 GPU=0 OUT=/tmp/test. Composite them on the site background #0b0809 and show me before going further.
-2. Full draft set for the site: FRAMES=60 PPU=1.5 SAMPLES=20 GPU=0 OUT=<repo>/frames. On CPU this takes about 10–30 s per picture.
-3. Check alignment in the browser: serve the site (python3 -m http.server 8765), take a screenshot with `.face` filled green, and make sure the green pill sits exactly on the black glass mid-turn and at the end pose. Then screenshot a feature screen (see "Quick render check" in CLAUDE.md for fonts and scroll positions).
+Testing (you only model. I render the full set on my Mac and check the animation and the screen alignment myself):
+- Blender runs in the sandbox via `pip install bpy --break-system-packages`; open band.blend with bpy and run render.py with runpy.
+- After a model change, run build.py, then render low-res test pictures 0 and 59 only: env FRAMES=60 ONLY=0,59 PPU=1.2 SAMPLES=24 GPU=0 OUT=/tmp/test. Composite them side by side on the site background #0b0809 and look. If it isn't right, fix build.py and render again (at most 2 tries, then tell me what's blocking it). Show me the final picture.
+- Don't render the full set, don't write to frames/, and don't check the site in a browser.
 
 Safety (I render these scripts on my own Mac, as my user):
 - build.py and render.py may only build the scene and write band.blend, frames/ and frames/m/. No internet access (urllib, requests, socket), no running other programs (subprocess, os.system), no deleting files, no paths outside the repo, no enabling Blender's auto-run scripts.
