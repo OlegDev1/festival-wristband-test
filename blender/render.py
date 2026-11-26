@@ -4,7 +4,7 @@ The website (src/band/band.js) plays these frames as you scroll: frame 0 = openi
 last frame = feature pose (screen facing you). The HTML screen is laid on top in CSS 3D with the same pose.
 
 On a Mac (Apple GPU):  sh blender/render-mac.sh   (or: Blender -b band.blend -P render.py)
-Options (env vars): FRAMES=60  PPU=2.4 (pixels per CSS px at --k=1)  SAMPLES=128  OUT=<website>/frames  ONLY=0,30,59  GPU=1
+Options (env vars): FRAMES=60  PPU=3 (pixels per CSS px at --k=1)  SAMPLES=128  OUT=<website>/frames  ONLY=0,30,59  GPU=1
                     MOBILE=0.7 (also writes a smaller copy of every frame to frames/m/ for phones; 0 = off)
 """
 import bpy, math, os, json, sys
@@ -21,7 +21,7 @@ R0 = dict(rx=0.0, ry=-62.0)               # opening: three-quarter side view, th
 R1 = dict(rx=4.0, ry=-8.0)                # features: screen toward you, a slight turn so the flank shows
 
 FRAMES = int(os.environ.get('FRAMES', 60))
-PPU = float(os.environ.get('PPU', 2.4))
+PPU = float(os.environ.get('PPU', 3))
 SAMPLES = int(os.environ.get('SAMPLES', 128))
 OUT = os.environ.get('OUT', os.path.join(HERE, '..', 'frames') if os.path.basename(HERE) == 'blender' else os.path.join(HERE, 'frames'))
 ONLY = [int(x) for x in os.environ['ONLY'].split(',')] if os.environ.get('ONLY') else None

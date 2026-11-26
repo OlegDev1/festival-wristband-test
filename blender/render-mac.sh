@@ -9,7 +9,7 @@ BL="/Applications/Blender.app/Contents/MacOS/Blender"
 [ -x "$BL" ] || { echo "Blender not found in /Applications. Install it from blender.org first."; exit 1; }
 echo "Building the band in your Blender version …"
 "$BL" -b -P "$DIR/build.py" 2>&1 | grep -E "built|Error" || true
-echo "Rendering ${FRAMES:-60} frames … (about 10-25 minutes on an M1; progress is printed per frame)"
-FRAMES=${FRAMES:-60} PPU=${PPU:-2.4} SAMPLES=${SAMPLES:-128} OUT="$DIR/../frames" \
+echo "Rendering ${FRAMES:-60} frames … (about 15-40 minutes on an M1; progress is printed per frame)"
+FRAMES=${FRAMES:-60} PPU=${PPU:-3} SAMPLES=${SAMPLES:-128} OUT="$DIR/../frames" \
   "$BL" -b "$DIR/band.blend" -P "$DIR/render.py" 2>&1 | grep --line-buffered -E "^(device|frame|done)|Error"
 echo "Done. Reload the page to see the new frames."

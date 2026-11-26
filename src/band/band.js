@@ -65,11 +65,12 @@ function pump(){
   }
 }
 
-/* canvas covers the framing box around the band centre, in CSS px; backing store follows the device pixels (max 2×).
+/* canvas covers the framing box around the band centre, in CSS px; backing store follows the device pixels, max 2.5×
+   (3× phones: 2.5× looks as sharp on a moving band and keeps the 60 decoded frames at ~235 MB instead of ~340 MB).
    A new backing size means decoding again; a different frame set (phone vs desktop copy) means downloading again. */
 function layout(force){
   if(!kk)return;
-  const b=F.box,w=b.w*kk,h=b.h*kk;dpr=Math.min(window.devicePixelRatio||1,2);
+  const b=F.box,w=b.w*kk,h=b.h*kk;dpr=Math.min(window.devicePixelRatio||1,2.5);
   Object.assign(cv.style,{left:`${b.x*kk}px`,top:`${b.y*kk}px`,width:`${w}px`,height:`${h}px`});
   stage.style.setProperty('--sw',F.screen.w);stage.style.setProperty('--sh',F.screen.h);stage.style.setProperty('--sz',F.screen.z);
   if(!meta)return;

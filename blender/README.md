@@ -36,7 +36,8 @@ Blender and want to keep that, run only the render step:
 Options, set before the command, e.g. `FRAMES=90 sh blender/render-mac.sh`:
 - `FRAMES` (60): number of pictures. The site cross-fades between neighbours, so 60 already turns smoothly; more pictures
   mainly make the first download bigger (that matters most on phones). The site reads the count from `frames.json`.
-- `PPU` (2.4): sharpness (pixels per band unit). 2.4 is sharp on retina screens.
+- `PPU` (3): sharpness (pixels per band unit). 3 gives 1312 px wide pictures: full sharpness on a retina Mac;
+  the phone copy (`MOBILE` 0.7 → 918 px) is full sharpness at the 2.5× the site uses on phones.
 - `SAMPLES` (128): render quality vs time.
 - `MOBILE` (0.7): size of the phone copy in `frames/m/`; `0` turns it off.
 
