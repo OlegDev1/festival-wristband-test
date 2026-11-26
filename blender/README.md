@@ -1,15 +1,62 @@
-# Band render (Blender)
+# The band render (Blender)
 
-The wristband on the site is a Blender render played as frames while you scroll.
+## The idea in one minute
+The wristband on the website is not live 3D. It works like a **flipbook**: 60 still pictures of the band, each turned a
+little more, from the side view (picture 0) to facing you (picture 59). As you scroll, the page shows the picture that
+matches your scroll position. Then it lays the live screen (normal HTML) on top of the black glass in that picture.
 
-- `band.blend`: the model, materials and lights (the studio HDRI is packed inside).
-- `build.py`: rebuilds `band.blend` from code (dimensions, strap path, materials). Run it if you want to change the model: `blender -b -P build.py`.
-- `render.py`: renders the turn (side view → screen facing you) into `../frames/` as WebP and writes `frames.json`, which the site reads (poses, framing, screen size).
+**Blender only makes the 60 pictures. The website plays them.**
 
-## Render on a Mac
-1. Install Blender (blender.org) into Applications.
-2. In Terminal, from the repo folder: `sh blender/render-mac.sh`
-3. Reload the page. Commit `frames/` to publish.
+## What is in this folder
+| File | What it is | When you touch it |
+|---|---|---|
+| `band.blend` | The 3D band: model, materials, lights, camera. The studio lighting image is packed inside. | Open it to look around. You can edit it in Blender, but read the warning below. |
+| `build.py` | The code that built `band.blend`. I made the model by writing code instead of clicking in Blender. Running it re-creates `band.blend` from scratch. | When you change the model by code (what an AI agent does). |
+| `render.py` | The "photographer". It turns the band in 60 small steps, renders a picture at each step in Cycles, saves them to `../frames/`, and writes `../frames/frames.json` (poses, framing, screen size) for the website. | To change the start or end pose, the number of pictures, or the quality. |
+| `render-mac.sh` | One command that runs `build.py`, then `render.py`, with the Blender installed on your Mac. | This is what you run. |
 
-Options: `PPU=3 sh blender/render-mac.sh` renders sharper (bigger files), `SAMPLES=64` renders faster, `FRAMES=90` makes the turn smoother.
-The poses (`R0`, `R1`) are at the top of `render.py`; the page follows `frames.json`, so you only change them there.
+**Why not just press Render → Render Animation in Blender?** The turning is not stored in `band.blend`;
+`render.py` does it step by step. Render Animation would give you the same picture many times.
+
+**Warning:** `render-mac.sh` runs `build.py` first, which re-creates `band.blend`. If you edited `band.blend` by hand in
+Blender and want to keep that, run only the render step:
+`/Applications/Blender.app/Contents/MacOS/Blender -b blender/band.blend -P blender/render.py`
+
+## Render the sharp pictures on a Mac (no git needed)
+1. Install the latest Blender from blender.org into Applications.
+2. On GitHub, click **Code → Download ZIP** (the whole site is only about 4 MB) and unzip it.
+   `build.py` also needs the `hdr/` folder next to `blender/`, so take the whole zip, not just this folder.
+3. In Terminal, go into the unzipped folder and run `sh blender/render-mac.sh`.
+   The first line should say `device METAL` (the Mac's graphics chip). If it says `CPU`, it still works, only slower.
+   It prints one line per picture.
+4. To publish: on GitHub open the `frames` folder → **Add file → Upload files** → drag in everything from your new
+   `frames` folder (60 `.webp` files + `frames.json`) → **Commit changes**. The site updates in about a minute.
+
+Options, set before the command, e.g. `FRAMES=90 sh blender/render-mac.sh`:
+- `FRAMES` (60): more pictures = a smoother turn and bigger download. The website reads the count from `frames.json`, so no code change is needed.
+- `PPU` (2.4): sharpness (pixels per band unit). 2.4 is sharp on retina screens.
+- `SAMPLES` (128): render quality vs time.
+
+## How the live screen lines up with the picture
+Blender renders the screen **black** (switched off). It never renders HTML. The website puts the HTML screen on top
+and turns it in CSS 3D exactly like the band in the picture:
+- same units: 1 band unit = 1 CSS pixel (times the page scale `--k`)
+- same camera: 1800 units in front of the band = CSS perspective 1800 px, centred on the band
+- same turn: the scroll value that picks the picture also sets the CSS rotation
+- same screen: a 124 × 308 pill, 33 units in front of the case centre (sizes come from `frames.json`)
+
+## Where each part of the animation lives
+| Part | Where | Needs a re-render? |
+|---|---|---|
+| The model (shape, materials, light) | `blender/build.py` → `band.blend` | yes |
+| The turn: start pose `R0`, end pose `R1`, number of pictures, camera framing | `blender/render.py` | yes |
+| When the turn happens while scrolling, when the screen turns on, where the band sits, the smoothing | `src/story/timeline.js`, `src/band/band.js` | no |
+| What the screens show | `src/chapters/` | no |
+
+## Known limits
+- With 60 pictures the turn moves in steps of about 1°, which can look steppy when you scroll slowly, and the HTML
+  screen moves smoothly while the picture steps. Fixes: more pictures (`FRAMES=90`), or a cross-fade between the two
+  nearest pictures in `src/band/band.js`.
+- The screen size in `render.py` (the `screen` entry written to `frames.json`) is typed by hand. If `W`, `H`,
+  `SCREEN_INSET` or `GLASS_TOP` change in `build.py`, change it there too, or the HTML screen will not line up.
+- Rebuilding needs `../hdr/tribu_studio.hdr` (a copy is packed in `band.blend`, but `build.py` loads the file).

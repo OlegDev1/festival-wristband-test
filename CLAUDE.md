@@ -30,7 +30,7 @@ src/captions/           chapter captions (eyebrow, title, body) built from chapt
 src/rail/               chapter dots + arrow/page keys
 src/band/               band.js: turn, spring, buzz, look → draws the rendered frame + turns the HTML screen; band.css
 frames/                 the band rendered by Blender: f000…f059.webp (turn from side to front) + frames.json (poses, framing, screen size)
-blender/                band.blend + build.py (makes the model) + render.py (renders frames/); see blender/README.md
+blender/                band.blend + build.py (makes the model) + render.py (renders frames/); blender/README.md explains it, blender/HANDOFF.md = prompt for model work
 src/sections/           how.* ("How it works"), end.* (slogan, colour range, footer)
 hdr/, tools/            studio HDRI (lights the Blender render) and its generator (tools/make_hdr.py)
 ```
