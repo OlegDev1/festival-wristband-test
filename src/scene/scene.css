@@ -1,10 +1,12 @@
 /* Stage scenery behind and in front of the band: swaying light beams, coral horizon glow, crowd silhouette,
-   and the bottom dim that keeps captions readable on phones. */
-.beams{position:absolute;inset:0;z-index:0;pointer-events:none}
+   and the bottom dim that keeps captions readable on phones.
+   will-change:opacity on the parts scene.js fades every scroll frame: each gets its own GPU layer, so the fade costs
+   nothing; without it Chrome re-rasterized them every frame near the top and fast scrolls dropped frames (band twitch). */
+.beams{position:absolute;inset:0;z-index:0;pointer-events:none;will-change:opacity}
 .beams i{position:absolute;top:-12vh;width:40vw;height:130vh;transform-origin:50% 0;clip-path:polygon(47% 0,53% 0,100% 100%,0 100%);background:linear-gradient(rgba(255,90,60,.26),rgba(255,90,60,0) 72%);animation:sway 9s ease-in-out infinite alternate}
 .beams i.c{background:linear-gradient(rgba(67,217,255,.17),rgba(67,217,255,0) 70%);animation-duration:11s}
-.horizon{position:absolute;inset:auto 0 0;height:50vh;z-index:0;background:radial-gradient(70% 75% at 50% 100%,rgba(255,90,60,.32),rgba(255,90,60,0) 70%)}
-.crowd{position:absolute;left:0;bottom:0;width:100%;height:24vh;z-index:3;fill:#040203;stroke:#040203;pointer-events:none}
-.dimB{position:absolute;inset:auto 0 0;height:46%;z-index:3;opacity:0;pointer-events:none;background:linear-gradient(rgba(11,8,9,0),var(--bg) 62%)}
+.horizon{position:absolute;inset:auto 0 0;height:50vh;z-index:0;will-change:opacity;background:radial-gradient(70% 75% at 50% 100%,rgba(255,90,60,.32),rgba(255,90,60,0) 70%)}
+.crowd{position:absolute;left:0;bottom:0;width:100%;height:24vh;z-index:3;will-change:opacity;fill:#040203;stroke:#040203;pointer-events:none}
+.dimB{position:absolute;inset:auto 0 0;height:46%;z-index:3;opacity:0;will-change:opacity;pointer-events:none;background:linear-gradient(rgba(11,8,9,0),var(--bg) 62%)}
 
 @keyframes sway{from{transform:rotate(var(--r0))}to{transform:rotate(var(--r1))}}
