@@ -26,7 +26,7 @@ src/chapters/           one file pair per chapter: <id>.js (strings, pose, scree
                         index.js = chapter order; chapters.js = runtime (contract documented at its top); screen.css = shared screen system
 src/captions/           chapter captions (eyebrow, title, body) built from chapter strings
 src/rail/               chapter dots + arrow/page keys
-src/band/               band.js: turn, spring, buzz, look → loads/decodes frames ahead of the scroll, cross-fades them, turns the HTML screen; band.css
+src/band/               band.js: turn, spring (timed in ms), buzz, look → loads and decodes every frame at page load and keeps them all, cross-fades them, turns the HTML screen; band.css
 frames/                 the band rendered by Blender: f000…f059.webp (turn from side to front), m/ = smaller phone copy, frames.json (poses, framing, screen size)
 blender/                band.blend + build.py (makes the model) + render.py (renders frames/); blender/README.md explains it, blender/HANDOFF.md = prompt for model work
 src/sections/           how.* ("How it works"), end.* (slogan, colour range, footer)
