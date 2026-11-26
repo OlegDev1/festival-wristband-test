@@ -1,0 +1,14 @@
+/* Chapter 02 · Radar */
+.scr-radar .radar{position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 calc(var(--k)*37px),rgba(255,255,255,.1) calc(var(--k)*37px) calc(var(--k)*38px)),radial-gradient(circle,rgba(67,217,255,.13),transparent 70%)}
+.scr-radar .radar::before,.scr-radar .radar::after{content:"";position:absolute;background:rgba(255,255,255,.06)}
+.scr-radar .radar::before{left:50%;top:0;bottom:0;width:1px}.scr-radar .radar::after{top:50%;left:0;right:0;height:1px}
+.scr-radar .sweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 280deg,rgba(67,217,255,.4) 360deg);animation:radar-spin 3.2s linear infinite}
+.scr-radar .me{position:absolute;left:50%;top:50%;width:calc(var(--k)*12px);height:calc(var(--k)*12px);margin:calc(var(--k)*-6px);border-radius:50%;background:#fff;box-shadow:0 0 0 calc(var(--k)*5px) rgba(255,255,255,.16)}
+.scr-radar .fr{position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-50%);width:calc(var(--k)*28px);height:calc(var(--k)*28px);font-size:calc(var(--k)*13px)}
+.scr-radar .fr::after{content:"";position:absolute;inset:calc(var(--k)*-6px);border-radius:50%;border:calc(var(--k)*2px) solid var(--c);opacity:0;animation:radar-pulse 2.4s ease-out infinite;animation-delay:var(--dl)}
+.scr-radar .fr.hi{width:calc(var(--k)*34px);height:calc(var(--k)*34px);font-size:calc(var(--k)*15px)}
+.scr-radar .rl{position:absolute;left:0;right:0;bottom:calc(var(--k)*24px)}
+.scr-radar .rl b{color:#fff}
+
+@keyframes radar-spin{to{transform:rotate(1turn)}}
+@keyframes radar-pulse{0%{transform:scale(.7);opacity:.9}100%{transform:scale(1.9);opacity:0}}

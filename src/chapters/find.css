@@ -1,0 +1,10 @@
+/* Chapter 03 · Find */
+.scr-find .ntop{display:flex;justify-content:center;align-items:center;gap:calc(var(--k)*7px);font:600 calc(var(--k)*15px)/1 Inter,sans-serif}
+.scr-find .ar{position:relative;width:calc(var(--k)*62px);height:calc(var(--k)*62px);margin:calc(var(--k)*10px) 0 calc(var(--k)*6px)}
+.scr-find .ar svg{width:100%;height:100%;fill:var(--cyan);transition:transform .3s,opacity .3s}
+.scr-find .ping{position:absolute;inset:calc(var(--k)*4px);border-radius:50%;background:var(--cyan);opacity:0}
+.scr-find.near .ar svg{opacity:0;transform:scale(.4)}
+.scr-find.near .ping{animation:find-ping 1.1s ease-out infinite}
+.scr-find .ws{margin-top:calc(var(--k)*6px);font-size:calc(var(--k)*14px)}
+
+@keyframes find-ping{0%{transform:scale(.4);opacity:.9}100%{transform:scale(1.25);opacity:0}}

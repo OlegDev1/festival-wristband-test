@@ -1,0 +1,37 @@
+/* The band on stage: positioning layers, the halo behind it, and the CSS 3D model.
+   In WebGL mode (.watch.webgl) the canvas #gl draws the case, glass and strap; the CSS model only keeps the HTML screen
+   (.screen, where src/chapters mounts the screens) laid exactly over the WebGL glass, a faint .glass sheen (fades with --gs)
+   and .shade (dims a little as the band turns away, factor in band.js apply()).
+   Without WebGL, css-model.js adds the case edge slats (.st) and the strap slices (.seg). All sizes scale with --k. */
+.view{position:absolute;inset:0;z-index:2;pointer-events:none;perspective:calc(var(--k)*1800px)}
+.pos{position:absolute;left:50%;top:50%;transform-style:preserve-3d;will-change:transform}
+.haloL{position:absolute;left:50%;top:50%;z-index:1;pointer-events:none;will-change:transform}
+.gl{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .7s}
+.gl.on{opacity:1}.gl canvas{display:block;width:100%;height:100%}
+.halo{position:absolute;left:calc(var(--k)*-400px);top:calc(var(--k)*-400px);width:calc(var(--k)*800px);height:calc(var(--k)*800px);border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--ring) 60%,transparent),transparent);opacity:.2;transition:opacity .6s}
+.glowing .halo{opacity:.5}
+.bz{position:absolute;transform-style:preserve-3d}
+.bz.go{animation:bz .45s linear}
+.watch{position:absolute;left:0;top:0;transform-style:preserve-3d;will-change:transform;--D:calc(var(--k)*260px);--R:calc(var(--k)*130px);--T:calc(var(--k)*46px);--W:calc(var(--k)*128px);--ts:calc(var(--k)*14px)}
+.webgl .face{background:none}.webgl .ringl,.webgl .back,.webgl .btn{display:none}.webgl .shade{inset:calc(var(--k)*17px)}
+/* WebGL draws the black sapphire glass with real reflections, so the HTML screen only carries the UI; keep a fainter CSS sheen on top */
+.webgl .screen{background:none}.webgl .glass{opacity:calc(.4 - .4*var(--gs,0))}
+.st,.face,.back,.btn,.sf,.sb,.sl,.sr{position:absolute;display:block;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.st{width:calc(var(--D)*.02618 + 1px);height:var(--T);left:calc((var(--D)*.0785 + 1px)/-2);top:calc(var(--T)/-2);transform:rotateZ(var(--a)) translateY(calc(var(--R)*-1 + .5px)) rotateX(90deg)}
+.face{width:var(--D);height:var(--D);left:calc(var(--R)*-1);top:calc(var(--R)*-1);border-radius:50%;transform:translateZ(calc(var(--T)/2 + .5px));background:conic-gradient(from calc(var(--spec,0)*1deg),#35343a,#87858d 10%,#2b2a30 28%,#5d5b62 50%,#26252b 70%,#79777f 88%,#35343a)}
+.ringl{position:absolute;inset:calc(var(--k)*7px);border-radius:50%;border:calc(var(--k)*3.5px) solid var(--ring);opacity:.55;transition:opacity .5s,box-shadow .5s,border-color .5s}
+.glow .ringl{opacity:1;box-shadow:0 0 calc(var(--k)*10px) var(--ring),0 0 calc(var(--k)*22px) var(--ring),inset 0 0 calc(var(--k)*10px) var(--ring)}
+.screen{position:absolute;inset:calc(var(--k)*17px);border-radius:50%;background:#000;overflow:hidden;box-shadow:0 0 0 calc(var(--k)*2px) #09090b}
+.glass{position:absolute;inset:0;z-index:5;border-radius:50%;pointer-events:none;background:linear-gradient(140deg,rgba(255,255,255,.15),rgba(255,255,255,0) 38%),radial-gradient(120% 80% at 100% 120%,rgba(255,255,255,.06),transparent 60%)}
+.shade{position:absolute;inset:0;z-index:6;border-radius:50%;background:#000;opacity:var(--fs,0)}
+.back{width:var(--D);height:var(--D);left:calc(var(--R)*-1);top:calc(var(--R)*-1);border-radius:50%;transform:rotateY(180deg) translateZ(calc(var(--T)/2 + .5px));background:radial-gradient(circle,#2b2b30 0 22%,#0f0f12 23% 26%,#1c1c21 27% 60%,#121215 61%)}
+.btn{width:calc(var(--k)*24px);height:calc(var(--k)*60px);left:calc(var(--k)*-12px);top:calc(var(--k)*-30px);border-radius:calc(var(--k)*12px);transform:translateX(calc(var(--R) + var(--k)*2.5px)) rotateY(90deg);background:linear-gradient(90deg,#b8341d,#ff6a4a 50%,#b8341d);transition:box-shadow .4s,background .4s}
+.sos .btn{background:#ff8a6c;box-shadow:0 0 calc(var(--k)*14px) #ff5a3c,0 0 calc(var(--k)*40px) #ff5a3c}
+.seg{position:absolute;left:calc(var(--W)/-2);top:0;width:var(--W);transform-style:preserve-3d}
+.sf{left:0;right:0;top:0;bottom:0;transform:translateZ(calc(var(--ts)/2));background:linear-gradient(90deg,#a12c18,#e44e2e 8%,#ff6446 28%,#ff7656 50%,#ff6446 72%,#e44e2e 92%,#a12c18)}
+.sl,.sr{top:0;bottom:0;width:var(--ts);background:linear-gradient(90deg,#6a1c0e,#b33722 50%,#6a1c0e)}
+.sl{left:calc(var(--ts)/-2);transform:rotateY(-90deg)}
+.sr{left:calc(var(--W) - var(--ts)/2);transform:rotateY(90deg)}
+.sf::after,.sl::after,.sr::after{content:"";position:absolute;inset:0;background:#0b0809;opacity:var(--o,0)}
+
+@keyframes bz{0%,100%{transform:none}20%{transform:translateX(calc(var(--k)*-5px))}40%{transform:translateX(calc(var(--k)*5px))}60%{transform:translateX(calc(var(--k)*-4px))}80%{transform:translateX(calc(var(--k)*3px))}}

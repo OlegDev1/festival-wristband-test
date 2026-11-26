@@ -1,0 +1,11 @@
+/* "How it works": heading + three columns with line icons (one column on phones). */
+.wrap{max-width:1240px;margin:0 auto}
+.sec{margin:0 0 clamp(32px,5vw,56px);max-width:20ch;font-weight:600;font-size:clamp(30px,4vw,52px);line-height:1.05;letter-spacing:-.02em;text-wrap:balance}
+.hw{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(28px,4vw,56px)}
+.hw svg{width:44px;height:44px;fill:none;stroke:var(--coral);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.hw h3{margin:18px 0 8px;font-weight:600;font-size:20px;line-height:1.2}
+.hw p{margin:0;color:var(--mute);max-width:38ch}
+
+@media (max-width:760px){
+  .hw{grid-template-columns:minmax(0,1fr)}
+}

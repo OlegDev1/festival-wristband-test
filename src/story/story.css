@@ -1,0 +1,4 @@
+/* The scroll story: #story is tall, .stage sticks to the viewport while it scrolls.
+   Height is set from the chapter count in timeline.js (≈180vh per unit); this value is only the default before JS runs. */
+#story{position:relative;height:1732vh}
+.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}

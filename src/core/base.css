@@ -1,0 +1,19 @@
+/* Design brief (applies to every feature):
+   VOICE: a product launch on a festival night — confident, warm, few words.
+   IDEA: the band itself is the presenter: it stands three-quarter, turns to you, then its screen walks through each feature.
+   PICTURE: a WebGL wristband (polished silver case, round braided coral loop, light ring) with an HTML screen laid exactly on top; CSS 3D fallback.
+   COLOUR and TYPE: warm black night, coral strap as the dominant colour, lagoon cyan for friends, sun yellow for places; Unbounded + Inter.
+   LAYOUT: one sticky stage; phone = band on top, caption below; wide = caption left, band right; then how-it-works and the colour range.
+
+   This file: colour tokens, reset, fonts, shared section padding, reduced motion. */
+:root{color-scheme:dark;--bg:#0b0809;--ink:#f7efe8;--mute:#b5a79f;--coral:#ff5a3c;--cyan:#43d9ff;--lime:#c6f24e;--sun:#ffc23d;--ring:#ff5a3c;--k:1}
+:root[data-theme=light],:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:clip;-webkit-font-smoothing:antialiased}
+.U,h1,h2,h3{font-family:Unbounded,Inter,system-ui,sans-serif}
+
+/* page sections below the story (src/sections) */
+.section{padding:clamp(56px,9vw,120px) max(5vw,20px)}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition-duration:.01ms!important}}

@@ -1,0 +1,10 @@
+/* Closing section (slogan + the four strap colours as mini bands) and the footer. */
+.end{text-align:center;background:radial-gradient(60% 80% at 50% 100%,rgba(255,90,60,.2),transparent 70%)}
+.end h2{margin:0 auto 14px;max-width:18ch;font-weight:800;font-size:clamp(32px,5.4vw,60px);line-height:1.05;letter-spacing:-.03em;text-wrap:balance}
+.end p{margin:0 auto;color:var(--mute);max-width:40ch}
+.cols{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(20px,4vw,48px);margin:44px 0 0;padding:0;list-style:none}
+.cols li{display:flex;flex-direction:column;align-items:center;gap:12px;font-size:14px;color:var(--mute)}
+.mini{position:relative;width:56px;height:100px}
+.mini::before{content:"";position:absolute;left:16px;width:24px;top:0;bottom:0;border-radius:9px;background:var(--c)}
+.mini::after{content:"";position:absolute;left:4px;top:26px;width:48px;height:48px;border-radius:50%;background:radial-gradient(circle,#050505 0 60%,#3c3b41 62%);box-shadow:0 0 0 3px var(--c)}
+footer{padding:28px max(5vw,20px) 40px;border-top:1px solid rgba(255,255,255,.08);color:var(--mute);font-size:13px;text-align:center}

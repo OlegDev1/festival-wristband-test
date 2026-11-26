@@ -1,0 +1,9 @@
+/* Header: logo, RU/EN/ES switch, scroll progress bar. */
+.top{position:fixed;inset:0 0 auto;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:6px max(4vw,14px);background:linear-gradient(rgba(11,8,9,.92),rgba(11,8,9,0))}
+.logo{display:flex;align-items:center;gap:10px;font:600 18px/1 Unbounded,Inter,sans-serif;color:var(--ink);text-decoration:none}
+.logo i{width:18px;height:18px;border-radius:50%;border:3px solid var(--coral);box-shadow:0 0 12px rgba(255,90,60,.8)}
+.lang{display:flex;gap:2px;padding:2px;border-radius:999px;background:rgba(255,255,255,.08)}
+.lang button{appearance:none;border:0;background:none;color:var(--ink);font:600 13px/1 Inter,sans-serif;min-width:44px;height:44px;border-radius:999px;cursor:pointer}
+.lang button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.lang button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.prog{position:fixed;left:0;top:0;width:100%;height:2px;z-index:31;background:var(--coral);transform-origin:0 0;transform:scaleX(0)}
