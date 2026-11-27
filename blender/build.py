@@ -19,13 +19,14 @@ R = W / 2                     # radius of the pill ends
 C = H / 2 - R                 # half length of the straight sides
 GLASS_TOP = 33                # glass flat top, in front of the module centre
 SCREEN_INSET = 16             # lit screen area, inset from the module outline
-STRAP_W, STRAP_T = 136, 18    # strap width (around the wrist) and thickness (soft silicone)
-STRAP_W0 = 150                # strap width where it leaves the module ends (flush with the metal flanks)
-HOLE_R, HOLE_STEP = 11, 46    # strap holes: radius, spacing along the loop
+BACK = 20                     # case back (was 30: the case is thinner now; glass and screen stay where they were)
+STRAP_W, STRAP_T = 136, 16    # strap width (around the wrist) and thickness (soft silicone)
+STRAP_W0 = 152                # strap width where it grows out of the cradle behind the case
+HOLE_R, HOLE_STEP = 10, 44    # strap holes: radius, spacing along the loop
 STRAP_FRONT = T / 2 + STRAP_T / 2 + 1     # (old) strap behind the module; only the optional connectors use it
-STRAP_Y = 6                   # strap centre line runs *through* the module, a bit behind its middle
-STRAP_PIN = H / 2 + 14        # the strap stays straight until just past the module ends, then curves back
-WRIST_D, WRIST_H = 300, 246   # loop depth (front to back, inner) and half height of the strap centre line
+STRAP_Y = 12                  # strap centre line inside the silicone cradle, in the back half of the case
+STRAP_PIN = 110               # straight inside the case only; it curves back before it leaves the case ends
+WRIST_D, WRIST_H = 410, 178   # loop: long front to back, low (top barely above the case ends, like the photo)
 
 NL, NA = 24, 56               # points per straight side / per pill end
 
@@ -219,9 +220,10 @@ def strap_path(n_out=480):
     return np.stack([yy, zz], 1), Ltot, yc
 
 
-def strap_section(w=STRAP_W):
+def strap_section(w=STRAP_W, t=STRAP_T):
     """rounded-rectangle cross-section: list of (x, n) with n = offset along the outward normal; perimeter params"""
-    w2, t2, cr = w / 2, STRAP_T / 2, 7.5
+    w2, t2 = w / 2, t / 2
+    cr = min(6.5, t2 - 0.01, w2 - 0.01)
     sec = []
     def arc(cx, cn, a0):
         for k in range(9):
@@ -255,7 +257,7 @@ def build_strap(mat):
         if ny * (q[0] - yc) + nz * q[1] < 0:                  # make the normal point out of the loop
             ny, nz = -ny, -nz
         # full module width where it leaves the module, easing to the wrist width as it curves back
-        f = min(1.0, max(0.0, (q[0] - STRAP_Y - 15) / 110)); f = f * f * (3 - 2 * f)
+        f = min(1.0, max(0.0, (q[0] - STRAP_Y - 10) / 120)); f = f * f * (3 - 2 * f)
         sec_i, _ = strap_section(STRAP_W0 + (STRAP_W - STRAP_W0) * f)
         rings.append([bm.verts.new((x * S, (q[0] + ny * n) * S, (q[1] + nz * n) * S)) for x, n in sec_i])
     seg = np.linalg.norm(np.roll(P, -1, 0) - P, axis=1); cum = np.concatenate([[0], np.cumsum(seg)])
@@ -282,40 +284,100 @@ def build_strap(mat):
     return ob, Ltot, P, cum, yc
 
 
-def punch_holes(strap, P, cum, Ltot, yc, pin_mat):
-    """round holes along the back of the loop (like a silicone sport strap) and a metal pin in the middle"""
+def build_clasp(P, cum, Ltot, yc, sil_mat, pin_mat):
+    """the buckle on the back of the loop, like the photo: the holed end lies on the inner face of the strap (holes
+       read as dimples), a metal pin pokes in through one hole, and a keeper holds the rounded tip.
+       s = arc length from the back of the loop; s > 0 runs toward the bottom of the band."""
+    Pc = np.vstack([P, P[:1]])
     def frame_at(s):
-        i = int(np.searchsorted(cum, s % Ltot)) % len(P)
-        q, q0, q1 = P[i], P[(i - 1) % len(P)], P[(i + 1) % len(P)]
-        ty, tz = q1 - q0; tl = math.hypot(ty, tz); ny, nz = tz / tl, -ty / tl
-        if ny * (q[0] - yc) + nz * q[1] < 0:
+        s = s % Ltot
+        y = np.interp(s, cum, Pc[:, 0]); z = np.interp(s, cum, Pc[:, 1])
+        d = 2.0
+        y0 = np.interp((s - d) % Ltot, cum, Pc[:, 0]); z0 = np.interp((s - d) % Ltot, cum, Pc[:, 1])
+        y1 = np.interp((s + d) % Ltot, cum, Pc[:, 0]); z1 = np.interp((s + d) % Ltot, cum, Pc[:, 1])
+        ty, tz = y1 - y0, z1 - z0; tl = math.hypot(ty, tz); ty, tz = ty / tl, tz / tl
+        ny, nz = tz, -ty
+        if ny * (y - yc) + nz * z < 0:
             ny, nz = -ny, -nz
-        return Vector((0, q[0] * S, q[1] * S)), Vector((0, ny, nz))
+        return Vector((0, y, z)), Vector((0, ny, nz)), Vector((0, ty, tz))
+
+    def smooth(f):
+        f = min(1.0, max(0.0, f)); return f * f * (3 - 2 * f)
+
+    s_a, s_b = -0.27 * Ltot, 0.17 * Ltot          # the holed end: from the upper back to its tip at the lower back
+    RAMP, TIP = 70.0, (STRAP_W - 4) / 2
+    W = STRAP_W - 3
+    # ---- the holed end: a strap layer swept along the loop, rising out of it and ending in a round tip
+    bm = bmesh.new(); rings = []
+    n = int((s_b - s_a) / 2.5)
+    for i in range(n + 1):
+        s = s_a + (s_b - s_a) * i / n
+        q, nrm, _ = frame_at(s)
+        r = smooth((s - s_a) / RAMP)
+        off = -STRAP_T * r                                # 0 = inside the strap, -STRAP_T = lying on its inner face
+        th = STRAP_T - 3 + 3 * r
+        d = s_b - s
+        w = W if d >= TIP else max(4.0, 2 * TIP * math.sqrt(max(0.0, 1 - ((TIP - d) / TIP) ** 2)))
+        sec, _ = strap_section(w, th)
+        rings.append([bm.verts.new(((x) * S, (q.y + nrm.y * (off + nn)) * S, (q.z + nrm.z * (off + nn)) * S))
+                      for x, nn in sec[:-1]])
+    m = len(rings[0])
+    for a, b in zip(rings, rings[1:]):
+        for k in range(m):
+            f = bm.faces.new((a[k], b[k], b[(k + 1) % m], a[(k + 1) % m])); f.smooth = True
+    bm.faces.new(list(reversed(rings[0]))); bm.faces.new(rings[-1])
+    bm.normal_update()
+    me = bpy.data.meshes.new('StrapEnd'); bm.to_mesh(me); bm.free()
+    end = bpy.data.objects.new('StrapEnd', me); bpy.context.collection.objects.link(end)
+    end.data.materials.append(sil_mat)
+    # ---- holes through the holed end only (the strap underneath shows through: dimples)
+    hs = [s_a + RAMP + 22 + k * HOLE_STEP for k in range(40)]
+    hs = [s for s in hs if s < s_b - TIP - 70]
+    pin_s = hs[len(hs) // 2]
     bm = bmesh.new()
-    step, n = HOLE_STEP, int(0.3 * Ltot / HOLE_STEP)
-    for k in range(-n, n + 1):
-        if k == 0:
-            continue                                         # the pin sits here
-        loc, nrm = frame_at(k * step)
-        mat = Matrix.Translation(loc) @ nrm.to_track_quat('Z', 'Y').to_matrix().to_4x4()
-        bmesh.ops.create_cone(bm, cap_ends=True, segments=28, radius1=HOLE_R * S, radius2=HOLE_R * S,
-                              depth=STRAP_T * 3 * S, matrix=mat)
+    for s in hs:
+        q, nrm, _ = frame_at(s)
+        M4 = Matrix.Translation((q - nrm * STRAP_T) * S) @ nrm.to_track_quat('Z', 'Y').to_matrix().to_4x4()
+        bmesh.ops.create_cone(bm, cap_ends=True, segments=32, radius1=HOLE_R * S, radius2=HOLE_R * S,
+                              depth=STRAP_T * 1.6 * S, matrix=M4)
     cme = bpy.data.meshes.new('Holes'); bm.to_mesh(cme); bm.free()
     cut = bpy.data.objects.new('Holes', cme); bpy.context.collection.objects.link(cut)
-    mod = strap.modifiers.new('holes', 'BOOLEAN'); mod.operation = 'DIFFERENCE'; mod.object = cut; mod.solver = 'EXACT'
-    bpy.context.view_layer.objects.active = strap
+    mod = end.modifiers.new('holes', 'BOOLEAN'); mod.operation = 'DIFFERENCE'; mod.object = cut; mod.solver = 'EXACT'
+    bpy.context.view_layer.objects.active = end
     bpy.ops.object.modifier_apply(modifier=mod.name)
     bpy.data.objects.remove(cut)
-    strap.data.set_sharp_from_angle(angle=math.radians(50))
-    # the pin: a short domed metal stud on the outer face
-    loc, nrm = frame_at(0)
-    rot = nrm.to_track_quat('Z', 'Y').to_euler()
-    bpy.ops.mesh.primitive_cylinder_add(vertices=40, radius=8.5 * S, depth=8 * S,
-                                        location=loc + nrm * (STRAP_T / 2 + 1) * S, rotation=rot)
+    end.data.set_sharp_from_angle(angle=math.radians(55))
+    # ---- the pin: metal stud from the strap underneath, up through one hole, domed top just above the surface
+    q, nrm, _ = frame_at(pin_s)
+    h = STRAP_T + 5
+    bpy.ops.mesh.primitive_cylinder_add(vertices=48, radius=7.5 * S, depth=h * S,
+                                        location=(q - nrm * (STRAP_T / 2 + h / 2)) * S,
+                                        rotation=nrm.to_track_quat('Z', 'Y').to_euler())
     pin = bpy.context.object; pin.name = 'Pin'
-    bev = pin.modifiers.new('bevel', 'BEVEL'); bev.width = 3.5 * S; bev.segments = 6
+    bev = pin.modifiers.new('bevel', 'BEVEL'); bev.width = 3.2 * S; bev.segments = 8
     bpy.ops.object.shade_smooth(); pin.data.materials.append(pin_mat)
-    return pin
+    # ---- keeper: a short silicone band around both layers, just before the tip
+    q, nrm, tg = frame_at(s_b - TIP - 34)
+    bm = bmesh.new()
+    bmesh.ops.create_cube(bm, size=1.0, matrix=Matrix.Diagonal(((W + 12) * S, 22 * S, (2 * STRAP_T + 7) * S, 1)))
+    kme = bpy.data.meshes.new('Keeper'); bm.to_mesh(kme); bm.free()
+    keeper = bpy.data.objects.new('Keeper', kme); bpy.context.collection.objects.link(keeper)
+    R3 = Matrix((tg.cross(nrm), tg, nrm)).transposed()
+    keeper.matrix_world = Matrix.Translation((q - nrm * (STRAP_T / 2)) * S) @ R3.to_4x4()
+    bev = keeper.modifiers.new('bevel', 'BEVEL'); bev.width = 7 * S; bev.segments = 6; bev.limit_method = 'NONE'
+    for p in keeper.data.polygons:
+        p.use_smooth = True
+    keeper.data.materials.append(sil_mat)
+    return [end, pin, keeper]
+
+
+def build_cradle(mat):
+    """silicone cradle hugging the back half of the case: the strap grows out of it, so case and strap read as one"""
+    rings = [(-7.0, 0.4), (-6.2, -1.4), (-4.8, -2.4), (-2.5, -2.9), (6.0, -2.9), (12.0, -2.3), (17.0, -0.6),
+             (21.0, 2.8), (23.5, 7.5), (24.6, 13.0), (25.0, 18.0)]
+    ob = loft('Cradle', rings, cap_back=True)
+    ob.data.materials.append(mat)
+    return ob
 
 
 def rounded_box(name, size, loc, bevel, mat):
@@ -341,7 +403,7 @@ def build():
 
     # module body: polished lip around the glass, straight flank, rounded back
     body = loft('Case', [(-30.0, 9.0), (-30.6, 6.8), (-30.5, 4.6), (-29.7, 2.6), (-28.3, 1.1), (-26.4, 0.25), (-24.0, 0.0),
-                         (8.0, 0.0), (13.0, 0.5), (18.0, 1.8), (22.5, 4.0), (26.0, 7.0), (28.4, 10.2), (29.7, 13.5), (30.0, 16.0)],
+                         (BACK - 22.0, 0.0), (BACK - 17.0, 0.5), (BACK - 12.0, 1.8), (BACK - 7.5, 4.0), (BACK - 4.0, 7.0), (BACK - 1.6, 10.2), (BACK - 0.3, 13.5), (BACK, 16.0)],
                 cap_back=True, back_mat=True)
     body.data.materials.append(silver); body.data.materials.append(back)
     # glass: sits in the lip, rounded edge, flat top
@@ -355,13 +417,14 @@ def build():
     scr = bpy.data.objects.new('Screen', sme); sc.collection.objects.link(scr); scr.data.materials.append(screen)
 
     st, Ltot, P, cum, yc = build_strap(strap)
-    pin = punch_holes(st, P, cum, Ltot, yc, chrome)
+    clasp = build_clasp(P, cum, Ltot, yc, strap, chrome)
+    cradle = build_cradle(strap)
     # connectors at both ends: a silver bridge the strap passes under
     con = []
     for sgn in ((1, -1) if os.environ.get('CONNECTORS') else ()):
         con.append(rounded_box('Connector' + ('Top' if sgn > 0 else 'Bot'), (STRAP_W + 6, 26, 24),
                                (0, STRAP_FRONT + 1, sgn * (H / 2 - 16)), 11, silver))
-    for ob in [body, gl, scr, st, pin] + con:
+    for ob in [body, gl, scr, st, cradle] + clasp + con:
         ob.parent = root
 
     # camera: 1800 BU in front, like the CSS perspective
