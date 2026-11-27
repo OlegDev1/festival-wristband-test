@@ -21,8 +21,8 @@ R0 = dict(rx=0.0, ry=-62.0)               # opening: three-quarter side view, th
 R1 = dict(rx=4.0, ry=-8.0)                # features: screen toward you, a slight turn so the flank shows
 
 FRAMES = int(os.environ.get('FRAMES', 60))
-PPU = float(os.environ.get('PPU', 3))
-SAMPLES = int(os.environ.get('SAMPLES', 128))
+PPU = float(os.environ.get('PPU', 2))         # medium (full quality: PPU=3 SAMPLES=128)
+SAMPLES = int(os.environ.get('SAMPLES', 48))  # denoised, so 48 is clean at this size
 OUT = os.environ.get('OUT', os.path.join(HERE, '..', 'frames') if os.path.basename(HERE) == 'blender' else os.path.join(HERE, 'frames'))
 ONLY = [int(x) for x in os.environ['ONLY'].split(',')] if os.environ.get('ONLY') else None
 MARGIN = 14                               # BU around the band in every frame
