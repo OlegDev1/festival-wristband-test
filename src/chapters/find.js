@@ -1,5 +1,5 @@
-/* Chapter 03 · Find: an arrow points to a friend while the distance counts down 120 → 12 m;
-   near the end the arrow turns into a ping, the line says "you're close" and the band buzzes. */
+/* Chapter · Find: friend on top, an arrow in a compass ring points to them while the distance counts down 120 → 12 m
+   and the edge arc fills; near the end the arrow becomes a ping, the line says "you're close" and the band buzzes. */
 import {clamp,txt} from '../core/dom.js';
 import {addStrings} from '../core/i18n.js';
 
@@ -9,6 +9,7 @@ addStrings('find',{
   es:{label:"Guía",title:"Solo sigue la flecha.",body:"Elige a un amigo y la pulsera te guía hasta él, con una vibración suave cuando estéis cerca.",sub:"junto al Main Stage",near:"¡Ya llegas!"}
 });
 
+const PILL='M62 3.5A58.5 58.5 0 0 1 120.5 62V246A58.5 58.5 0 0 1 3.5 246V62A58.5 58.5 0 0 1 62 3.5Z';
 const S={dist:120,near:false,ang:34};
 
 export default {
@@ -16,8 +17,9 @@ export default {
   pose:[-8,-5,0],
   screen:`
 <div class="scr scr-find">
+  <svg class="edge" viewBox="0 0 124 308" aria-hidden="true"><path class="trk" d="${PILL}"/><path class="val" data-r="arc" d="${PILL}" pathLength="100" stroke-dasharray="0 100" style="stroke:var(--cyan)"/></svg>
   <span class="ntop"><i class="av" data-r="av" style="--c:var(--cyan)"></i><span data-r="name"></span></span>
-  <div class="ar"><i class="ping"></i><svg viewBox="0 0 100 100" data-r="arrow" aria-hidden="true"><path d="M50 6 86 84 50 66 14 84Z"/></svg></div>
+  <div class="cmp"><i class="ping"></i><i class="ping p2"></i><svg viewBox="0 0 100 100" data-r="arrow" aria-hidden="true"><path d="M50 6 86 84 50 66 14 84Z"/></svg></div>
   <div class="nd"><b data-r="dist">120</b><span data-r="unit"></span></div>
   <span class="ws" data-r="sub"></span>
 </div>`,
@@ -30,5 +32,6 @@ export default {
     txt(r.av,c.names[0][0]);txt(r.name,c.names[0]);txt(r.dist,String(S.dist));txt(r.unit,c.unit);
     txt(r.sub,S.near?t.near:t.sub);r.root.classList.toggle('near',S.near);
     r.arrow.style.transform=`rotate(${S.ang.toFixed(1)}deg)`;
+    r.arc.setAttribute('stroke-dasharray',`${(100*(120-S.dist)/108).toFixed(1)} 100`);
   }
 };

@@ -1,4 +1,4 @@
-# Tribu wristband site — notes for agents
+# FindMe wristband site — notes for agents
 
 Read this first. The page is split into feature folders: open only the folder for the feature you are changing.
 ## WORKING RULES
@@ -42,7 +42,7 @@ CSS isolation: chapter CSS is scoped under `.scr-<id>` and its keyframes are pre
 ## Where to change things
 | What | Where |
 |---|---|
-| A chapter's copy, screen, animation | `src/chapters/<id>.js` + `<id>.css` only. Ids: home, radar, find, bump, places, lineup, glow, sos |
+| A chapter's copy, screen, animation | `src/chapters/<id>.js` + `<id>.css` only. Ids, in order: home, crew, bump, radar, find, meet, places, ghost, sos |
 | Add / reorder chapters | `src/chapters/index.js`. Scroll length, rail and captions follow (≈180vh per chapter, `VH_PER_UNIT` in `timeline.js`) |
 | Shared screen look | `src/chapters/screen.css`: pill screen 124×308 design size, scaled by `--k`; `.we` label (9) / `.wb` clock, hours over minutes (50) / `.wm` (17) / `.nd b` (40) / `.ws` (12); edge arc = pill `<path>` starting top centre, stroke 3 |
 | Scroll pacing | `src/story/timeline.js` `frame()`: `INTRO=1.6`; turn between features `blend` (second half of each chapter); screen switch `floor(q+.25)`; chapter animation `lt=fr*1.17` |

@@ -1,15 +1,15 @@
-/* Chapter 02 · Radar: a round radar near the top of the pill, the nearest friend named below */
-.scr-radar{padding-top:calc(var(--k)*6px)}
-.scr-radar .radar{position:relative;flex:none;width:calc(var(--k)*108px);height:calc(var(--k)*108px);border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 calc(var(--k)*17px),rgba(255,255,255,.1) calc(var(--k)*17px) calc(var(--k)*18px)),radial-gradient(circle,rgba(67,217,255,.13),transparent 70%)}
-.scr-radar .radar::before,.scr-radar .radar::after{content:"";position:absolute;background:rgba(255,255,255,.06)}
-.scr-radar .radar::before{left:50%;top:0;bottom:0;width:1px}.scr-radar .radar::after{top:50%;left:0;right:0;height:1px}
-.scr-radar .sweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 280deg,rgba(67,217,255,.4) 360deg);animation:radar-spin 3.2s linear infinite}
-.scr-radar .me{position:absolute;left:50%;top:50%;width:calc(var(--k)*10px);height:calc(var(--k)*10px);margin:calc(var(--k)*-5px);border-radius:50%;background:#fff;box-shadow:0 0 0 calc(var(--k)*4px) rgba(255,255,255,.16)}
-.scr-radar .fr{position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-50%);width:calc(var(--k)*22px);height:calc(var(--k)*22px);font-size:calc(var(--k)*10px)}
-.scr-radar .fr::after{content:"";position:absolute;inset:calc(var(--k)*-5px);border-radius:50%;border:calc(var(--k)*2px) solid var(--c);opacity:0;animation:radar-pulse 2.4s ease-out infinite;animation-delay:var(--dl)}
-.scr-radar .fr.hi{width:calc(var(--k)*27px);height:calc(var(--k)*27px);font-size:calc(var(--k)*12px)}
-.scr-radar .rl{margin-top:calc(var(--k)*30px);font-size:calc(var(--k)*13px)}
-.scr-radar .rl b{display:inline-block;margin-bottom:calc(var(--k)*3px);font:600 calc(var(--k)*17px)/1.1 Unbounded,Inter,sans-serif;color:#fff}
+/* Chapter · Radar: round radar under the label, the lit friend's name and distance below. --a = lit friend's colour (radar.js) */
+.scr-radar .we{margin-bottom:calc(var(--k)*12px);transition:color .4s}
+.scr-radar .radar{position:relative;flex:none;width:calc(var(--k)*100px);height:calc(var(--k)*100px);margin-bottom:calc(var(--k)*16px);border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 calc(var(--k)*16px),rgba(255,255,255,.1) calc(var(--k)*16px) calc(var(--k)*17px)),radial-gradient(circle,color-mix(in srgb,var(--a) 16%,transparent),transparent 70%);transition:background .4s}
+.scr-radar .sweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 280deg,color-mix(in srgb,var(--a) 40%,transparent) 360deg);animation:radar-spin 3.2s linear infinite}
+.scr-radar .beam{position:absolute;left:50%;top:50%;height:calc(var(--k)*1.5px);margin-top:calc(var(--k)*-.75px);transform-origin:0 50%;background:linear-gradient(90deg,rgba(255,255,255,.1),var(--a));transition:width .45s cubic-bezier(.2,.8,.2,1),transform .45s cubic-bezier(.2,.8,.2,1)}
+.scr-radar .me{position:absolute;left:50%;top:50%;width:calc(var(--k)*9px);height:calc(var(--k)*9px);margin:calc(var(--k)*-4.5px);border-radius:50%;background:#fff;box-shadow:0 0 0 calc(var(--k)*4px) rgba(255,255,255,.16)}
+.scr-radar .fr{position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-50%) scale(.82);width:calc(var(--k)*22px);height:calc(var(--k)*22px);font-size:calc(var(--k)*10px);opacity:.6;transition:transform .4s cubic-bezier(.2,.8,.2,1.3),opacity .4s}
+.scr-radar .fr.hi{transform:translate(-50%,-50%) scale(1.15);opacity:1;box-shadow:0 0 0 calc(var(--k)*2px) #000}
+.scr-radar .fr.hi::after{content:"";position:absolute;inset:calc(var(--k)*-5px);border-radius:50%;border:calc(var(--k)*2px) solid var(--c);animation:radar-pulse 1.8s ease-out infinite}
+.scr-radar .wm{font-size:calc(var(--k)*18px)}
+.scr-radar .nd{margin:calc(var(--k)*8px) 0 calc(var(--k)*5px)}
+.scr-radar .nd b{font-size:calc(var(--k)*34px)}
 
 @keyframes radar-spin{to{transform:rotate(1turn)}}
 @keyframes radar-pulse{0%{transform:scale(.7);opacity:.9}100%{transform:scale(1.9);opacity:0}}

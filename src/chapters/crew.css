@@ -1,0 +1,11 @@
+/* Chapter · Crew. --ring (the crew colour) is set on the stage by band.js from crew.js look() */
+.scr-crew{--a:var(--ring)}
+.scr-crew::before{content:"";position:absolute;left:0;right:0;top:22%;bottom:30%;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--ring) 30%,transparent),transparent);transition:background .4s}
+.scr-crew>*{position:relative}
+.scr-crew .we{transition:color .4s}
+.scr-crew .disc{width:calc(var(--k)*64px);height:calc(var(--k)*64px);font-size:calc(var(--k)*19px);font-style:normal}
+.scr-crew .wm{font-size:calc(var(--k)*18px)}
+.scr-crew .ws{margin-top:calc(var(--k)*6px)}
+.scr-crew .sws{display:flex;gap:calc(var(--k)*8px);margin-top:calc(var(--k)*18px)}
+.scr-crew .sws i{width:calc(var(--k)*11px);height:calc(var(--k)*11px);border-radius:50%;background:var(--c);opacity:.55;transition:transform .35s,box-shadow .35s,opacity .35s}
+.scr-crew .sws i.on{opacity:1;transform:scale(1.25);box-shadow:0 0 0 calc(var(--k)*2px) #000,0 0 0 calc(var(--k)*3.5px) var(--c)}

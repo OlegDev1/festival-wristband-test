@@ -1,10 +1,17 @@
-/* Chapter 04 · Bump: the two bubbles meet vertically on the tall screen. --g = how far they have moved (set in bump.js) */
-.scr-bump .bump{position:relative;flex:none;width:calc(var(--k)*64px);height:calc(var(--k)*140px);margin-bottom:calc(var(--k)*16px);--g:0px}
-.scr-bump .bb{position:absolute;left:calc(var(--k)*5px);width:calc(var(--k)*54px);height:calc(var(--k)*54px);border-radius:50%;display:grid;place-items:center;font:700 calc(var(--k)*13px)/1 Inter,sans-serif;font-style:normal;color:#14100e;transition:transform .3s}
-.scr-bump .bb.a{top:0;background:var(--coral);transform:translateY(var(--g))}
-.scr-bump .bb.b{bottom:0;background:var(--lime);transform:translateY(calc(var(--g)*-1))}
-.scr-bump .burst{position:absolute;left:calc(50% - var(--k)*36px);top:calc(50% - var(--k)*36px);width:calc(var(--k)*72px);height:calc(var(--k)*72px);border-radius:50%;border:calc(var(--k)*3px) solid #fff;opacity:0}
-.scr-bump.ok .burst{animation:bump-ring 1s ease-out infinite}
-.scr-bump .ws{margin-top:calc(var(--k)*6px)}
+/* Chapter · Bump: two mini bands side by side (strap behind, silver-rimmed pill on top) meet in the middle.
+   --g = how far each has moved (bump.js) */
+.scr-bump{--a:var(--lime)}
+.scr-bump .bump{position:relative;flex:none;width:calc(var(--k)*100px);height:calc(var(--k)*96px);margin:calc(var(--k)*2px) 0 calc(var(--k)*18px);--g:0px}
+.scr-bump .bb{position:absolute;top:0;bottom:0;width:calc(var(--k)*30px);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.scr-bump .bb.a{left:calc(var(--k)*8px);transform:translateX(var(--g))}
+.scr-bump .bb.b{right:calc(var(--k)*8px);transform:translateX(calc(var(--g)*-1))}
+.scr-bump .bb::before{content:"";position:absolute;left:calc(var(--k)*7px);right:calc(var(--k)*7px);top:0;bottom:0;border-radius:calc(var(--k)*6px);background:linear-gradient(90deg,color-mix(in srgb,var(--c) 65%,#000),var(--c) 50%,color-mix(in srgb,var(--c) 65%,#000))}
+.scr-bump .bb>i{position:absolute;left:0;right:0;top:calc(var(--k)*20px);bottom:calc(var(--k)*20px);border-radius:999px;background:#060606;box-shadow:0 0 0 calc(var(--k)*1.5px) #a8a6ae,0 0 0 calc(var(--k)*2.5px) #2c2b30;transition:background .3s,box-shadow .3s}
+.scr-bump.ok .bb>i{background:radial-gradient(circle,color-mix(in srgb,var(--c) 70%,#000),#060606 80%)}
+.scr-bump .burst{position:absolute;left:50%;top:50%;width:calc(var(--k)*70px);height:calc(var(--k)*70px);margin:calc(var(--k)*-35px);border-radius:50%;border:calc(var(--k)*2.5px) solid #fff;opacity:0}
+.scr-bump.ok .burst{animation:bump-ring 1.2s ease-out infinite}
+.scr-bump .wm{min-height:2.24em;display:flex;align-items:center;justify-content:center}
+.scr-bump.ok .wm{color:var(--lime)}
+.scr-bump .ws{margin-top:calc(var(--k)*4px)}
 
-@keyframes bump-ring{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.3);opacity:0}}
+@keyframes bump-ring{0%{transform:scale(.5);opacity:.9}100%{transform:scale(1.4);opacity:0}}

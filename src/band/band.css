@@ -20,6 +20,6 @@
 .glass{position:absolute;inset:0;z-index:5;border-radius:inherit;pointer-events:none;opacity:calc(.4*var(--gs,0));
   background:linear-gradient(150deg,rgba(255,255,255,.13),rgba(255,255,255,0) 34%),linear-gradient(330deg,rgba(255,255,255,.05),rgba(255,255,255,0) 30%)}
 .shade{position:absolute;inset:0;z-index:6;border-radius:inherit;background:#000;opacity:var(--fs,0);pointer-events:none}
-/* crew glow (glow chapter) and SOS: light around the screen edge */
+/* crew glow (crew chapter) and SOS: light around the screen edge */
 .glow .face{box-shadow:0 0 0 calc(var(--k)*2px) var(--ring),0 0 calc(var(--k)*14px) var(--ring),0 0 calc(var(--k)*34px) color-mix(in srgb,var(--ring) 70%,transparent)}
 .sos .face{box-shadow:0 0 0 calc(var(--k)*2px) #ff5a3c,0 0 calc(var(--k)*16px) #ff5a3c,0 0 calc(var(--k)*40px) rgba(255,90,60,.6)}

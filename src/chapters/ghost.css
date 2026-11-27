@@ -1,0 +1,15 @@
+/* Chapter · Ghost mode: solid lavender disc + toggle off → dashed floating ghost + toggle on (.ghosted) */
+.scr-ghost{--a:#c7b8ff}
+.scr-ghost .disc{width:calc(var(--k)*62px);height:calc(var(--k)*62px);margin-bottom:calc(var(--k)*16px);border:calc(var(--k)*1.5px) dashed transparent}
+.scr-ghost.ghosted .disc{background:transparent;color:var(--a);border-color:color-mix(in srgb,var(--a) 70%,transparent);box-shadow:none;animation:ghost-float 2.4s ease-in-out infinite}
+.scr-ghost .disc svg{transition:opacity .4s}
+.scr-ghost.ghosted .disc svg{opacity:.75}
+.scr-ghost .wm{font-size:calc(var(--k)*19px);transition:color .4s}
+.scr-ghost.ghosted .wm{color:var(--a)}
+.scr-ghost .ws{margin-top:calc(var(--k)*6px)}
+.scr-ghost .tg{position:relative;width:calc(var(--k)*36px);height:calc(var(--k)*20px);margin-top:calc(var(--k)*18px);border-radius:999px;background:rgba(255,255,255,.16);transition:background .35s}
+.scr-ghost .tg i{position:absolute;left:calc(var(--k)*2px);top:calc(var(--k)*2px);width:calc(var(--k)*16px);height:calc(var(--k)*16px);border-radius:50%;background:#fff;transition:transform .35s cubic-bezier(.2,.8,.2,1.2)}
+.scr-ghost.ghosted .tg{background:var(--a)}
+.scr-ghost.ghosted .tg i{transform:translateX(calc(var(--k)*16px));background:#14100e}
+
+@keyframes ghost-float{0%,100%{transform:translateY(0)}50%{transform:translateY(calc(var(--k)*-4px))}}

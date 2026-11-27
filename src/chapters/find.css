@@ -1,10 +1,15 @@
-/* Chapter 03 · Find */
+/* Chapter · Find: compass ring with the arrow, edge arc = how close you are */
+.scr-find{--a:var(--cyan)}
 .scr-find .ntop{display:flex;justify-content:center;align-items:center;gap:calc(var(--k)*6px);font:600 calc(var(--k)*13px)/1 Inter,sans-serif}
-.scr-find .ar{position:relative;width:calc(var(--k)*56px);height:calc(var(--k)*56px);margin:calc(var(--k)*22px) 0 calc(var(--k)*18px)}
-.scr-find .ar svg{width:100%;height:100%;fill:var(--cyan);transition:transform .3s,opacity .3s}
-.scr-find .ping{position:absolute;inset:calc(var(--k)*4px);border-radius:50%;background:var(--cyan);opacity:0}
-.scr-find.near .ar svg{opacity:0;transform:scale(.4)}
-.scr-find.near .ping{animation:find-ping 1.1s ease-out infinite}
-.scr-find .ws{margin-top:calc(var(--k)*8px)}
+.scr-find .cmp{position:relative;flex:none;display:grid;place-items:center;width:calc(var(--k)*84px);height:calc(var(--k)*84px);margin:calc(var(--k)*18px) 0 calc(var(--k)*14px);border-radius:50%;border:calc(var(--k)*1.5px) solid rgba(255,255,255,.14);background:radial-gradient(circle,rgba(67,217,255,.12),transparent 70%);transition:border-color .4s,box-shadow .4s}
+.scr-find .cmp::before{content:"";position:absolute;left:50%;top:calc(var(--k)*-3px);width:calc(var(--k)*5px);height:calc(var(--k)*5px);margin-left:calc(var(--k)*-2.5px);border-radius:50%;background:var(--cyan)}
+.scr-find .cmp svg{width:calc(var(--k)*42px);height:calc(var(--k)*42px);fill:var(--cyan);transition:transform .3s,opacity .3s}
+.scr-find .ping{position:absolute;inset:calc(var(--k)*14px);border-radius:50%;background:var(--cyan);opacity:0}
+.scr-find.near .cmp{border-color:var(--cyan);box-shadow:0 0 calc(var(--k)*20px) rgba(67,217,255,.45)}
+.scr-find.near .cmp svg{opacity:0;transform:scale(.4)}
+.scr-find.near .ping{animation:find-ping 1.4s ease-out infinite}
+.scr-find.near .ping.p2{animation-delay:-.7s}
+.scr-find .ws{margin-top:calc(var(--k)*6px)}
+.scr-find.near .ws{color:var(--cyan);font-weight:600}
 
-@keyframes find-ping{0%{transform:scale(.4);opacity:.9}100%{transform:scale(1.25);opacity:0}}
+@keyframes find-ping{0%{transform:scale(.3);opacity:.9}100%{transform:scale(1.6);opacity:0}}

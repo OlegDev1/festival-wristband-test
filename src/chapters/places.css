@@ -1,14 +1,11 @@
-/* Chapter 05 · Places */
+/* Chapter · Places (.disc and .pips are shared, in screen.css) */
 .scr-places{--a:var(--sun)}
-.scr-places .disc{position:relative;width:calc(var(--k)*62px);height:calc(var(--k)*62px);margin:calc(var(--k)*4px) 0 calc(var(--k)*16px);border-radius:50%;background:var(--sun);color:#14100e;box-shadow:0 0 calc(var(--k)*24px) color-mix(in srgb,var(--sun) 45%,transparent)}
+.scr-places .disc{margin-top:calc(var(--k)*4px);margin-bottom:calc(var(--k)*16px);width:calc(var(--k)*62px);height:calc(var(--k)*62px)}
 .scr-places .ic{position:absolute;inset:0;margin:auto;display:grid;place-items:center;opacity:0;transform:scale(.6) rotate(-20deg);transition:opacity .35s,transform .45s cubic-bezier(.2,.8,.2,1.2)}
 .scr-places .ic.on{opacity:1;transform:none}
-.scr-places svg.ic{width:calc(var(--k)*30px);height:calc(var(--k)*30px);fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.scr-places svg.ic{width:calc(var(--k)*30px);height:calc(var(--k)*30px)}
 .scr-places b.ic{font:700 calc(var(--k)*17px)/1 Unbounded,Inter,sans-serif;letter-spacing:-.02em}
 .scr-places .wm{font-size:calc(var(--k)*19px)}
 .scr-places .nd{gap:calc(var(--k)*3px);margin:calc(var(--k)*12px) 0 calc(var(--k)*6px)}
 .scr-places .nd b{font-size:calc(var(--k)*38px)}
 .scr-places .nd svg{width:calc(var(--k)*17px);height:calc(var(--k)*17px);fill:var(--sun);align-self:center;margin-right:calc(var(--k)*2px);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
-.scr-places .pips{display:flex;gap:calc(var(--k)*4px);margin-top:calc(var(--k)*18px)}
-.scr-places .pips i{width:calc(var(--k)*6px);height:calc(var(--k)*3px);border-radius:2px;background:rgba(255,255,255,.2);transition:width .35s,background .35s}
-.scr-places .pips i.on{width:calc(var(--k)*16px);background:var(--sun)}

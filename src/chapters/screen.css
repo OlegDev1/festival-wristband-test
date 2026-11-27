@@ -20,3 +20,10 @@
 .nd{display:flex;align-items:baseline;justify-content:center;gap:calc(var(--k)*3px)}
 .nd b{font:600 calc(var(--k)*40px)/1 Unbounded,Inter,sans-serif;letter-spacing:-.04em}
 .nd span{font:500 calc(var(--k)*13px)/1 Inter,sans-serif;color:rgba(255,255,255,.6)}
+/* big disc: the screen's hero icon or initials, in --c (falls back to the screen accent --a) */
+.disc{position:relative;flex:none;display:grid;place-items:center;width:calc(var(--k)*58px);height:calc(var(--k)*58px);margin:calc(var(--k)*2px) 0 calc(var(--k)*14px);border-radius:50%;background:var(--c,var(--a));color:#14100e;box-shadow:0 0 calc(var(--k)*22px) color-mix(in srgb,var(--c,var(--a)) 40%,transparent);font:700 calc(var(--k)*17px)/1 Unbounded,Inter,sans-serif;letter-spacing:-.02em;transition:background .4s,box-shadow .4s,color .4s}
+.disc svg{width:calc(var(--k)*28px);height:calc(var(--k)*28px);fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+/* step pips at the foot of a screen: which step of n, the lit one in the screen accent */
+.pips{display:flex;gap:calc(var(--k)*4px);margin-top:calc(var(--k)*16px)}
+.pips i{width:calc(var(--k)*6px);height:calc(var(--k)*3px);border-radius:2px;background:rgba(255,255,255,.2);transition:width .35s,background .35s}
+.pips i.on{width:calc(var(--k)*16px);background:var(--a)}

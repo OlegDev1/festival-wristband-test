@@ -2,12 +2,13 @@
    To add one: copy a chapter file pair, give it a new id, add it to this list.
    Scroll length, rail dots and captions follow the list automatically. */
 import home from './home.js';
+import crew from './crew.js';
+import bump from './bump.js';
 import radar from './radar.js';
 import find from './find.js';
-import bump from './bump.js';
+import meet from './meet.js';
 import places from './places.js';
-import lineup from './lineup.js';
-import glow from './glow.js';
+import ghost from './ghost.js';
 import sos from './sos.js';
 
-export default [home,radar,find,bump,places,lineup,glow,sos];
+export default [home,crew,bump,radar,find,meet,places,ghost,sos];
