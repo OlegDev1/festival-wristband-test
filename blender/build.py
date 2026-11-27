@@ -470,11 +470,27 @@ def build():
         x, y, z = d3; v = Vector((x, -z, y)).normalized()
         ob.rotation_euler = (-v).to_track_quat('-Z', 'Y').to_euler()
         return ob
-    sun('Key', (300, 500, 600), (1.0, 0.95, 0.9), 2.6, 12)
-    sun('Side', (700, 250, 150), (1.0, 0.96, 0.93), 1.6, 15)
-    sun('RimCyan', (-500, 120, -400), (0.26, 0.85, 1.0), 0.7, 10)
-    sun('RimCoral', (-400, -300, 300), (1.0, 0.35, 0.24), 0.5, 15)
-    sun('Back', (200, 300, -700), (1.0, 0.55, 0.75), 1.2, 10)
+    if os.environ.get('FESTIVAL_LIGHTS'):                # the old coloured rig, kept for reference
+        sun('Key', (300, 500, 600), (1.0, 0.95, 0.9), 2.6, 12)
+        sun('Side', (700, 250, 150), (1.0, 0.96, 0.93), 1.6, 15)
+        sun('RimCyan', (-500, 120, -400), (0.26, 0.85, 1.0), 0.7, 10)
+        sun('RimCoral', (-400, -300, 300), (1.0, 0.35, 0.24), 0.5, 15)
+        sun('Back', (200, 300, -700), (1.0, 0.55, 0.75), 1.2, 10)
+    else:
+        # soft white product-photo lighting (like the reference): big softboxes, no coloured light.
+        # Camera at (0, -18, 0) looking +Y, Z up; lights aim at the band centre and stay fixed while it turns.
+        def softbox(name, loc, size, power, col=(1.0, 0.985, 0.97)):
+            ld = bpy.data.lights.new(name, 'AREA'); ld.shape = 'RECTANGLE'
+            ld.size, ld.size_y = size; ld.energy = power; ld.color = col
+            ob = bpy.data.objects.new(name, ld); sc.collection.objects.link(ob)
+            ob.location = loc
+            ob.rotation_euler = (-Vector(loc)).to_track_quat('-Z', 'Y').to_euler()
+            return ob
+        softbox('Key', (-9.0, -12.0, 8.0), (8.0, 8.0), 2600)          # upper left front: main soft light
+        softbox('Fill', (11.0, -10.0, -1.0), (10.0, 10.0), 1100)      # right front: lifts the shadows
+        softbox('Top', (0.0, -1.0, 14.0), (12.0, 6.0), 1800)          # overhead: soft gradient along the strap
+        softbox('RimL', (-6.0, 12.0, 3.0), (2.0, 12.0), 1700)         # behind left: edge highlight (off the glass mirror angle)
+        softbox('RimR', (10.0, 8.0, -2.0), (2.0, 12.0), 1100)         # behind right: edge highlight on the loop
 
     r = sc.render
     r.engine = 'CYCLES'; sc.cycles.samples = 128; sc.cycles.use_denoising = True
