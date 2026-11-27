@@ -1,10 +1,19 @@
-/* Closing section (slogan + the four strap colours as mini bands) and the footer. */
-.end{text-align:center;background:radial-gradient(60% 80% at 50% 100%,rgba(255,90,60,.2),transparent 70%)}
-.end h2{margin:0 auto 14px;max-width:18ch;font-weight:800;font-size:clamp(32px,5.4vw,60px);line-height:1.05;letter-spacing:-.03em;text-wrap:balance}
+/* Closing section (slogan + the four strap colours as mini pill bands) and the footer. */
+.end{text-align:center;padding-top:clamp(40px,6vw,80px);background:radial-gradient(60% 70% at 50% 100%,rgba(255,90,60,.16),transparent 70%)}
+.end .kick{margin-bottom:16px}
+.end h2{margin:0 auto 14px;max-width:16ch;font-weight:800;font-size:clamp(32px,5.4vw,60px);line-height:1.05;letter-spacing:-.03em;text-wrap:balance}
 .end p{margin:0 auto;color:var(--mute);max-width:40ch}
-.cols{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(20px,4vw,48px);margin:44px 0 0;padding:0;list-style:none}
-.cols li{display:flex;flex-direction:column;align-items:center;gap:12px;font-size:14px;color:var(--mute)}
-.mini{position:relative;width:56px;height:100px}
-.mini::before{content:"";position:absolute;left:16px;width:24px;top:0;bottom:0;border-radius:9px;background:var(--c)}
-.mini::after{content:"";position:absolute;left:4px;top:26px;width:48px;height:48px;border-radius:50%;background:radial-gradient(circle,#050505 0 60%,#3c3b41 62%);box-shadow:0 0 0 3px var(--c)}
-footer{padding:28px max(5vw,20px) 40px;border-top:1px solid rgba(255,255,255,.08);color:var(--mute);font-size:13px;text-align:center}
+.cols{display:grid;grid-template-columns:repeat(4,auto);justify-content:center;gap:clamp(18px,4vw,56px);margin:48px 0 0;padding:0;list-style:none}
+.cols li{display:flex;flex-direction:column;align-items:center;gap:14px;font-size:14px;color:var(--mute)}
+/* mini band: strap in the colour, silver-rimmed pill module on top (same form factor as the hero band) */
+.mini{position:relative;width:44px;height:112px}
+.mini::before{content:"";position:absolute;left:9px;right:9px;top:0;bottom:0;border-radius:10px;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 70%,#000),var(--c) 45%,color-mix(in srgb,var(--c) 75%,#000))}
+.mini::after{content:"";position:absolute;left:5px;right:5px;top:22px;bottom:22px;border-radius:999px;background:#050505;box-shadow:0 0 0 2px #9c9aa3,0 0 0 3px #3c3b41,0 6px 18px rgba(0,0,0,.6)}
+footer{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 24px;padding:24px max(5vw,20px) 32px;border-top:1px solid rgba(255,255,255,.08);color:var(--mute);font-size:13px}
+.flogo{display:flex;align-items:center;gap:8px;font:600 15px/1 Unbounded,Inter,sans-serif;color:var(--ink)}
+.flogo i{width:14px;height:14px;border-radius:50%;border:2.5px solid var(--coral)}
+
+@media (max-width:760px){
+  .cols{grid-template-columns:repeat(4,auto);gap:22px}
+  footer{flex-direction:column;justify-content:center;text-align:center}
+}

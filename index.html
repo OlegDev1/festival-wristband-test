@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tribu — festival band</title>
+<title>FindMe — festival band</title>
 <!-- Page shell only. Each block below names the folder in src/ that owns it; CLAUDE.md has the full map. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,7 +25,7 @@
 <body>
 <!-- src/header: logo, language switch, scroll progress -->
 <header class="top">
-  <a class="logo" href="#story"><i></i>Tribu</a>
+  <a class="logo" href="#story"><i></i>FindMe</a>
   <div class="lang" role="group" aria-label="Language">
     <button type="button" data-l="ru" aria-pressed="false">RU</button>
     <button type="button" data-l="en" aria-pressed="false">EN</button>
@@ -41,7 +41,7 @@
     <div class="beams" id="beams"><i style="left:2%;--r0:10deg;--r1:22deg"></i><i class="c" style="right:2%;--r0:-10deg;--r1:-22deg"></i></div>
     <div class="horizon" id="horizon"></div>
     <!-- src/hero: wordmark, behind the band -->
-    <h1 class="hero-t" id="heroT">Tribu</h1>
+    <h1 class="hero-t" id="heroT">FindMe</h1>
 
     <!-- src/band: the wristband. #frames = the Blender render for the current turn (frames/, made by blender/render.py);
          .face/.screen = the live HTML screen laid on the rendered glass in CSS 3D. Chapter screens (src/chapters) mount into #screen -->
@@ -49,7 +49,7 @@
     <div class="view">
       <div class="pos" id="pos">
         <div class="bz" id="bz">
-          <canvas class="frames" id="frames" aria-label="Tribu wristband"></canvas>
+          <canvas class="frames" id="frames" aria-label="FindMe wristband"></canvas>
           <div class="persp">
             <div class="watch" id="watch">
               <div class="face">
@@ -71,7 +71,7 @@
     <div class="hero-f" id="heroF">
       <p class="tag" data-i="hero.tag"></p>
       <p class="sub" data-i="hero.sub"></p>
-      <span class="hint" data-i="hero.scroll"></span>
+      <span class="hint" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
     </div>
     <!-- src/rail: chapter dots (built from src/chapters/index.js) -->
     <nav class="rail" id="rail"></nav>
@@ -81,19 +81,21 @@
 </section>
 
 <!-- src/sections/how: how it works -->
-<section class="section">
+<section class="section how">
   <div class="wrap">
+    <span class="kick" data-i="how.kick"></span>
     <h2 class="sec" data-i="how.title"></h2>
     <div class="hw">
-      <div><svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="9" cy="33" r="5"/><circle cx="35" cy="33" r="5"/><circle cx="22" cy="10" r="5"/><path d="M12 28.5 19.5 14.5M24.5 14.5 32 28.5M14 33h16"/></svg><h3 data-i="how.t1"></h3><p data-i="how.b1"></p></div>
-      <div><svg viewBox="0 0 44 44" aria-hidden="true"><rect x="4" y="13" width="31" height="18" rx="5"/><path d="M39 19v6"/><rect x="9" y="18" width="14" height="8" rx="2" fill="#ff5a3c" stroke="none"/></svg><h3 data-i="how.t2"></h3><p data-i="how.b2"></p></div>
-      <div><svg viewBox="0 0 44 44" aria-hidden="true"><path d="M22 5c6.5 8.5 11 14 11 19.5a11 11 0 0 1-22 0C11 19 15.5 13.5 22 5z"/><path d="M17 26a5 5 0 0 0 5 5"/></svg><h3 data-i="how.t3"></h3><p data-i="how.b3"></p></div>
+      <div class="card"><span class="n">01</span><svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="9" cy="33" r="5"/><circle cx="35" cy="33" r="5"/><circle cx="22" cy="10" r="5"/><path d="M12 28.5 19.5 14.5M24.5 14.5 32 28.5M14 33h16"/></svg><h3 data-i="how.t1"></h3><p data-i="how.b1"></p></div>
+      <div class="card"><span class="n">02</span><svg viewBox="0 0 44 44" aria-hidden="true"><rect x="4" y="13" width="31" height="18" rx="5"/><path d="M39 19v6"/><rect x="9" y="18" width="14" height="8" rx="2" fill="#ff5a3c" stroke="none"/></svg><h3 data-i="how.t2"></h3><p data-i="how.b2"></p></div>
+      <div class="card"><span class="n">03</span><svg viewBox="0 0 44 44" aria-hidden="true"><path d="M22 5c6.5 8.5 11 14 11 19.5a11 11 0 0 1-22 0C11 19 15.5 13.5 22 5z"/><path d="M17 26a5 5 0 0 0 5 5"/></svg><h3 data-i="how.t3"></h3><p data-i="how.b3"></p></div>
     </div>
   </div>
 </section>
 
 <!-- src/sections/end: slogan, the four strap colours, footer -->
 <section class="section end">
+  <span class="kick" data-i="end.kick"></span>
   <h2 data-i="end.title"></h2>
   <p data-i="end.body"></p>
   <ul class="cols">
@@ -103,6 +105,6 @@
     <li><i class="mini" style="--c:#ffc23d"></i><span data-c="3"></span></li>
   </ul>
 </section>
-<footer data-i="end.note"></footer>
+<footer><span class="flogo"><i></i>FindMe</span><span data-i="end.note"></span></footer>
 </body>
 </html>

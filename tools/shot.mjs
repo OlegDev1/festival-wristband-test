@@ -1,5 +1,5 @@
 // Screenshots of the site for agents in the sandbox. One command, no setup:
-//   node tools/shot.mjs [top|<chapter id>|<chapter index> ...] [--mobile] [--out DIR]
+//   node tools/shot.mjs [top|how|bottom|<chapter id>|<chapter index> ...] [--mobile] [--out DIR]
 //   e.g. node tools/shot.mjs top radar sos   →  /tmp/shot/top.png, radar.png, sos.png
 // Serves the repo itself, uses /usr/bin/google-chrome (or $CHROME), and swaps Google Fonts for local @fontsource copies
 // (the sandbox can't reach Google Fonts). First run installs playwright-core + fonts into /tmp/shot-deps (npm).
@@ -66,6 +66,8 @@ for (const t of targets) {
   // same scroll position as the rail's go(i): the middle of chapter i
   const y = await page.evaluate(async t => {
     if (t === 'top') return 0;
+    if (t === 'how') return document.querySelector('.how').offsetTop - 40;
+    if (t === 'bottom') return document.documentElement.scrollHeight;
     const list = (await import(new URL('src/chapters/index.js', location.href))).default;
     const {INTRO} = await import(new URL('src/story/timeline.js', location.href));
     const i = /^\d+$/.test(t) ? +t : list.findIndex(c => c.id === t);
