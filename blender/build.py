@@ -19,10 +19,13 @@ R = W / 2                     # radius of the pill ends
 C = H / 2 - R                 # half length of the straight sides
 GLASS_TOP = 33                # glass flat top, in front of the module centre
 SCREEN_INSET = 16             # lit screen area, inset from the module outline
-STRAP_W, STRAP_T = 138, 18    # strap width and thickness (soft silicone, thicker than the old woven strap)
+STRAP_W, STRAP_T = 136, 18    # strap width (around the wrist) and thickness (soft silicone)
+STRAP_W0 = 150                # strap width where it leaves the module ends (flush with the metal flanks)
 HOLE_R, HOLE_STEP = 11, 46    # strap holes: radius, spacing along the loop
-STRAP_FRONT = T / 2 + STRAP_T / 2 + 1     # strap centre line behind the module
-WRIST_D, WRIST_H = 300, 226   # loop depth (front to back, inner) and half height of the strap centre line
+STRAP_FRONT = T / 2 + STRAP_T / 2 + 1     # (old) strap behind the module; only the optional connectors use it
+STRAP_Y = 6                   # strap centre line runs *through* the module, a bit behind its middle
+STRAP_PIN = H / 2 + 14        # the strap stays straight until just past the module ends, then curves back
+WRIST_D, WRIST_H = 300, 246   # loop depth (front to back, inner) and half height of the strap centre line
 
 NL, NA = 24, 56               # points per straight side / per pill end
 
@@ -193,19 +196,19 @@ def mat_strap(color=(0.072, 0.006, 0.040)):
 def strap_path(n_out=480):
     """closed centre line of the loop in the band's Y-Z plane (BU): flat behind the module, round around the wrist.
        Starts at the back of the loop so the texture seam is hidden."""
-    yc = STRAP_FRONT + WRIST_D / 2 + STRAP_T / 2
+    yc = STRAP_Y + WRIST_D / 2 + STRAP_T / 2
     ay = WRIST_D / 2 + STRAP_T / 2
     t = np.linspace(0, 2 * np.pi, 3000, endpoint=False) + np.pi
     c, s = np.cos(t), np.sin(t)
     e = np.where(c >= 0, 2 / 5.0, 2 / 2.3)
     y = yc - ay * np.sign(c) * np.abs(c) ** e
     z = WRIST_H * np.sign(s) * np.abs(s) ** e
-    pin = (y < yc) & (np.abs(z) <= 138)
-    y = np.where(pin, STRAP_FRONT, y)
+    pin = (y < yc) & (np.abs(z) <= STRAP_PIN)
+    y = np.where(pin, STRAP_Y, y)
     for _ in range(1500):                                  # relax into a smooth curve, keeping the flat part flat
         y2 = 0.5 * y + 0.25 * (np.roll(y, 1) + np.roll(y, -1))
         z2 = 0.5 * z + 0.25 * (np.roll(z, 1) + np.roll(z, -1))
-        y = np.where(pin, STRAP_FRONT, y2); z = np.where(pin, z, z2)
+        y = np.where(pin, STRAP_Y, y2); z = np.where(pin, z, z2)
     P = np.stack([y, z], 1)
     seg = np.linalg.norm(np.roll(P, -1, 0) - P, axis=1)
     cum = np.concatenate([[0], np.cumsum(seg)])
@@ -216,9 +219,9 @@ def strap_path(n_out=480):
     return np.stack([yy, zz], 1), Ltot, yc
 
 
-def strap_section():
+def strap_section(w=STRAP_W):
     """rounded-rectangle cross-section: list of (x, n) with n = offset along the outward normal; perimeter params"""
-    w2, t2, cr = STRAP_W / 2, STRAP_T / 2, 7.5
+    w2, t2, cr = w / 2, STRAP_T / 2, 7.5
     sec = []
     def arc(cx, cn, a0):
         for k in range(9):
@@ -251,7 +254,10 @@ def build_strap(mat):
         ny, nz = tz / tl, -ty / tl
         if ny * (q[0] - yc) + nz * q[1] < 0:                  # make the normal point out of the loop
             ny, nz = -ny, -nz
-        rings.append([bm.verts.new((x * S, (q[0] + ny * n) * S, (q[1] + nz * n) * S)) for x, n in sec])
+        # full module width where it leaves the module, easing to the wrist width as it curves back
+        f = min(1.0, max(0.0, (q[0] - STRAP_Y - 15) / 110)); f = f * f * (3 - 2 * f)
+        sec_i, _ = strap_section(STRAP_W0 + (STRAP_W - STRAP_W0) * f)
+        rings.append([bm.verts.new((x * S, (q[0] + ny * n) * S, (q[1] + nz * n) * S)) for x, n in sec_i])
     seg = np.linalg.norm(np.roll(P, -1, 0) - P, axis=1); cum = np.concatenate([[0], np.cumsum(seg)])
     for i in range(N):
         a, b = rings[i], rings[i + 1]
