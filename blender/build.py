@@ -26,7 +26,7 @@ HOLE_R, HOLE_STEP = 10, 44    # strap holes: radius, spacing along the loop
 STRAP_FRONT = T / 2 + STRAP_T / 2 + 1     # (old) strap behind the module; only the optional connectors use it
 STRAP_Y = 12                  # strap centre line inside the silicone cradle, in the back half of the case
 STRAP_PIN = 140               # straight along the case, rounding off near its ends into the circle
-LOOP_R, LOOP_CHORD = 240, 168  # loop = circle of this centre-line radius; the case is a flat chord of it
+LOOP_R, LOOP_CHORD = 254, 168  # loop = circle of this centre-line radius; the case is a flat chord of it
 
 NL, NA = 24, 56               # points per straight side / per pill end
 
