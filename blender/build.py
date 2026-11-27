@@ -19,7 +19,8 @@ R = W / 2                     # radius of the pill ends
 C = H / 2 - R                 # half length of the straight sides
 GLASS_TOP = 33                # glass flat top, in front of the module centre
 SCREEN_INSET = 16             # lit screen area, inset from the module outline
-STRAP_W, STRAP_T = 136, 14    # strap width and thickness
+STRAP_W, STRAP_T = 138, 18    # strap width and thickness (soft silicone, thicker than the old woven strap)
+HOLE_R, HOLE_STEP = 11, 46    # strap holes: radius, spacing along the loop
 STRAP_FRONT = T / 2 + STRAP_T / 2 + 1     # strap centre line behind the module
 WRIST_D, WRIST_H = 300, 226   # loop depth (front to back, inner) and half height of the strap centre line
 
@@ -86,14 +87,20 @@ def principled(name, **kw):
 
 
 def mat_silver():
-    m, p = principled('Silver', **{'Base Color': (0.86, 0.86, 0.88, 1), 'Metallic': 1.0, 'Roughness': 0.16,
-                                     'Anisotropic': 0.25})
+    """bead-blasted, champagne anodised aluminium: satin metal with a fine grain"""
+    m, p = principled('Aluminium', **{'Base Color': (0.80, 0.68, 0.54, 1), 'Metallic': 1.0, 'Roughness': 0.27,
+                                        'Anisotropic': 0.15, 'Coat Weight': 0.25, 'Coat Roughness': 0.12})
+    N, L = m.node_tree.nodes, m.node_tree.links
+    nz = N.new('ShaderNodeTexNoise'); nz.inputs['Scale'].default_value = 2500; nz.inputs['Detail'].default_value = 1
+    bump = N.new('ShaderNodeBump'); bump.inputs['Strength'].default_value = 0.08
+    L.new(nz.outputs['Fac'], bump.inputs['Height']); L.new(bump.outputs['Normal'], p.inputs['Normal'])
     return m
 
 
 def mat_glass():
-    m, p = principled('Glass', **{'Base Color': (0.004, 0.004, 0.005, 1), 'Roughness': 0.03, 'IOR': 1.77,
-                                    'Coat Weight': 1.0, 'Coat Roughness': 0.02})
+    m, p = principled('Glass', **{'Base Color': (0.0, 0.0, 0.0, 1), 'Roughness': 0.0, 'IOR': 1.52,
+                                    'Specular IOR Level': 0.7, 'Coat Weight': 1.0, 'Coat Roughness': 0.0,
+                                    'Coat IOR': 1.52})
     return m
 
 
@@ -106,6 +113,20 @@ def mat_screen():
 
 def mat_back():
     m, p = principled('Back', **{'Base Color': (0.025, 0.022, 0.024, 1), 'Roughness': 0.45})
+    return m
+
+
+def mat_silicone(color=(0.86, 0.66, 0.52)):
+    """warm peach-cream soft-touch silicone: soft subsurface, low sheen, faint micro texture"""
+    m, p = principled('Silicone', **{'Base Color': (*color, 1), 'Roughness': 0.48, 'Specular IOR Level': 0.45,
+                                       'Subsurface Weight': 0.35, 'Subsurface Radius': (1.0, 0.55, 0.35),
+                                       'Subsurface Scale': 0.03, 'Coat Weight': 0.12, 'Coat Roughness': 0.35,
+                                       'Sheen Weight': 0.15, 'Sheen Roughness': 0.5})
+    N, L = m.node_tree.nodes, m.node_tree.links
+    nz = N.new('ShaderNodeTexNoise'); nz.inputs['Scale'].default_value = 1800; nz.inputs['Detail'].default_value = 2
+    bump = N.new('ShaderNodeBump'); bump.inputs['Strength'].default_value = 0.05
+    L.new(nz.outputs['Fac'], bump.inputs['Height']); L.new(bump.outputs['Normal'], p.inputs['Normal'])
+    m['u_node'] = ''
     return m
 
 
@@ -197,7 +218,7 @@ def strap_path(n_out=480):
 
 def strap_section():
     """rounded-rectangle cross-section: list of (x, n) with n = offset along the outward normal; perimeter params"""
-    w2, t2, cr = STRAP_W / 2, STRAP_T / 2, 5.5
+    w2, t2, cr = STRAP_W / 2, STRAP_T / 2, 7.5
     sec = []
     def arc(cx, cn, a0):
         for k in range(9):
@@ -247,11 +268,48 @@ def build_strap(mat):
     me = bpy.data.meshes.new('Strap'); bm.to_mesh(me); bm.free()
     ob = bpy.data.objects.new('Strap', me); bpy.context.collection.objects.link(ob)
     ob.data.materials.append(mat)
-    # exact weave tiling along the loop: whole number of warp cells around Ltot
-    cells = round(Ltot / 3.4)
-    un = mat.node_tree.nodes[mat['u_node']]
-    un.inputs[1].default_value = cells / (Ltot / 100)
-    return ob, Ltot
+    if mat.get('u_node'):
+        # exact weave tiling along the loop: whole number of warp cells around Ltot
+        cells = round(Ltot / 3.4)
+        un = mat.node_tree.nodes[mat['u_node']]
+        un.inputs[1].default_value = cells / (Ltot / 100)
+    return ob, Ltot, P, cum, yc
+
+
+def punch_holes(strap, P, cum, Ltot, yc, pin_mat):
+    """round holes along the back of the loop (like a silicone sport strap) and a metal pin in the middle"""
+    def frame_at(s):
+        i = int(np.searchsorted(cum, s % Ltot)) % len(P)
+        q, q0, q1 = P[i], P[(i - 1) % len(P)], P[(i + 1) % len(P)]
+        ty, tz = q1 - q0; tl = math.hypot(ty, tz); ny, nz = tz / tl, -ty / tl
+        if ny * (q[0] - yc) + nz * q[1] < 0:
+            ny, nz = -ny, -nz
+        return Vector((0, q[0] * S, q[1] * S)), Vector((0, ny, nz))
+    bm = bmesh.new()
+    step, n = HOLE_STEP, int(0.3 * Ltot / HOLE_STEP)
+    for k in range(-n, n + 1):
+        if k == 0:
+            continue                                         # the pin sits here
+        loc, nrm = frame_at(k * step)
+        mat = Matrix.Translation(loc) @ nrm.to_track_quat('Z', 'Y').to_matrix().to_4x4()
+        bmesh.ops.create_cone(bm, cap_ends=True, segments=28, radius1=HOLE_R * S, radius2=HOLE_R * S,
+                              depth=STRAP_T * 3 * S, matrix=mat)
+    cme = bpy.data.meshes.new('Holes'); bm.to_mesh(cme); bm.free()
+    cut = bpy.data.objects.new('Holes', cme); bpy.context.collection.objects.link(cut)
+    mod = strap.modifiers.new('holes', 'BOOLEAN'); mod.operation = 'DIFFERENCE'; mod.object = cut; mod.solver = 'EXACT'
+    bpy.context.view_layer.objects.active = strap
+    bpy.ops.object.modifier_apply(modifier=mod.name)
+    bpy.data.objects.remove(cut)
+    strap.data.set_sharp_from_angle(angle=math.radians(50))
+    # the pin: a short domed metal stud on the outer face
+    loc, nrm = frame_at(0)
+    rot = nrm.to_track_quat('Z', 'Y').to_euler()
+    bpy.ops.mesh.primitive_cylinder_add(vertices=40, radius=8.5 * S, depth=8 * S,
+                                        location=loc + nrm * (STRAP_T / 2 + 1) * S, rotation=rot)
+    pin = bpy.context.object; pin.name = 'Pin'
+    bev = pin.modifiers.new('bevel', 'BEVEL'); bev.width = 3.5 * S; bev.segments = 6
+    bpy.ops.object.shade_smooth(); pin.data.materials.append(pin_mat)
+    return pin
 
 
 def rounded_box(name, size, loc, bevel, mat):
@@ -270,7 +328,8 @@ def rounded_box(name, size, loc, bevel, mat):
 def build():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     sc = bpy.context.scene
-    silver, glass, screen, back, strap = mat_silver(), mat_glass(), mat_screen(), mat_back(), mat_strap()
+    silver, glass, screen, back, strap = mat_silver(), mat_glass(), mat_screen(), mat_back(), mat_silicone()
+    chrome, _ = principled('Chrome', **{'Base Color': (0.92, 0.91, 0.90, 1), 'Metallic': 1.0, 'Roughness': 0.12})
 
     root = bpy.data.objects.new('Band', None); sc.collection.objects.link(root)
 
@@ -289,13 +348,14 @@ def build():
     sme = bpy.data.meshes.new('Screen'); sbm.to_mesh(sme); sbm.free()
     scr = bpy.data.objects.new('Screen', sme); sc.collection.objects.link(scr); scr.data.materials.append(screen)
 
-    st, Ltot = build_strap(strap)
+    st, Ltot, P, cum, yc = build_strap(strap)
+    pin = punch_holes(st, P, cum, Ltot, yc, chrome)
     # connectors at both ends: a silver bridge the strap passes under
     con = []
     for sgn in ((1, -1) if os.environ.get('CONNECTORS') else ()):
         con.append(rounded_box('Connector' + ('Top' if sgn > 0 else 'Bot'), (STRAP_W + 6, 26, 24),
                                (0, STRAP_FRONT + 1, sgn * (H / 2 - 16)), 11, silver))
-    for ob in [body, gl, scr, st] + con:
+    for ob in [body, gl, scr, st, pin] + con:
         ob.parent = root
 
     # camera: 1800 BU in front, like the CSS perspective
