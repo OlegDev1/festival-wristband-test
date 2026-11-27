@@ -298,7 +298,7 @@ def build_strap(mat):
 
 def build_clasp(P, cum, Ltot, yc, sil_mat, pin_mat):
     """the buckle on the back of the loop, like the photo: the holed end lies on the inner face of the strap (holes
-       read as dimples), a metal pin pokes in through one hole, and a keeper holds the rounded tip.
+       read as dimples), and a keeper holds the rounded tip (no metal pin).
        s = arc length from the back of the loop; s > 0 runs toward the bottom of the band."""
     Pc = np.vstack([P, P[:1]])
     def frame_at(s):
@@ -345,7 +345,6 @@ def build_clasp(P, cum, Ltot, yc, sil_mat, pin_mat):
     # ---- holes through the holed end only (the strap underneath shows through: dimples)
     hs = [s_a + RAMP + 22 + k * HOLE_STEP for k in range(40)]
     hs = [s for s in hs if s < s_b - TIP - 70]
-    pin_s = hs[len(hs) // 2]
     bm = bmesh.new()
     for s in hs:
         q, nrm, _ = frame_at(s)
@@ -364,15 +363,6 @@ def build_clasp(P, cum, Ltot, yc, sil_mat, pin_mat):
     for p in end.data.polygons:
         p.use_smooth = True
     end.data.set_sharp_from_angle(angle=math.radians(70))
-    # ---- the pin: metal stud from the strap underneath, up through one hole, domed top just above the surface
-    q, nrm, _ = frame_at(pin_s)
-    h = STRAP_T + 5
-    bpy.ops.mesh.primitive_cylinder_add(vertices=48, radius=7.5 * S, depth=h * S,
-                                        location=(q - nrm * (STRAP_T / 2 + h / 2)) * S,
-                                        rotation=nrm.to_track_quat('Z', 'Y').to_euler())
-    pin = bpy.context.object; pin.name = 'Pin'
-    bev = pin.modifiers.new('bevel', 'BEVEL'); bev.width = 3.2 * S; bev.segments = 8
-    bpy.ops.object.shade_smooth(); pin.data.materials.append(pin_mat)
     # ---- keeper: a short silicone band around both layers, just before the tip
     q, nrm, tg = frame_at(s_b - TIP - 34)
     bm = bmesh.new()
@@ -385,7 +375,7 @@ def build_clasp(P, cum, Ltot, yc, sil_mat, pin_mat):
     for p in keeper.data.polygons:
         p.use_smooth = True
     keeper.data.materials.append(sil_mat)
-    return [end, pin, keeper]
+    return [end, keeper]
 
 
 def build_cradle(mat):
