@@ -16,6 +16,7 @@ const S={min:15,due:false,going:false,k:0};
 export default {
   id:'meet',
   pose:[10,-4,-2],
+  end:.82,
   screen:`
 <div class="scr scr-meet">
   <svg class="edge" viewBox="0 0 124 308" aria-hidden="true"><path class="trk" d="${PILL}"/><path class="val" data-r="arc" d="${PILL}" pathLength="100" stroke-dasharray="0 100" style="stroke:var(--lime)"/></svg>

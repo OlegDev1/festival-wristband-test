@@ -15,6 +15,7 @@ const S={dist:120,near:false,ang:34};
 export default {
   id:'find',
   pose:[-8,-5,0],
+  end:.84,
   screen:`
 <div class="scr scr-find">
   <svg class="edge" viewBox="0 0 124 308" aria-hidden="true"><path class="trk" d="${PILL}"/><path class="val" data-r="arc" d="${PILL}" pathLength="100" stroke-dasharray="0 100" style="stroke:var(--cyan)"/></svg>

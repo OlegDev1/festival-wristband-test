@@ -15,6 +15,7 @@ const S={hold:0,sent:false};
 export default {
   id:'sos',
   pose:[-46,6,0],
+  end:.42,
   screen:`
 <div class="scr scr-sos">
   <svg class="edge" viewBox="0 0 124 308" aria-hidden="true"><path class="val" data-r="arc" d="${PILL}" pathLength="100" stroke-dasharray="0 100" style="stroke:#fff"/></svg>

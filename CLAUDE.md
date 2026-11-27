@@ -45,9 +45,9 @@ CSS isolation: chapter CSS is scoped under `.scr-<id>` and its keyframes are pre
 | What | Where |
 |---|---|
 | A chapter's copy, screen, animation | `src/chapters/<id>.js` + `<id>.css` only. Ids, in order: home, crew, bump, radar, find, meet, places, ghost, sos |
-| Add / reorder chapters | `src/chapters/index.js`. Scroll length, rail and captions follow (≈180vh per chapter, `VH_PER_UNIT` in `timeline.js`) |
+| Add / reorder chapters | `src/chapters/index.js`. Scroll length, rail and captions follow (≈360vh per chapter, `VH_PER_UNIT` in `timeline.js`) |
 | Shared screen look | `src/chapters/screen.css`: pill screen 124×308 design size, scaled by `--k`; `.we` label (9) / `.wb` clock, hours over minutes (50) / `.wm` (17) / `.nd b` (40) / `.ws` (12); edge arc = pill `<path>` starting top centre, stroke 3 |
-| Scroll pacing | `src/story/timeline.js` `frame()`: `INTRO=1.6`; turn between features `blend` (second half of each chapter); screen switch `floor(q+.25)`; chapter animation `lt=fr*1.17` |
+| Scroll pacing | `src/story/timeline.js` `frame()`: `INTRO=1.6`; turn between features `blend` (second half of each chapter); screen switch `floor(q+.25)`; chapter animation `lp` 0→1 over the first half of every chapter, scaled to each chapter's `end` |
 | Opening pose, band position/size | Poses live in `blender/render.py` (`R0`, `R1`) and are copied to `frames/frames.json`; change them there, I re-render on my Mac. `src/band/band.js`: opening scale `S0`, `size()` (divisor 290 = band units), chapter tilt = 2D `rz` from each chapter's `pose` (its ry/rx are ignored: the render has one turn) |
 | Screen on the band | `src/band/band.css`: `.persp` (1800·k perspective at the band centre = the Blender camera), `.face` pill `--sw`×`--sh` at depth `--sz` (from frames.json), `.glass` sheen, `.glow`/`.sos` edge light |
 | Hero text | `src/hero/`: title `.hero-t` tall light Six Caps, uppercase, high up *behind* the band, size `min(64vh,70vw)`; tagline `.hero-f`; `--hy` lifts the title on scroll |

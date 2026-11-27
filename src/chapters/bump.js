@@ -14,6 +14,7 @@ const S={g:0,ok:false};
 export default {
   id:'bump',
   pose:[16,3,2],
+  end:.52,
   screen:`
 <div class="scr scr-bump">
   <span class="we" data-r="we"></span>

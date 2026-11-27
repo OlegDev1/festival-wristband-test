@@ -14,6 +14,7 @@ const S={on:false};
 export default {
   id:'ghost',
   pose:[6,4,1],
+  end:.42,
   screen:`
 <div class="scr scr-ghost">
   <span class="we" data-r="we"></span>

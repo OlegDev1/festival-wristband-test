@@ -16,6 +16,7 @@ let sws=[];
 export default {
   id:'crew',
   pose:[-26,12,0],
+  end:.76,
   screen:`
 <div class="scr scr-crew">
   <span class="we" data-r="we"></span>

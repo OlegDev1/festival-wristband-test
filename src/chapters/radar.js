@@ -17,6 +17,7 @@ let dots=[],pips=[];
 export default {
   id:'radar',
   pose:[12,6,-2],
+  end:.76,
   screen:`
 <div class="scr scr-radar">
   <span class="we" data-r="near"></span>

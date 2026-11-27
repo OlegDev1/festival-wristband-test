@@ -6,9 +6,11 @@
    A chapter module (see home.js … sos.js) default-exports:
      id       'find' — also its strings namespace and its CSS file name
      pose     [ry, rx, rz] band rotation while it is on, in degrees
+     end      lt at which its animation is complete; the scroll story maps its 0 → 1 progress onto 0 → end,
+              so every chapter takes the same scroll to finish (try mode passes lt directly)
      screen   markup, one root .scr.scr-<id>; [data-r=name] elements are handed to mount/draw as r.name, r.root = the .scr
      mount(r)               optional, once
-     step(lt, {buzz})       optional, only while it is the active screen; lt = 0 … ~1.17 through the chapter
+     step(lt, {buzz})       optional, only while it is the active screen; lt = 0 … end through the chapter
      draw(r, t, common)     optional, every frame and on language change; t = its own strings, common = shared strings
      look()                 optional, while active: {ring, glow, sos} for the band
    and calls addStrings(id, {ru, en, es}) with at least label, title, body (used by the caption and the rail). */
@@ -35,7 +37,7 @@ function draw(){const cm=strings('common');live.forEach(({c,r})=>c.draw&&c.draw(
 export function update(f){
   if(f.si!==si){live.forEach(({r},i)=>r.root.classList.toggle('on',i===f.si));si=f.si}
   const a=live[f.si];
-  if(a&&a.c.step)a.c.step(f.lt,api);
+  if(a&&a.c.step)a.c.step(f.lp!==undefined?f.lp*(a.c.end??1):f.lt,api);
   draw();
   return a&&a.c.look?{...BASE_LOOK,...a.c.look()}:BASE_LOOK;
 }

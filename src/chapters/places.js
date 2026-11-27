@@ -16,6 +16,7 @@ let ics=[],pips=[];
 export default {
   id:'places',
   pose:[-14,6,0],
+  end:.68,
   screen:`
 <div class="scr scr-places">
   <span class="we" data-r="near"></span>
