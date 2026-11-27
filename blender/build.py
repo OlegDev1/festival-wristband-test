@@ -23,10 +23,11 @@ BACK = 20                     # case back (was 30: the case is thinner now; glas
 STRAP_W, STRAP_T = 136, 16    # strap width (around the wrist) and thickness (soft silicone)
 STRAP_W0 = 152                # strap width where it grows out of the cradle behind the case
 HOLE_R, HOLE_STEP = 10, 44    # strap holes: radius, spacing along the loop
+CROWN = 1.3                   # outer face of the strap bulges this much in the middle
 STRAP_FRONT = T / 2 + STRAP_T / 2 + 1     # (old) strap behind the module; only the optional connectors use it
 STRAP_Y = 12                  # strap centre line inside the silicone cradle, in the back half of the case
 STRAP_PIN = 140               # straight along the case, rounding off near its ends into the circle
-LOOP_R, LOOP_CHORD = 254, 168  # loop = circle of this centre-line radius; the case is a flat chord of it
+LOOP_R, LOOP_CHORD = 245, 168  # loop = circle of this centre-line radius; the case is a flat chord of it
 
 NL, NA = 24, 56               # points per straight side / per pill end
 
@@ -121,15 +122,25 @@ def mat_back():
 
 
 def mat_silicone(color=(0.86, 0.66, 0.52)):
-    """warm peach-cream soft-touch silicone: soft subsurface, low sheen, faint micro texture"""
-    m, p = principled('Silicone', **{'Base Color': (*color, 1), 'Roughness': 0.48, 'Specular IOR Level': 0.45,
-                                       'Subsurface Weight': 0.35, 'Subsurface Radius': (1.0, 0.55, 0.35),
-                                       'Subsurface Scale': 0.03, 'Coat Weight': 0.12, 'Coat Roughness': 0.35,
-                                       'Sheen Weight': 0.15, 'Sheen Roughness': 0.5})
+    """premium soft-touch silicone, warm peach-cream: deep soft subsurface (edges glow a little), velvety sheen,
+       a faint satin coat, and a fine matte grain whose roughness varies slightly so highlights look soft and real"""
+    m, p = principled('Silicone', **{'Base Color': (*color, 1), 'Roughness': 0.44, 'IOR': 1.41,
+                                       'Specular IOR Level': 0.5,
+                                       'Subsurface Weight': 0.55, 'Subsurface Radius': (1.0, 0.45, 0.25),
+                                       'Subsurface Scale': 0.06, 'Coat Weight': 0.08, 'Coat Roughness': 0.25,
+                                       'Sheen Weight': 0.35, 'Sheen Roughness': 0.35, 'Sheen Tint': (1, 1, 1, 1)})
     N, L = m.node_tree.nodes, m.node_tree.links
-    nz = N.new('ShaderNodeTexNoise'); nz.inputs['Scale'].default_value = 1800; nz.inputs['Detail'].default_value = 2
-    bump = N.new('ShaderNodeBump'); bump.inputs['Strength'].default_value = 0.05
-    L.new(nz.outputs['Fac'], bump.inputs['Height']); L.new(bump.outputs['Normal'], p.inputs['Normal'])
+    tc = N.new('ShaderNodeTexCoord')
+    grain = N.new('ShaderNodeTexNoise'); grain.inputs['Scale'].default_value = 2200; grain.inputs['Detail'].default_value = 3
+    L.new(tc.outputs['Generated'], grain.inputs['Vector'])
+    bump = N.new('ShaderNodeBump'); bump.inputs['Strength'].default_value = 0.06
+    L.new(grain.outputs['Fac'], bump.inputs['Height']); L.new(bump.outputs['Normal'], p.inputs['Normal'])
+    rvar = N.new('ShaderNodeTexNoise'); rvar.inputs['Scale'].default_value = 90; rvar.inputs['Detail'].default_value = 2
+    L.new(tc.outputs['Generated'], rvar.inputs['Vector'])
+    mr = N.new('ShaderNodeMapRange')
+    mr.inputs['From Min'].default_value = 0.3; mr.inputs['From Max'].default_value = 0.7
+    mr.inputs['To Min'].default_value = 0.39; mr.inputs['To Max'].default_value = 0.5
+    L.new(rvar.outputs['Fac'], mr.inputs['Value']); L.new(mr.outputs['Result'], p.inputs['Roughness'])
     m['u_node'] = ''
     return m
 
@@ -222,7 +233,7 @@ def strap_path(n_out=480):
 def strap_section(w=STRAP_W, t=STRAP_T):
     """rounded-rectangle cross-section: list of (x, n) with n = offset along the outward normal; perimeter params"""
     w2, t2 = w / 2, t / 2
-    cr = min(6.5, t2 - 0.01, w2 - 0.01)
+    cr = min(4.2, t2 - 0.01, w2 - 0.01)       # crisp but soft edges, flat-ish faces (premium moulded look)
     sec = []
     def arc(cx, cn, a0):
         for k in range(9):
@@ -232,9 +243,11 @@ def strap_section(w=STRAP_W, t=STRAP_T):
         for i in range(1, k):
             f = i / k; sec.append((x0 + (x1 - x0) * f, n0 + (n1 - n0) * f))
     arc(w2 - cr, t2 - cr, 0); line(w2 - cr, t2, -w2 + cr, t2, 40)
-    arc(-w2 + cr, t2 - cr, math.pi / 2); line(-w2, t2 - cr, -w2, -t2 + cr, 3)
+    arc(-w2 + cr, t2 - cr, math.pi / 2); line(-w2, t2 - cr, -w2, -t2 + cr, 5)
     arc(-w2 + cr, -t2 + cr, math.pi); line(-w2 + cr, -t2, w2 - cr, -t2, 40)
-    arc(w2 - cr, -t2 + cr, 3 * math.pi / 2); line(w2, -t2 + cr, w2, t2 - cr, 3)
+    arc(w2 - cr, -t2 + cr, 3 * math.pi / 2); line(w2, -t2 + cr, w2, t2 - cr, 5)
+    fx = max(w2 - cr, 1e-3)                     # gentle crown on the outer face
+    sec = [(x, n + CROWN * max(0.0, 1 - (x / fx) ** 2)) if n > t2 - cr + 1e-6 else (x, n) for x, n in sec]
     sec.append(sec[0])
     per = [0.0]
     for a, b in zip(sec, sec[1:]):
@@ -345,7 +358,12 @@ def build_clasp(P, cum, Ltot, yc, sil_mat, pin_mat):
     bpy.context.view_layer.objects.active = end
     bpy.ops.object.modifier_apply(modifier=mod.name)
     bpy.data.objects.remove(cut)
-    end.data.set_sharp_from_angle(angle=math.radians(55))
+    bev = end.modifiers.new('rims', 'BEVEL'); bev.width = 1.8 * S; bev.segments = 3
+    bev.limit_method = 'ANGLE'; bev.angle_limit = math.radians(35)
+    bpy.ops.object.modifier_apply(modifier=bev.name)
+    for p in end.data.polygons:
+        p.use_smooth = True
+    end.data.set_sharp_from_angle(angle=math.radians(70))
     # ---- the pin: metal stud from the strap underneath, up through one hole, domed top just above the surface
     q, nrm, _ = frame_at(pin_s)
     h = STRAP_T + 5
