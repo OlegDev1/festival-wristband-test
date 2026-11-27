@@ -18,6 +18,7 @@ export function mount(chapters){
     dots.forEach((b,i)=>b.setAttribute('aria-label',`${i+1}. ${strings(chapters[i].id).label}`));
   });
   addEventListener('keydown',e=>{
+    if(document.documentElement.classList.contains('trying'))return;  // src/try handles its own keys
     if(e.altKey||e.ctrlKey||e.metaKey||e.shiftKey||/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))return;
     const d={ArrowRight:1,PageDown:1,ArrowLeft:-1,PageUp:-1}[e.key];
     if(d&&step(d))e.preventDefault();

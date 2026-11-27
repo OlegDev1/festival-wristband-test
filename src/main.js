@@ -3,7 +3,8 @@
      1. features register strings and build their DOM (mount)
      2. the language is applied (fills every [data-i], then redraws text built in code)
      3. the timeline starts: on every scroll frame it calls the features below, band last (it needs the active chapter's look)
-     4. the band's rendered frames load on their own (src/band). */
+     4. the band's rendered frames load on their own (src/band).
+   Try it mode (src/try) borrows the chapter screens while open; the timeline callback skips frames meanwhile. */
 import './core/common-strings.js';
 import './sections/how.js';
 import {startLang} from './core/i18n.js';
@@ -17,18 +18,21 @@ import * as chapters from './chapters/chapters.js';
 import * as captions from './captions/captions.js';
 import * as rail from './rail/rail.js';
 import * as band from './band/band.js';
+import * as tryMode from './try/try.js';
 
 header.mount();
 scene.mount();
 end.mount();
-chapters.mount(CHAPTERS,{buzz:band.buzz});
+chapters.mount(CHAPTERS,{buzz:()=>{band.buzz();tryMode.buzz()}});
 captions.mount(CHAPTERS);
 rail.mount(CHAPTERS);
 band.mount(CHAPTERS.map(c=>c.pose));
+tryMode.mount(CHAPTERS);
 
 startLang();
 
 timeline.start(CHAPTERS.length,f=>{
+  if(tryMode.update(f))return;  // try mode owns the screens while open
   header.update(f);
   hero.update(f);
   scene.update(f);

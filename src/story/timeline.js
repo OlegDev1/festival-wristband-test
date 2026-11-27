@@ -51,8 +51,8 @@ export function start(chapters,onFrame){
   run();
 }
 
-/* jump to the middle of chapter i (its screen is fully on there) */
-export function go(i){scrollTo({top:story.offsetTop+((INTRO+clamp(i,0,N-1)+.55)/U)*span(),behavior:reduce?'auto':'smooth'})}
+/* jump to the middle of chapter i (its screen is fully on there); behavior 'auto' = instant (src/try) */
+export function go(i,behavior){scrollTo({top:story.offsetTop+((INTRO+clamp(i,0,N-1)+.55)/U)*span(),behavior:behavior||(reduce?'auto':'smooth')})}
 
 /* step d chapters from the current one (before chapter 1 = back to the top); false if there is nowhere to go */
 export function step(d){

@@ -19,13 +19,16 @@
 <link rel="stylesheet" href="src/rail/rail.css">
 <link rel="stylesheet" href="src/sections/how.css">
 <link rel="stylesheet" href="src/sections/end.css">
+<link rel="stylesheet" href="src/try/try.css">
 <link rel="preload" href="frames/frames.json" as="fetch" crossorigin>
 <script type="module" src="src/main.js"></script>
 </head>
 <body>
-<!-- src/header: logo, language switch, scroll progress -->
+<!-- src/header: logo, language switch, scroll progress (+ the src/try button) -->
 <header class="top">
   <a class="logo" href="#story"><i></i>FindMe</a>
+  <!-- src/try: opens Try it mode (the overlay itself is built by src/try/try.js) -->
+  <button type="button" class="try-open" data-try><i></i><span data-i="try.open"></span></button>
   <div class="lang" role="group" aria-label="Language">
     <button type="button" data-l="ru" aria-pressed="false">RU</button>
     <button type="button" data-l="en" aria-pressed="false">EN</button>
@@ -98,6 +101,8 @@
   <span class="kick" data-i="end.kick"></span>
   <h2 data-i="end.title"></h2>
   <p data-i="end.body"></p>
+  <!-- src/try: big Try it button -->
+  <button type="button" class="try-cta" data-try><i></i><span data-i="try.cta"></span></button>
   <ul class="cols">
     <li><i class="mini" style="--c:#ff5a3c"></i><span data-c="0"></span></li>
     <li><i class="mini" style="--c:#43d9ff"></i><span data-c="1"></span></li>
