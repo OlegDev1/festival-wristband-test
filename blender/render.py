@@ -4,7 +4,7 @@ The website (src/band/band.js) plays these frames as you scroll: frame 0 = openi
 last frame = feature pose (screen facing you). The HTML screen is laid on top in CSS 3D with the same pose.
 
 On a Mac (Apple GPU):  sh blender/render-mac.sh   (or: Blender -b band.blend -P render.py)
-Options (env vars): FRAMES=60  PPU=3 (pixels per CSS px at --k=1)  SAMPLES=128  OUT=<website>/frames  ONLY=0,30,59  GPU=1
+Options (env vars): FRAMES=60  PPU=2 (pixels per CSS px at --k=1; 3 = full)  SAMPLES=48 (128 = full)  OUT=<website>/frames  ONLY=0,30,59  GPU=1
                     MOBILE=0.7 (also writes a smaller copy of every frame to frames/m/ for phones; 0 = off)
 """
 import bpy, math, os, json, sys
