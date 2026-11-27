@@ -25,8 +25,8 @@ STRAP_W0 = 152                # strap width where it grows out of the cradle beh
 HOLE_R, HOLE_STEP = 10, 44    # strap holes: radius, spacing along the loop
 STRAP_FRONT = T / 2 + STRAP_T / 2 + 1     # (old) strap behind the module; only the optional connectors use it
 STRAP_Y = 12                  # strap centre line inside the silicone cradle, in the back half of the case
-STRAP_PIN = 110               # straight inside the case only; it curves back before it leaves the case ends
-WRIST_D, WRIST_H = 410, 178   # loop: long front to back, low (top barely above the case ends, like the photo)
+STRAP_PIN = 140               # straight along the case, rounding off near its ends into the circle
+LOOP_R, LOOP_CHORD = 240, 168  # loop = circle of this centre-line radius; the case is a flat chord of it
 
 NL, NA = 24, 56               # points per straight side / per pill end
 
@@ -197,16 +197,15 @@ def mat_strap(color=(0.072, 0.006, 0.040)):
 def strap_path(n_out=480):
     """closed centre line of the loop in the band's Y-Z plane (BU): flat behind the module, round around the wrist.
        Starts at the back of the loop so the texture seam is hidden."""
-    yc = STRAP_Y + WRIST_D / 2 + STRAP_T / 2
-    ay = WRIST_D / 2 + STRAP_T / 2
+    # a circle (like the photo) with the case sitting on it as a flat chord: the strap rises a little above and
+    # below the case ends and goes round the wrist in one circle
+    yc = STRAP_Y + math.sqrt(LOOP_R ** 2 - LOOP_CHORD ** 2)
     t = np.linspace(0, 2 * np.pi, 3000, endpoint=False) + np.pi
     c, s = np.cos(t), np.sin(t)
-    e = np.where(c >= 0, 2 / 5.0, 2 / 2.3)
-    y = yc - ay * np.sign(c) * np.abs(c) ** e
-    z = WRIST_H * np.sign(s) * np.abs(s) ** e
-    pin = (y < yc) & (np.abs(z) <= STRAP_PIN)
-    y = np.where(pin, STRAP_Y, y)
-    for _ in range(1500):                                  # relax into a smooth curve, keeping the flat part flat
+    y = np.maximum(yc - LOOP_R * c, STRAP_Y)
+    z = LOOP_R * s
+    pin = (y <= STRAP_Y + 1e-6) & (np.abs(z) <= STRAP_PIN)
+    for _ in range(600):                                   # round off the corners where the circle meets the case
         y2 = 0.5 * y + 0.25 * (np.roll(y, 1) + np.roll(y, -1))
         z2 = 0.5 * z + 0.25 * (np.roll(z, 1) + np.roll(z, -1))
         y = np.where(pin, STRAP_Y, y2); z = np.where(pin, z, z2)
