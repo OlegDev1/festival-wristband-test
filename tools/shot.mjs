@@ -1,7 +1,7 @@
 // Screenshots of the site for agents in the sandbox. One command, no setup:
 //   node tools/shot.mjs [top|how|bottom|<chapter id>|<chapter index> ...] [--mobile] [--out DIR]
 //   e.g. node tools/shot.mjs top radar sos   →  /tmp/shot/top.png, radar.png, sos.png
-//   try = opens Try it mode from the header; try-<id> = also switches to that feature and taps it (sos: holds it)
+//   try = opens Try it mode from the header (launcher); try-<id> = also opens that feature and taps it (sos: holds it)
 // Serves the repo itself, uses /usr/bin/google-chrome (or $CHROME), and swaps Google Fonts for local @fontsource copies
 // (the sandbox can't reach Google Fonts). First run installs playwright-core + fonts into /tmp/shot-deps (npm).
 import {createServer} from 'node:http';
@@ -69,7 +69,7 @@ for (const t of targets) {
     if (!(await page.$('html.trying'))) { await page.click('.try-open'); await page.waitForTimeout(1200); }
     if (id) {
       const n = await page.evaluate(async id => (await import(new URL('src/chapters/index.js', location.href))).default.findIndex(c => c.id === id), id);
-      if (n >= 0) await page.click(`.try-tabs button >> nth=${n}`);
+      if (n >= 0) await page.click(`.try-app[data-n="${n}"]`);
       const b = await (await page.$('.try-dev')).boundingBox();
       await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2); await page.mouse.down();
       await page.waitForTimeout(id === 'sos' ? 1600 : 80); await page.mouse.up();

@@ -1,4 +1,4 @@
-/* Try it mode (src/try/try.js): the full-screen overlay with the big CSS pill device, the hint + feature tabs under it,
+/* Try it mode (src/try/try.js): the full-screen overlay with the big CSS pill device, its launcher screen and side button, the hint under it,
    the close button, and the two "Try it" buttons ([data-try]: header pill, end-section CTA). The device sets its own --k
    (the chapter screens are moved into .try-scr while open). html.trying locks the page and hides the story's overlays. */
 
@@ -38,12 +38,29 @@ html.trying .caps,html.trying .rail,html.trying .hero-t,html.trying .hero-f,html
   55%{transform:translateX(calc(var(--k)*-3px)) rotate(-1deg)}75%{transform:translateX(calc(var(--k)*2px))}}
 .try-scr{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none}
 
-/* hint + feature tabs */
-.try-ui{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:14px}
-.try-hint{margin:0;padding:0 20px;min-height:1.4em;font:500 15px/1.4 Inter,sans-serif;color:var(--ink);text-align:center}
-.try-tabs{display:flex;gap:4px;max-width:100%;overflow-x:auto;padding:2px 14px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-.try-tabs::-webkit-scrollbar{display:none}
-.try-tabs>:first-child{margin-left:auto}.try-tabs>:last-child{margin-right:auto}
-.try-tabs button{appearance:none;flex:none;border:0;height:40px;padding:0 14px;border-radius:999px;background:none;cursor:pointer;
-  font:600 11px/1 Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);transition:color .2s,background .2s}
-.try-tabs button.on{color:var(--coral);background:rgba(255,90,60,.14)}
+/* launcher screen (si = -1): small clock, 2 × 4 app icons in the feature's colour */
+.scr-launch{justify-content:center;gap:calc(var(--k)*10px);pointer-events:auto}
+.scr-launch:not(.on){pointer-events:none}
+.try-clock{font:600 calc(var(--k)*19px)/1 Unbounded,Inter,sans-serif;letter-spacing:-.03em}
+.try-apps{display:grid;grid-template-columns:repeat(2,calc(var(--k)*50px));gap:calc(var(--k)*5px) calc(var(--k)*4px)}
+.try-app{appearance:none;border:0;background:none;padding:0;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:calc(var(--k)*3px);-webkit-tap-highlight-color:transparent}
+.try-app span{display:grid;place-items:center;width:calc(var(--k)*32px);height:calc(var(--k)*32px);border-radius:50%;
+  background:color-mix(in srgb,var(--t) 20%,#111);box-shadow:inset 0 0 0 calc(var(--k)*1px) color-mix(in srgb,var(--t) 45%,transparent);transition:transform .15s}
+.try-app:active span{transform:scale(.9)}
+.try-app svg{width:55%;height:55%;fill:none;stroke:var(--t);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.try-app em{font:500 calc(var(--k)*7.5px)/1.1 Inter,sans-serif;font-style:normal;color:rgba(255,255,255,.8);max-width:100%;text-wrap:balance;min-height:2.2em}
+.try-app:focus-visible{outline:none}.try-app:focus-visible span{outline:2px solid var(--cyan);outline-offset:2px}
+
+/* side button on the pill's right edge: back to the launcher (pulses once when a feature opens) */
+.try-side{appearance:none;border:0;padding:0;position:absolute;z-index:2;right:calc(var(--k)*-6px);top:36%;width:calc(var(--k)*6px);height:calc(var(--k)*34px);
+  border-radius:0 calc(var(--k)*3px) calc(var(--k)*3px) 0;background:linear-gradient(90deg,#3c3b41,#9c9aa3 60%,#3c3b41);cursor:pointer;transition:transform .1s}
+.try-side::before{content:"";position:absolute;inset:-10px -16px -10px -6px}
+.try-side:active{transform:translateX(-2px)}
+.try-dev:not(.inapp) .try-side{opacity:.55}
+.try-side.nudge{animation:try-nudge 1.2s ease-out 2}
+@keyframes try-nudge{0%,100%{box-shadow:none}40%{box-shadow:0 0 0 2px var(--coral),0 0 14px var(--coral)}}
+
+/* hint under the device */
+.try-ui{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 20px 4px;text-align:center}
+.try-hint{margin:0;min-height:1.4em;font:500 15px/1.4 Inter,sans-serif;color:var(--ink)}
+.try-sub{margin:0;min-height:1.4em;font:500 12px/1.4 Inter,sans-serif;color:var(--mute)}

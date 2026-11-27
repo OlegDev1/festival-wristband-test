@@ -29,7 +29,8 @@ src/rail/               chapter dots + arrow/page keys
 src/band/               band.js: turn, spring (timed in ms), buzz, look → loads and decodes every frame at page load and keeps them all, cross-fades them, turns the HTML screen; band.css
 frames/                 the band rendered by Blender: f000…f059.webp (turn from side to front), m/ = smaller phone copy, frames.json (poses, framing, screen size)
 blender/                band.blend + build.py (makes the model) + render.py (renders frames/); blender/README.md explains it, blender/HANDOFF.md = prompt for model work
-src/try/                Try it mode: overlay with a big CSS pill device; borrows the chapter screens, zooms in from the stage band, gestures drive lt
+src/try/                Try it mode: overlay with a big CSS pill device; borrows the chapter screens, zooms in from the stage band; own launcher
+                        screen (clock + app icons), side button / swipe right = home; gestures drive lt
 src/sections/           how.* ("How it works"), end.* (slogan, colour range, footer)
 hdr/, tools/            studio HDRI (lights the Blender render) and its generator (tools/make_hdr.py); tools/shot.mjs = site screenshots
 ```
@@ -52,7 +53,7 @@ CSS isolation: chapter CSS is scoped under `.scr-<id>` and its keyframes are pre
 | Hero text | `src/hero/`: title `.hero-t` tall light Six Caps, uppercase, high up *behind* the band, size `min(64vh,70vw)`; tagline `.hero-f`; `--hy` lifts the title on scroll |
 | Captions / rail | `src/captions/`, `src/rail/` (coral `.eyebrow` from each chapter's `label`) |
 | Band model, materials, light | `blender/build.py` (pill 156×340×60 BU, glass, screen, woven plum strap, studio HDRI + suns) → `band.blend`; then `blender/render.py` → `frames/` |
-| Try it mode (overlay, zoom, gestures per chapter, header/end buttons) | `src/try/try.js` (`TAP` table = what a tap does per chapter) + `try.css`. Hooks: `main.js` (mount, buzz, skip frames while open), `rail.js` (keys ignored while `html.trying`) |
+| Try it mode (overlay, zoom, launcher, gestures per chapter, header/end buttons) | `src/try/try.js` (`TAP` = what a tap does per chapter, `ICON`/`TINT` = launcher icons) + `try.css`. Hooks: `main.js` (mount, buzz, skip frames while open), `rail.js` (keys ignored while `html.trying`) |
 | Translations | the feature's own file (`addStrings`); shared ones in `src/core/common-strings.js` |
 
 ## Screenshot
